@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulut Depom</title>
-    
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>" type="image/svg+xml">
 
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    
+
     <style>
         :root {
             --bg-color: #f8fafd;
@@ -173,32 +173,56 @@
             loadFolder(); 
         });
 
-        // forceRefresh parametresi eklendi
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true);
-            currentActiveFolderId = folderId; // Mevcut klasörü kaydet
+            currentActiveFolderId = folderId;
+            const userPass = sessionStorage.getItem('drivePassword');
             
-            let fetchUrl = APPS_SCRIPT_URL + '?';
+            // Tarayıcı hafızası için klasöre özel bir anahtar kelime oluştur
+            const cacheKey = 'folderCache_' + (folderId || 'rootFolder');
+
+            // 1. ZORUNLU YENİLEME YOKSA ÖNCE TARAYICI HAFIZASINA BAK (ANINDA AÇILIR)
+            if (!forceRefresh) {
+                const localCache = sessionStorage.getItem(cacheKey);
+                if (localCache) {
+                    renderItems(JSON.parse(localCache));
+                    updateBackButton();
+                    return; // Veri bulundu, işlemi burada kes ve Google'a bağlanma!
+                }
+            }
+
+            // 2. TARAYICIDA YOKSA VEYA YENİLE BUTONUNA BASILDIYSA GOOGLE'DAN ÇEK
+            let fetchUrl = APPS_SCRIPT_URL + `?pass=${userPass}&`;
             if (folderId) fetchUrl += `id=${folderId}&`;
-            if (forceRefresh) fetchUrl += `refresh=true&`; // Yenileme sinyali!
+            if (forceRefresh) fetchUrl += `refresh=true&`;
 
             fetch(fetchUrl)
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
+                        document.getElementById('loginError').style.display = 'none';
+                        
+                        // Gelen taze veriyi bir dahaki sefere anında açılması için tarayıcıya kaydet
+                        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
+                        
                         renderItems(result.data);
                         updateBackButton();
                     } else {
-                        alert("Veri çekilemedi: " + result.error);
+                        alert("Hata: " + result.error);
+                        // Eğer hata "şifre" kaynaklıysa, şifre ekranını geri getir
+                        if (result.error.toLowerCase().includes("şifre") || result.error.toLowerCase().includes("yetkisiz")) {
+                            sessionStorage.removeItem('drivePassword');
+                            document.getElementById('loginOverlay').style.display = 'flex';
+                        }
                         showLoader(false);
                     }
                 })
                 .catch(error => {
-                    console.error('API Hatası:', error);
-                    alert("Ağa bağlanılamadı.");
+                    alert("Ağa bağlanılamadı. İnternet bağlantınızı kontrol edin.");
                     showLoader(false);
                 });
         }
+
 
         // Yenile butonuna basıldığında çalışacak fonksiyon
         function refreshCurrentFolder() {
@@ -232,25 +256,31 @@
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `<span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${file.name}">${file.name}</span>`;
-                // Dosyaya tıklanınca çalışacak yeni indirme mantığı
                 card.onclick = () => {
-                    // Eğer dosya Google Docs, Sheets veya Slides değilse (çünkü onlar direkt indirilemez)
                     if (!file.type.includes('google-apps')) {
-                        // Google Drive'ın doğrudan indirme API linkini oluşturuyoruz
                         const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
-                        
-                        // Ekranda yeni sekme açılmasını engelleyip, arka planda indirmeyi tetikleyen görünmez bir tıklama yapıyoruz
+        
                         const link = document.createElement('a');
                         link.href = directDownloadUrl;
-                        link.setAttribute('download', file.name);
+                        link.target = '_blank'; // Kesinlikle yeni sekmede açması için
+        
+                        // Linki geçici olarak sayfaya ekle, tıkla ve anında sil
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
+        
                     } else {
-                        // Eğer Google tabanlı bir dökümansa mecburen okuma sayfasında aç
-                        window.open(file.url, '_blank');
+                        // Google dökümanları için standart açılış
+                        const link = document.createElement('a');
+                        link.href = file.url;
+                        link.target = '_blank';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                     }
                 };
+
+
                 container.appendChild(card);
             });
 
