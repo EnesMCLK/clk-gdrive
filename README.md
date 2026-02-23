@@ -1,6 +1,6 @@
 # ☁️ CLK-GDrive
 
-**clk-gdrive**, Google Drive altyapısını kullanan, tamamen sunucusuz (serverless) ve modern bir web tabanlı dosya yöneticisidir. 
+**CLK-GDrive**, Google Drive altyapısını kullanan, tamamen sunucusuz (serverless) ve modern bir web tabanlı dosya yöneticisidir. 
 
 Bu proje, özellikle katı güvenlik duvarlarına (firewall) sahip şirket ağlarında, harici bulut depolama servislerine veya sunuculara erişimin engellendiği durumlarda **yalnızca GitHub ve Google ekosistemini kullanarak** kesintisiz bir dosya erişim deneyimi sunmak amacıyla geliştirilmiştir.
 
