@@ -1,4 +1,4 @@
-# ☁️ CLK-GDrive
+# ☁︎ Bulut Depom
 
 **CLK-GDrive**, Google Drive altyapısını kullanan, tamamen sunucusuz (serverless) ve modern bir web tabanlı dosya yöneticisidir. 
 
