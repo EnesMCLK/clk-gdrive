@@ -1,4 +1,4 @@
-# ☁️ clk-gdrive
+# ☁️ CLK-GDrive
 
 **clk-gdrive**, Google Drive altyapısını kullanan, tamamen sunucusuz (serverless) ve modern bir web tabanlı dosya yöneticisidir. 
 
