@@ -19,17 +19,6 @@ Sistem üç ana bileşenden oluşur:
 2. **Backend (API Köprüsü):** Google Apps Script. Tarayıcıdan gelen istekleri karşılayıp Drive'dan veriyi JSON formatında frontend'e iletir.
 3. **Database (Depolama):** Google Drive. Tüm dosyalar ve klasör hiyerarşisi kullanıcının kişisel veya kurumsal Drive hesabında tutulur.
 
-## 🚀 Kurulum ve Kullanım
-
-Kendi `clk-gdrive` sisteminizi kurmak oldukça basittir:
-
-1. Bu repoyu kendi GitHub hesabınıza **fork'layın** (veya indirin).
-2. Google Drive üzerinde dosyalarınızı tutacağınız bir klasör oluşturun ve URL'sindeki klasör kimliğini (`folderId`) kopyalayın.
-3. [Google Apps Script](https://script.google.com/) üzerinden yeni bir proje oluşturup, API kodunu ekleyin ve `rootFolderId` kısmına kopyaladığınız kimliği yapıştırın.
-4. Apps Script projesini **Web Uygulaması** (Web App) olarak dağıtın (Erişim: Herkes).
-5. Size verilen Web App URL'sini bu repodaki `index.html` dosyasının alt kısmında yer alan `APPS_SCRIPT_URL` değişkenine yapıştırın.
-6. Projeyi **GitHub Pages** üzerinden yayına alın!
-
 ## 📝 Lisans
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır. Kişisel ve ticari kullanıma, değiştirilmeye ve dağıtılmaya açıktır.
