@@ -167,58 +167,52 @@
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUNiaNw7Ryg21tGMSHYT3aYU5tnN0TAfLw5nhTgQUyDLq-_t_qnG3fH8m6HBlf3C8f/exec'; 
 
         let historyStack = [];
-        let currentActiveFolderId = null; // Şu an bulunduğumuz klasörü akılda tutmak için
+        let currentActiveFolderId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadFolder(); 
+            loadFolder(); // Sayfa açılır açılmaz doğrudan ana klasörü yükle
         });
 
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true);
             currentActiveFolderId = folderId;
-            const userPass = sessionStorage.getItem('drivePassword');
             
-            // Tarayıcı hafızası için klasöre özel bir anahtar kelime oluştur
+            // Klasörün anında açılması için yerel hafıza anahtarı
             const cacheKey = 'folderCache_' + (folderId || 'rootFolder');
 
-            // 1. ZORUNLU YENİLEME YOKSA ÖNCE TARAYICI HAFIZASINA BAK (ANINDA AÇILIR)
+            // 1. ZORUNLU YENİLEME YOKSA ÖNCE YEREL HAFIZAYA BAK
             if (!forceRefresh) {
                 const localCache = sessionStorage.getItem(cacheKey);
                 if (localCache) {
                     renderItems(JSON.parse(localCache));
                     updateBackButton();
-                    return; // Veri bulundu, işlemi burada kes ve Google'a bağlanma!
+                    return; // Veri bulundu, Google'a bağlanmadan işlemi bitir
                 }
             }
 
-            // 2. TARAYICIDA YOKSA VEYA YENİLE BUTONUNA BASILDIYSA GOOGLE'DAN ÇEK
-            let fetchUrl = APPS_SCRIPT_URL + `?pass=${userPass}&`;
+            // 2. HAFIZADA YOKSA GOOGLE'DAN ÇEK
+            let fetchUrl = APPS_SCRIPT_URL + '?';
             if (folderId) fetchUrl += `id=${folderId}&`;
             if (forceRefresh) fetchUrl += `refresh=true&`;
 
             fetch(fetchUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error("HTTP Hatası: " + response.status);
+                    return response.json();
+                })
                 .then(result => {
                     if (result.success) {
-                        document.getElementById('loginError').style.display = 'none';
-                        
-                        // Gelen taze veriyi bir dahaki sefere anında açılması için tarayıcıya kaydet
+                        // Gelen güncel veriyi bir sonraki giriş için hafızaya kaydet
                         sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
-                        
                         renderItems(result.data);
                         updateBackButton();
                     } else {
                         alert("Hata: " + result.error);
-                        // Eğer hata "şifre" kaynaklıysa, şifre ekranını geri getir
-                        if (result.error.toLowerCase().includes("şifre") || result.error.toLowerCase().includes("yetkisiz")) {
-                            sessionStorage.removeItem('drivePassword');
-                            document.getElementById('loginOverlay').style.display = 'flex';
-                        }
                         showLoader(false);
                     }
                 })
                 .catch(error => {
-                    alert("Ağa bağlanılamadı. İnternet bağlantınızı kontrol edin.");
+                    alert("Bağlantı Başarısız. Gerçek Hata: " + error.message);
                     showLoader(false);
                 });
         }
