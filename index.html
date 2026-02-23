@@ -144,6 +144,9 @@
             <span class="material-icons-round" style="color: var(--primary-color);">cloud</span>
             Bulut Depom
         </h1>
+        <button class="btn-back" style="margin-left: auto;" onclick="refreshCurrentFolder()" title="Verileri Yenile">
+            <span class="material-icons-round">refresh</span>
+        </button>
     </div>
 
     <div class="main-content">
@@ -158,23 +161,23 @@
 
     <script>
         // --- AYARLAR ---
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOBXkR4KZWDRzxrBw4-wYrWt68e4QtbkmzIzNwHCRobQ_Nz_pa260ro0p7VwvWoPf7/exec'; 
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUNiaNw7Ryg21tGMSHYT3aYU5tnN0TAfLw5nhTgQUyDLq-_t_qnG3fH8m6HBlf3C8f/exec'; 
 
-        // Navigasyon Geçmişi (Geri butonu için)
         let historyStack = [];
+        let currentActiveFolderId = null; // Şu an bulunduğumuz klasörü akılda tutmak için
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadFolder(); // Sayfa açılınca root (ana) klasörü yükle
+            loadFolder(); 
         });
 
-        function loadFolder(folderId = null) {
+        // forceRefresh parametresi eklendi
+        function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true);
+            currentActiveFolderId = folderId; // Mevcut klasörü kaydet
             
-            // Eğer bir folderId varsa URL'ye parametre olarak ekle
-            let fetchUrl = APPS_SCRIPT_URL;
-            if (folderId) {
-                fetchUrl += `?id=${folderId}`;
-            }
+            let fetchUrl = APPS_SCRIPT_URL + '?';
+            if (folderId) fetchUrl += `id=${folderId}&`;
+            if (forceRefresh) fetchUrl += `refresh=true&`; // Yenileme sinyali!
 
             fetch(fetchUrl)
                 .then(response => response.json())
@@ -189,38 +192,35 @@
                 })
                 .catch(error => {
                     console.error('API Hatası:', error);
-                    alert("Ağa bağlanılamadı. Şirket duvarı veya URL hatası olabilir.");
+                    alert("Ağa bağlanılamadı.");
                     showLoader(false);
                 });
         }
 
+        // Yenile butonuna basıldığında çalışacak fonksiyon
+        function refreshCurrentFolder() {
+            // Bulunduğumuz klasörü "forceRefresh = true" ile tekrar yükle
+            loadFolder(currentActiveFolderId, true);
+        }
+
         function renderItems(data) {
             const container = document.getElementById('gridContainer');
-            container.innerHTML = ''; // Temizle
+            container.innerHTML = ''; 
 
-            // 1. Önce Klasörleri Ekrana Bas
             data.folders.forEach(folder => {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = `
-                    <span class="material-icons-round item-icon icon-folder">folder</span>
-                    <span class="item-name" title="${folder.name}">${folder.name}</span>
-                `;
-                
-                // Klasöre tıklanınca içine gir
+                card.innerHTML = `<span class="material-icons-round item-icon icon-folder">folder</span><span class="item-name" title="${folder.name}">${folder.name}</span>`;
                 card.onclick = () => {
-                    historyStack.push(data.currentId); // Şu anki ID'yi geçmişe kaydet
-                    loadFolder(folder.id); // Yeni klasörü yükle
+                    historyStack.push(data.currentId); 
+                    loadFolder(folder.id); 
                 };
                 container.appendChild(card);
             });
 
-            // 2. Sonra Dosyaları Ekrana Bas
             data.files.forEach(file => {
                 let iconName = 'insert_drive_file';
                 let iconColorClass = 'icon-doc';
-
-                // Dosya tipine göre ikon belirleme
                 if (file.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; }
                 else if (file.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; }
                 else if (file.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; }
@@ -228,27 +228,17 @@
 
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = `
-                    <span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span>
-                    <span class="item-name" title="${file.name}">${file.name}</span>
-                `;
-                
-                // Dosyaya tıklanınca yeni sekmede aç
-                card.onclick = () => {
-                    window.open(file.url, '_blank');
-                };
+                card.innerHTML = `<span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${file.name}">${file.name}</span>`;
+                card.onclick = () => window.open(file.url, '_blank');
                 container.appendChild(card);
             });
 
-            // Eğer klasör boşsa uyarı ver
             if (data.folders.length === 0 && data.files.length === 0) {
                 container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
             }
-
             showLoader(false);
         }
 
-        // Geri butonu fonksiyonu
         function goBack() {
             if (historyStack.length > 0) {
                 const previousFolderId = historyStack.pop();
@@ -256,10 +246,8 @@
             }
         }
 
-        // Geri butonunun aktif/pasif durumunu ayarla
         function updateBackButton() {
-            const backBtn = document.getElementById('backBtn');
-            backBtn.disabled = historyStack.length === 0;
+            document.getElementById('backBtn').disabled = historyStack.length === 0;
         }
 
         function showLoader(show) {
