@@ -232,7 +232,25 @@
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `<span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${file.name}">${file.name}</span>`;
-                card.onclick = () => window.open(file.url, '_blank');
+                // Dosyaya tıklanınca çalışacak yeni indirme mantığı
+                card.onclick = () => {
+                    // Eğer dosya Google Docs, Sheets veya Slides değilse (çünkü onlar direkt indirilemez)
+                    if (!file.type.includes('google-apps')) {
+                        // Google Drive'ın doğrudan indirme API linkini oluşturuyoruz
+                        const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
+                        
+                        // Ekranda yeni sekme açılmasını engelleyip, arka planda indirmeyi tetikleyen görünmez bir tıklama yapıyoruz
+                        const link = document.createElement('a');
+                        link.href = directDownloadUrl;
+                        link.setAttribute('download', file.name);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        // Eğer Google tabanlı bir dökümansa mecburen okuma sayfasında aç
+                        window.open(file.url, '_blank');
+                    }
+                };
                 container.appendChild(card);
             });
 
