@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulut Depom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f8fafd;
+            --surface-color: #ffffff;
+            --primary-color: #0b57d0;
+            --text-main: #1f1f1f;
+            --text-muted: #444746;
+            --hover-color: #edf2fa;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Product Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Üst Menü / Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            gap: 16px;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 500;
+            margin: 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover { background-color: var(--hover-color); }
+        .btn-back:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Izgara Yapısı */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* Dosya / Klasör Kartları */
+        .item-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .item-card:hover {
+            background-color: var(--hover-color);
+            border-color: #c2e7ff;
+        }
+
+        .item-icon {
+            font-size: 28px;
+        }
+
+        /* İkon Renkleri */
+        .icon-folder { color: #fbbc04; } /* Klasör Sarısı */
+        .icon-pdf { color: #ea4335; } /* PDF Kırmızısı */
+        .icon-image { color: #188038; } /* Resim Yeşili */
+        .icon-doc { color: #4285f4; } /* Döküman Mavisi */
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Yükleniyor Ekranı */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            color: var(--primary-color);
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <button class="btn-back" id="backBtn" onclick="goBack()" disabled title="Geri Git">
+            <span class="material-icons-round">arrow_back</span>
+        </button>
+        <h1>
+            <span class="material-icons-round" style="color: var(--primary-color);">cloud</span>
+            Bulut Depom
+        </h1>
+    </div>
+
+    <div class="main-content">
+        <div id="loader" class="loader-container">
+            <span class="material-icons-round spinner">autorenew</span>
+            <span style="color: var(--text-muted); font-weight: 500;">Dosyalar getiriliyor...</span>
+        </div>
+
+        <div class="grid-container" id="gridContainer" style="display: none;">
+            </div>
+    </div>
+
+    <script>
+        // --- AYARLAR ---
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOBXkR4KZWDRzxrBw4-wYrWt68e4QtbkmzIzNwHCRobQ_Nz_pa260ro0p7VwvWoPf7/exec'; 
+
+        // Navigasyon Geçmişi (Geri butonu için)
+        let historyStack = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFolder(); // Sayfa açılınca root (ana) klasörü yükle
+        });
+
+        function loadFolder(folderId = null) {
+            showLoader(true);
+            
+            // Eğer bir folderId varsa URL'ye parametre olarak ekle
+            let fetchUrl = APPS_SCRIPT_URL;
+            if (folderId) {
+                fetchUrl += `?id=${folderId}`;
+            }
+
+            fetch(fetchUrl)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        renderItems(result.data);
+                        updateBackButton();
+                    } else {
+                        alert("Veri çekilemedi: " + result.error);
+                        showLoader(false);
+                    }
+                })
+                .catch(error => {
+                    console.error('API Hatası:', error);
+                    alert("Ağa bağlanılamadı. Şirket duvarı veya URL hatası olabilir.");
+                    showLoader(false);
+                });
+        }
+
+        function renderItems(data) {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = ''; // Temizle
+
+            // 1. Önce Klasörleri Ekrana Bas
+            data.folders.forEach(folder => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <span class="material-icons-round item-icon icon-folder">folder</span>
+                    <span class="item-name" title="${folder.name}">${folder.name}</span>
+                `;
+                
+                // Klasöre tıklanınca içine gir
+                card.onclick = () => {
+                    historyStack.push(data.currentId); // Şu anki ID'yi geçmişe kaydet
+                    loadFolder(folder.id); // Yeni klasörü yükle
+                };
+                container.appendChild(card);
+            });
+
+            // 2. Sonra Dosyaları Ekrana Bas
+            data.files.forEach(file => {
+                let iconName = 'insert_drive_file';
+                let iconColorClass = 'icon-doc';
+
+                // Dosya tipine göre ikon belirleme
+                if (file.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; }
+                else if (file.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; }
+                else if (file.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; }
+                else if (file.type.includes('spreadsheet') || file.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
+
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span>
+                    <span class="item-name" title="${file.name}">${file.name}</span>
+                `;
+                
+                // Dosyaya tıklanınca yeni sekmede aç
+                card.onclick = () => {
+                    window.open(file.url, '_blank');
+                };
+                container.appendChild(card);
+            });
+
+            // Eğer klasör boşsa uyarı ver
+            if (data.folders.length === 0 && data.files.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
+            }
+
+            showLoader(false);
+        }
+
+        // Geri butonu fonksiyonu
+        function goBack() {
+            if (historyStack.length > 0) {
+                const previousFolderId = historyStack.pop();
+                loadFolder(previousFolderId);
+            }
+        }
+
+        // Geri butonunun aktif/pasif durumunu ayarla
+        function updateBackButton() {
+            const backBtn = document.getElementById('backBtn');
+            backBtn.disabled = historyStack.length === 0;
+        }
+
+        function showLoader(show) {
+            document.getElementById('loader').style.display = show ? 'flex' : 'none';
+            document.getElementById('gridContainer').style.display = show ? 'none' : 'grid';
+        }
+    </script>
+</body>
+</html>
