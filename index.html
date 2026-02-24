@@ -25,34 +25,46 @@
         .login-btn:disabled { background-color: #a8c7fa; cursor: not-allowed; }
         .login-error { color: #d93025; font-size: 13px; margin-bottom: 16px; display: none; background: #fce8e6; padding: 8px; border-radius: 6px; }
 
-        /* ANA ARAYÜZ BİLEŞENLERİ */
-        .navbar { display: flex; align-items: center; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); gap: 16px; flex-shrink: 0; }
-        .navbar h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
+        /* ANA ARAYÜZ (YENİ YERLEŞİM) */
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .navbar-left { display: flex; align-items: center; gap: 16px; }
+        .navbar-left h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .navbar-right { display: flex; align-items: center; gap: 12px; }
+
         .btn-icon { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: 0.2s; }
         .btn-icon:hover { background-color: var(--hover-color); }
         .btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
-        .breadcrumb { display: flex; align-items: center; padding: 10px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 4px; font-size: 14px; flex-shrink: 0; }
+        
+        /* DOSYA YOLU VE YENİLEME ALANI (YENİ BÖLÜM) */
+        .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; flex: 1; }
         .breadcrumb-item { color: var(--text-muted); display: flex; align-items: center; border-radius: 6px; padding: 4px 8px; transition: 0.2s; user-select: none; }
         .breadcrumb-item.clickable { cursor: pointer; }
         .breadcrumb-item.clickable:hover { background-color: var(--hover-color); color: var(--text-main); }
         .breadcrumb-item.active { font-weight: 500; color: var(--text-main); cursor: default; }
         .breadcrumb-separator { font-size: 18px; color: var(--text-muted); user-select: none; }
-        .main-content { padding: 24px; flex: 1; overflow-y: auto; position: relative; }
-        .dropdown { position: relative; display: inline-block; margin-left: auto; }
+
+        /* HESAP BUTONU (YENİ) */
+        .account-btn { background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 12px 4px 8px; cursor: pointer; font-weight: 500; font-family: inherit; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .account-btn:hover { background-color: #e1e9f7; }
+        .account-avatar { background-color: var(--primary-color); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+
+        /* AÇILIR MENÜLER (Görünüm ve Hesap için ortak) */
+        .dropdown { position: relative; display: inline-block; }
         .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 10; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 5px; }
         .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; }
         .dropdown-content a:hover { background-color: var(--hover-color); }
         .show { display: block; }
+
+        /* KARTLAR VE GÖRÜNÜM AYARLARI */
+        .main-content { padding: 24px; flex: 1; overflow-y: auto; position: relative; }
         .grid-container { display: grid; gap: 16px; }
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
         .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
         .item-card.selected { background-color: #e8f0fe; border-color: var(--primary-color); }
         .item-name-wrapper { display: flex; align-items: center; overflow: hidden; position: relative; }
         .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-details { display: none; font-size: 13px; color: var(--text-muted); }
         .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
-        .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
-        .item-card:hover .item-checkbox, .item-card.selected .item-checkbox { display: block; }
         .item-actions { display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; }
         .item-card:hover .item-actions, .item-card.selected .item-actions { display: flex; }
         .action-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -60,12 +72,16 @@
         
         .view-large { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
-        .view-large .item-checkbox { position: absolute; top: 12px; left: 12px; }
         .view-large .item-actions { top: 8px; right: 8px; }
         .view-large .item-icon { font-size: 48px; }
         .view-large .item-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; line-height: 1.4; }
         
-        /* Modallar */
+        .view-small { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .view-small .item-card { padding: 12px 16px; display: flex; align-items: center; }
+        .view-small .item-icon { font-size: 24px; margin-right: 12px; }
+        .view-small .item-actions { top: 50%; transform: translateY(-50%); right: 12px; }
+        
+        /* Modallar ve Yardımcı Sınıflar */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface-color); padding: 24px; border-radius: 16px; width: 320px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
         .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--primary-color); }
@@ -93,24 +109,39 @@
     </div>
 
     <div id="appContainer" style="display: none; flex-direction: column; height: 100vh;">
+        
         <div class="navbar">
-            <button class="btn-icon" id="backBtn" onclick="goBack()" disabled title="Geri Git"><span class="material-icons-round">arrow_back</span></button>
-            <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
+            <div class="navbar-left">
+                <button class="btn-icon" id="backBtn" onclick="goBack()" disabled title="Geri Git"><span class="material-icons-round">arrow_back</span></button>
+                <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
+            </div>
             
-            <div class="dropdown">
-                <button class="btn-icon" onclick="toggleViewMenu()" title="Görünüm Seçenekleri"><span class="material-icons-round" id="currentViewIcon">grid_view</span></button>
-                <div class="dropdown-content" id="viewDropdown">
-                    <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
-                    <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
+            <div class="navbar-right">
+                <div class="dropdown">
+                    <button class="btn-icon" onclick="toggleMenu('viewDropdown')" title="Görünüm Seçenekleri"><span class="material-icons-round" id="currentViewIcon">grid_view</span></button>
+                    <div class="dropdown-content" id="viewDropdown">
+                        <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
+                        <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="account-btn" onclick="toggleMenu('accountDropdown')" title="Hesap İşlemleri">
+                        <div class="account-avatar" id="avatarLetter">T</div>
+                        <span id="activeUserName">Hesap</span>
+                        <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">arrow_drop_down</span>
+                    </button>
+                    <div class="dropdown-content" id="accountDropdown">
+                        <a onclick="logout()" style="color: #d93025;"><span class="material-icons-round">logout</span> Çıkış Yap</a>
+                    </div>
                 </div>
             </div>
-
-            <span id="activeUserName" style="margin-left:auto; margin-right:8px; font-weight:500; font-size:14px; color:var(--text-muted); background: var(--hover-color); padding: 4px 12px; border-radius: 20px;"></span>
-            <button class="btn-icon" onclick="logout()" title="Çıkış Yap"><span class="material-icons-round" style="color: #d93025;">logout</span></button>
-            <button class="btn-icon" onclick="refreshCurrentFolder()" title="Yenile"><span class="material-icons-round">refresh</span></button>
         </div>
 
-        <div class="breadcrumb" id="breadcrumbContainer"></div>
+        <div class="breadcrumb-bar">
+            <div class="breadcrumb" id="breadcrumbContainer"></div>
+            <button class="btn-icon" onclick="refreshCurrentFolder()" title="Klasörü Yenile"><span class="material-icons-round">refresh</span></button>
+        </div>
 
         <div class="main-content" id="mainArea">
             <div id="loader" class="loader-container">
@@ -134,10 +165,28 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('activeUserName').innerText = sessionStorage.getItem('displayName') || '';
+                const displayName = sessionStorage.getItem('displayName') || 'Kullanıcı';
+                document.getElementById('activeUserName').innerText = displayName;
+                document.getElementById('avatarLetter').innerText = displayName.charAt(0).toUpperCase();
                 showApp();
             }
         });
+
+        // Çift menüyü sorunsuz yönetmek için tek bir fonksiyon
+        function toggleMenu(menuId) {
+            let menus = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < menus.length; i++) {
+                if (menus[i].id !== menuId) menus[i].classList.remove('show');
+            }
+            document.getElementById(menuId).classList.toggle("show");
+        }
+
+        window.onclick = function(event) { 
+            if (!event.target.closest('.dropdown')) { 
+                let dropdowns = document.getElementsByClassName("dropdown-content"); 
+                for (let i = 0; i < dropdowns.length; i++) dropdowns[i].classList.remove('show'); 
+            } 
+        }
 
         function checkLogin() {
             const user = document.getElementById('usernameInput').value.trim();
@@ -147,36 +196,29 @@
 
             if (!user || !pass) return;
 
-            loginBtn.innerText = 'Doğrulanıyor...';
-            loginBtn.disabled = true;
+            loginBtn.innerText = 'Doğrulanıyor...'; loginBtn.disabled = true;
 
-            // Şifreyi ve kullanıcıyı doğrudan Google'a soruyoruz
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
 
-            fetch(fetchUrl)
-                .then(r => r.json())
-                .then(result => {
-                    loginBtn.innerText = 'Giriş Yap';
-                    loginBtn.disabled = false;
-
-                    if (result.success) {
-                        sessionStorage.setItem('isLoggedIn', 'true');
-                        sessionStorage.setItem('authUser', user);
-                        sessionStorage.setItem('authPass', pass);
-                        sessionStorage.setItem('displayName', result.displayName); // Backend'den gelen "TK" ismi
-                        
-                        document.getElementById('activeUserName').innerText = result.displayName;
-                        errorLabel.style.display = 'none';
-                        showApp(result.data); 
-                    } else {
-                        errorLabel.innerText = result.error || 'Giriş Başarısız!';
-                        errorLabel.style.display = 'block';
-                    }
-                })
-                .catch(e => {
-                    loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false;
-                    errorLabel.innerText = 'Bağlantı hatası!'; errorLabel.style.display = 'block';
-                });
+            fetch(fetchUrl).then(r => r.json()).then(result => {
+                loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false;
+                if (result.success) {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('authUser', user);
+                    sessionStorage.setItem('authPass', pass);
+                    sessionStorage.setItem('displayName', result.displayName); 
+                    
+                    document.getElementById('activeUserName').innerText = result.displayName;
+                    document.getElementById('avatarLetter').innerText = result.displayName.charAt(0).toUpperCase();
+                    errorLabel.style.display = 'none';
+                    showApp(result.data); 
+                } else {
+                    errorLabel.innerText = result.error || 'Giriş Başarısız!'; errorLabel.style.display = 'block';
+                }
+            }).catch(e => {
+                loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false;
+                errorLabel.innerText = 'Bağlantı hatası!'; errorLabel.style.display = 'block';
+            });
         }
 
         function handleEnterKey(e) { if (e.key === 'Enter') checkLogin(); }
@@ -187,15 +229,11 @@
             if (initialData) renderItems(initialData); else loadFolder();
         }
 
-        function logout() {
-            sessionStorage.clear();
-            location.reload();
-        }
+        function logout() { sessionStorage.clear(); location.reload(); }
 
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true); currentActiveFolderId = folderId; renderBreadcrumb(); 
-            const u = sessionStorage.getItem('authUser');
-            const p = sessionStorage.getItem('authPass');
+            const u = sessionStorage.getItem('authUser'); const p = sessionStorage.getItem('authPass');
 
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`;
             if (folderId) fetchUrl += `&id=${folderId}`;
@@ -208,40 +246,24 @@
         }
 
         function renderItems(data) {
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = ''; allCurrentItems = [];
-            
+            const container = document.getElementById('gridContainer'); container.innerHTML = ''; allCurrentItems = [];
             const items = [...data.folders.map(f => ({...f, isFolder:true})), ...data.files.map(f => ({...f, isFolder:false}))];
             allCurrentItems = items;
 
             items.forEach((item, index) => {
-                let icon = item.isFolder ? 'folder' : 'insert_drive_file';
-                let color = item.isFolder ? 'icon-folder' : 'icon-doc';
+                let icon = item.isFolder ? 'folder' : 'insert_drive_file'; let color = item.isFolder ? 'icon-folder' : 'icon-doc';
                 if(item.type && item.type.includes('pdf')) { icon = 'picture_as_pdf'; color = 'icon-pdf'; }
 
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.innerHTML = `
-                    <span class="material-icons-round item-icon ${color}">${icon}</span>
-                    <span class="item-name">${item.name}</span>
-                    <div class="item-actions">
-                        <button class="action-btn" onclick="event.stopPropagation(); triggerDownload(${index})">
-                            <span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span>
-                        </button>
-                    </div>
-                `;
-                card.onclick = () => {
-                    if (item.isFolder) {
-                        historyStack.push(currentActiveFolderId);
-                        pathArray.push({ id: item.id, name: item.name });
-                        loadFolder(item.id);
-                    } else triggerDownload(index);
-                };
+                const card = document.createElement('div'); card.className = 'item-card';
+                card.innerHTML = `<span class="material-icons-round item-icon ${color}">${icon}</span><span class="item-name">${item.name}</span>
+                    <div class="item-actions"><button class="action-btn" onclick="event.stopPropagation(); triggerDownload(${index})">
+                    <span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button></div>`;
+                
+                card.onclick = () => { if (item.isFolder) { historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); } else triggerDownload(index); };
                 card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); };
                 container.appendChild(card);
             });
-            updateBackButton();
-            showLoader(false);
+            updateBackButton(); showLoader(false);
         }
 
         function triggerDownload(index) {
@@ -256,14 +278,9 @@
                 const span = document.createElement('span'); span.className = 'breadcrumb-item ' + (index === pathArray.length-1 ? 'active' : 'clickable');
                 span.innerText = item.name;
                 if (index < pathArray.length - 1) {
-                    span.onclick = () => {
-                        const count = pathArray.length - 1 - index;
-                        for(let i=0; i<count; i++) { historyStack.pop(); pathArray.pop(); }
-                        loadFolder(item.id);
-                    };
+                    span.onclick = () => { const count = pathArray.length - 1 - index; for(let i=0; i<count; i++) { historyStack.pop(); pathArray.pop(); } loadFolder(item.id); };
                     container.appendChild(span);
-                    const sep = document.createElement('span'); sep.className = 'material-icons-round breadcrumb-separator'; sep.innerText = 'chevron_right';
-                    container.appendChild(sep);
+                    const sep = document.createElement('span'); sep.className = 'material-icons-round breadcrumb-separator'; sep.innerText = 'chevron_right'; container.appendChild(sep);
                 } else container.appendChild(span);
             });
         }
@@ -271,13 +288,11 @@
         function goBack() { if (historyStack.length > 0) { pathArray.pop(); loadFolder(historyStack.pop()); } }
         function updateBackButton() { document.getElementById('backBtn').disabled = historyStack.length === 0; }
         function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; document.getElementById('gridContainer').style.display = show ? 'none' : 'grid'; }
-        function toggleViewMenu() { document.getElementById("viewDropdown").classList.toggle("show"); }
-        function changeView(v, i) { document.getElementById('gridContainer').className = 'grid-container ' + v; document.getElementById('currentViewIcon').innerText = i; toggleViewMenu(); }
+        function changeView(v, i) { document.getElementById('gridContainer').className = 'grid-container ' + v; document.getElementById('currentViewIcon').innerText = i; document.getElementById('viewDropdown').classList.remove('show'); }
         function refreshCurrentFolder() { loadFolder(currentActiveFolderId, true); }
         
         function showContextMenu(e, item) {
-            selectedItemForContext = item;
-            const menu = document.getElementById('contextMenu');
+            selectedItemForContext = item; const menu = document.getElementById('contextMenu');
             document.getElementById('ctxText').innerText = item.isFolder ? 'Drive\'da Aç' : 'İndir';
             menu.style.display = 'block'; menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px';
         }
