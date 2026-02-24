@@ -305,11 +305,14 @@
             // Klasörse menü metnini Drive'da aç olarak değiştir
             if(item.isFolder) {
                 document.getElementById('ctxDownloadIcon').innerText = "open_in_new";
-                document.getElementById('ctxDownloadText').innerText = "Drive'da İndir (Zip)";
+                // İŞTE DEĞİŞEN KISIM BURASI:
+                document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Drive'a Yönlendirir)";
             } else {
                 document.getElementById('ctxDownloadIcon').innerText = "download";
                 document.getElementById('ctxDownloadText').innerText = "Hemen İndir";
             }
+
+            // ... kodun geri kalanı ...
 
             menu.style.display = 'block';
             
