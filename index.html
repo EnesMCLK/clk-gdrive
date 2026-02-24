@@ -2,12 +2,30 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulut Depom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="application-name" content="Bulut Depom">
+    <meta name="theme-color" content="#0b57d0">
+    
+    <title>Bulut Depom | Kurumsal Dosya Yönetim Sistemi</title>
+    <meta name="description" content="Bulut Depom, dosyalarınıza her yerden güvenle erişebileceğiniz, hızlı ve profesyonel bir kurumsal arşiv yönetim platformudur.">
+    <meta name="keywords" content="bulut depolama, dosya yönetimi, kurumsal arşiv, e-imza arşivi, belge yönetimi, online depo">
+    <meta name="author" content="EnesMCLK">
+    
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Bulut Depom | Kurumsal Yönetim">
+    <meta property="og:description" content="Dosyalarınıza kurumsal ağlardan ve mobil cihazlardan güvenle erişin.">
+    <meta property="og:site_name" content="Bulut Depom">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Google_Drive_icon_%282020%29.svg/512px-Google_Drive_icon_%282020%29.svg.png"> 
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    
+
     <style>
         :root { --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0; --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0; }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -35,7 +53,7 @@
         .btn-icon:hover { background-color: var(--hover-color); }
         .btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        /* DOSYA YOLU VE YENİLEME ALANI (YENİ BÖLÜM) */
+        /* DOSYA YOLU VE YENİLEME ALANI */
         .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; flex: 1; }
         .breadcrumb-item { color: var(--text-muted); display: flex; align-items: center; border-radius: 6px; padding: 4px 8px; transition: 0.2s; user-select: none; }
@@ -44,12 +62,12 @@
         .breadcrumb-item.active { font-weight: 500; color: var(--text-main); cursor: default; }
         .breadcrumb-separator { font-size: 18px; color: var(--text-muted); user-select: none; }
 
-        /* HESAP BUTONU (YENİ) */
+        /* HESAP BUTONU */
         .account-btn { background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 12px 4px 8px; cursor: pointer; font-weight: 500; font-family: inherit; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s; }
         .account-btn:hover { background-color: #e1e9f7; }
         .account-avatar { background-color: var(--primary-color); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-        /* AÇILIR MENÜLER (Görünüm ve Hesap için ortak) */
+        /* AÇILIR MENÜLER (Görünüm ve Hesap) */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 10; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 5px; }
         .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; }
@@ -62,33 +80,69 @@
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
         .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
         .item-card.selected { background-color: #e8f0fe; border-color: var(--primary-color); }
+        
         .item-name-wrapper { display: flex; align-items: center; overflow: hidden; position: relative; }
         .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-details { display: none; font-size: 13px; color: var(--text-muted); }
         .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
+        .details-header { display: none; }
+
+        /* Checkbox ve Aksiyonlar */
+        .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
+        .item-card:hover .item-checkbox, .item-card.selected .item-checkbox { display: block; }
         .item-actions { display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; }
         .item-card:hover .item-actions, .item-card.selected .item-actions { display: flex; }
         .action-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .action-btn:hover { background-color: var(--hover-color); color: var(--text-main); }
+        .action-btn .material-icons-round { font-size: 20px; }
         
+        /* Görünümler (CSS Grid) */
         .view-large { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-        .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+        .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; text-align: center; }
+        .view-large .item-checkbox { position: absolute; top: 12px; left: 12px; z-index: 2; margin: 0; }
         .view-large .item-actions { top: 8px; right: 8px; }
-        .view-large .item-icon { font-size: 48px; }
-        .view-large .item-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; line-height: 1.4; }
-        
+        .view-large .item-icon { font-size: 48px; margin: 0; }
+        .view-large .item-name-wrapper { flex-direction: column; width: 100%; align-items: center; }
+        .view-large .item-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; overflow-wrap: anywhere; width: 100%; line-height: 1.4; }
+
         .view-small { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
         .view-small .item-card { padding: 12px 16px; display: flex; align-items: center; }
         .view-small .item-icon { font-size: 24px; margin-right: 12px; }
+        .view-small .item-checkbox { margin-right: 12px; flex-shrink: 0; }
         .view-small .item-actions { top: 50%; transform: translateY(-50%); right: 12px; }
-        
+
+        .view-list { grid-template-columns: 1fr; gap: 8px; }
+        .view-list .item-card { padding: 12px 16px; display: flex; align-items: center; }
+        .view-list .item-icon { font-size: 24px; margin-right: 16px; }
+        .view-list .item-checkbox { margin-right: 12px; flex-shrink: 0; }
+        .view-list .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
+
+        .view-details { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white;}
+        .view-details .details-header { display: grid; grid-template-columns: 3fr 1fr 1fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        .view-details .item-card { border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; display: grid; grid-template-columns: 3fr 1fr 1fr; align-items: center; padding: 10px 24px; }
+        .view-details .item-card:last-child { border-bottom: none; }
+        .view-details .item-icon { font-size: 24px; margin-right: 16px; }
+        .view-details .item-checkbox { margin-right: 12px; flex-shrink: 0; }
+        .view-details .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
+        .view-details .item-details { display: block; }
+
         /* Modallar ve Yardımcı Sınıflar */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface-color); padding: 24px; border-radius: 16px; width: 320px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
+        .modal-header { font-size: 18px; font-weight: 500; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-close { cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 50%; transition: 0.2s; display: flex;}
+        .modal-close:hover { background-color: var(--hover-color); color: var(--text-main); }
+        .modal-body { display: flex; flex-direction: column; gap: 12px; }
+        .detail-row { display: flex; flex-direction: column; gap: 4px; }
+        .detail-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
+        .detail-value { font-size: 14px; color: var(--text-main); word-break: break-all; }
+
         .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--primary-color); }
         .spinner { animation: spin 1s linear infinite; font-size: 40px; margin-bottom: 16px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
         #contextMenu { display: none; position: fixed; background-color: var(--surface-color); border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; min-width: 160px; padding: 8px 0; }
-        .context-menu-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-main); }
+        .context-menu-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-main); transition: background 0.1s; }
         .context-menu-item:hover { background-color: var(--hover-color); }
     </style>
 </head>
@@ -122,6 +176,8 @@
                     <div class="dropdown-content" id="viewDropdown">
                         <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
                         <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
+                        <a onclick="changeView('view-list', 'view_list')"><span class="material-icons-round">view_list</span> Listele</a>
+                        <a onclick="changeView('view-details', 'table_rows')"><span class="material-icons-round">table_rows</span> Ayrıntılar</a>
                     </div>
                 </div>
 
@@ -153,17 +209,33 @@
     </div>
 
     <div id="contextMenu">
-        <div class="context-menu-item" onclick="handleContextAction('download')"><span class="material-icons-round" id="ctxIcon">download</span> <span id="ctxText">İndir</span></div>
+        <div class="context-menu-item" onclick="handleContextAction('download')"><span class="material-icons-round" id="ctxDownloadIcon">download</span> <span id="ctxDownloadText">Hemen İndir</span></div>
+        <div class="context-menu-item" onclick="handleContextAction('details')"><span class="material-icons-round">info</span> Ayrıntılar</div>
+    </div>
+
+    <div class="modal-overlay" id="detailsModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span style="display:flex; align-items:center; gap:8px;"><span class="material-icons-round" id="modalIcon">info</span> Özellikler</span>
+                <span class="material-icons-round modal-close" onclick="closeModal(true)">close</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
     </div>
 
     <script>
-        // Render üzerinden gelecek olan Google Apps Script URL'si
+        // --- GOOGLE APPS SCRIPT LİNKİ (KENDİ LİNKİNİZİ BURAYA YAZIN VEYA RENDER ÜZERİNDEN GELECEK) ---
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
 
         let historyStack = []; let currentActiveFolderId = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
         let allCurrentItems = []; let selectedItemForContext = null;
+        let selectedItems = new Set(); let lastSelectedIdx = -1;
 
         document.addEventListener('DOMContentLoaded', () => {
+            const savedView = localStorage.getItem('userView') || 'view-large';
+            const savedIcon = localStorage.getItem('userViewIcon') || 'grid_view';
+            changeView(savedView, savedIcon, false);
+
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 const displayName = sessionStorage.getItem('displayName') || 'Kullanıcı';
                 document.getElementById('activeUserName').innerText = displayName;
@@ -172,7 +244,6 @@
             }
         });
 
-        // Çift menüyü sorunsuz yönetmek için tek bir fonksiyon
         function toggleMenu(menuId) {
             let menus = document.getElementsByClassName("dropdown-content");
             for (let i = 0; i < menus.length; i++) {
@@ -186,6 +257,12 @@
                 let dropdowns = document.getElementsByClassName("dropdown-content"); 
                 for (let i = 0; i < dropdowns.length; i++) dropdowns[i].classList.remove('show'); 
             } 
+        }
+
+        function changeView(viewClass, iconName, save = true) {
+            const container = document.getElementById('gridContainer');
+            container.className = 'grid-container ' + viewClass; document.getElementById('currentViewIcon').innerText = iconName;
+            if (save) { localStorage.setItem('userView', viewClass); localStorage.setItem('userViewIcon', iconName); document.getElementById('viewDropdown').classList.remove('show'); }
         }
 
         function checkLogin() {
@@ -226,13 +303,19 @@
         function showApp(initialData = null) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appContainer').style.display = 'flex';
-            if (initialData) renderItems(initialData); else loadFolder();
+            if (initialData) { renderItems(initialData); updateBackButton(); } else loadFolder();
         }
 
         function logout() { sessionStorage.clear(); location.reload(); }
 
+        function formatBytes(bytes) { if (bytes === 0) return '0 B'; if (!bytes) return '--'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]; }
+        function formatDate(timestamp) { if (!timestamp) return '--'; const date = new Date(timestamp); return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' }); }
+
         function loadFolder(folderId = null, forceRefresh = false) {
-            showLoader(true); currentActiveFolderId = folderId; renderBreadcrumb(); 
+            showLoader(true); currentActiveFolderId = folderId; const cacheKey = 'folderCache_' + (folderId || 'rootFolder'); renderBreadcrumb(); 
+            
+            if (!forceRefresh) { const localCache = sessionStorage.getItem(cacheKey); if (localCache) { renderItems(JSON.parse(localCache)); updateBackButton(); return; } }
+            
             const u = sessionStorage.getItem('authUser'); const p = sessionStorage.getItem('authPass');
 
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`;
@@ -240,37 +323,12 @@
             if (forceRefresh) fetchUrl += `&refresh=true`;
 
             fetch(fetchUrl).then(r => r.json()).then(result => {
-                if (result.success) renderItems(result.data); 
-                else { alert(result.error); if(result.error.includes("yetki")) logout(); }
-            }).catch(() => alert("Veri çekilemedi.")).finally(() => showLoader(false));
+                if (result.success) { sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); renderItems(result.data); updateBackButton(); }
+                else { alert(result.error); if(result.error.includes("yetki") || result.error.includes("şifre")) logout(); showLoader(false); }
+            }).catch(() => { alert("Veri çekilemedi."); showLoader(false); });
         }
 
-        function renderItems(data) {
-            const container = document.getElementById('gridContainer'); container.innerHTML = ''; allCurrentItems = [];
-            const items = [...data.folders.map(f => ({...f, isFolder:true})), ...data.files.map(f => ({...f, isFolder:false}))];
-            allCurrentItems = items;
-
-            items.forEach((item, index) => {
-                let icon = item.isFolder ? 'folder' : 'insert_drive_file'; let color = item.isFolder ? 'icon-folder' : 'icon-doc';
-                if(item.type && item.type.includes('pdf')) { icon = 'picture_as_pdf'; color = 'icon-pdf'; }
-
-                const card = document.createElement('div'); card.className = 'item-card';
-                card.innerHTML = `<span class="material-icons-round item-icon ${color}">${icon}</span><span class="item-name">${item.name}</span>
-                    <div class="item-actions"><button class="action-btn" onclick="event.stopPropagation(); triggerDownload(${index})">
-                    <span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button></div>`;
-                
-                card.onclick = () => { if (item.isFolder) { historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); } else triggerDownload(index); };
-                card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); };
-                container.appendChild(card);
-            });
-            updateBackButton(); showLoader(false);
-        }
-
-        function triggerDownload(index) {
-            const item = allCurrentItems[index];
-            if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank');
-            else window.open(item.url || `https://drive.google.com/uc?export=download&id=${item.id}`, '_blank');
-        }
+        function refreshCurrentFolder() { loadFolder(currentActiveFolderId, true); }
 
         function renderBreadcrumb() {
             const container = document.getElementById('breadcrumbContainer'); container.innerHTML = '';
@@ -285,19 +343,90 @@
             });
         }
 
+        function toggleSelection(id, index, cardElem, forceSelect) {
+            const checkbox = cardElem.querySelector('.item-checkbox');
+            if (forceSelect) { selectedItems.add(id); cardElem.classList.add('selected'); checkbox.checked = true; lastSelectedIdx = index; } 
+            else { selectedItems.delete(id); cardElem.classList.remove('selected'); checkbox.checked = false; if (lastSelectedIdx === index) lastSelectedIdx = -1; }
+        }
+
+        function handleShiftSelect(currentIndex) {
+            if (lastSelectedIdx === -1) { const cardElem = document.querySelectorAll('.item-card')[currentIndex]; toggleSelection(allCurrentItems[currentIndex].id, currentIndex, cardElem, true); return; }
+            const start = Math.min(lastSelectedIdx, currentIndex); const end = Math.max(lastSelectedIdx, currentIndex); const cards = document.querySelectorAll('.item-card');
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false); cards.forEach(c => c.classList.remove('selected')); selectedItems.clear();
+            for (let i = start; i <= end; i++) { selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true; }
+        }
+
+        function executeAction(action, index) {
+            const item = allCurrentItems[index];
+            if (action === 'download') { if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank'); else triggerDownload(item); } 
+            else if (action === 'details') { openDetailsModal(item); }
+        }
+
+        function renderItems(data) {
+            const container = document.getElementById('gridContainer'); container.innerHTML = ''; container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
+            allCurrentItems = []; selectedItems.clear(); lastSelectedIdx = -1;
+            data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
+
+            allCurrentItems.forEach((item, index) => {
+                let iconName = item.isFolder ? 'folder' : 'insert_drive_file'; let iconColorClass = item.isFolder ? 'icon-folder' : 'icon-doc';
+                if (!item.isFolder) {
+                    if (item.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; } else if (item.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('spreadsheet') || item.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
+                }
+
+                const actionHtml = `<div class="item-actions"><button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})"><span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button><button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})"><span class="material-icons-round">info</span></button></div>`;
+                const card = document.createElement('div'); card.className = 'item-card';
+                card.innerHTML = `<div class="item-name-wrapper"><input type="checkbox" class="item-checkbox"><span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${item.name}">${item.name}</span></div><div class="item-details">${formatDate(item.date)}</div><div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>${actionHtml}`;
+                
+                card.onclick = (e) => { 
+                    if (e.target.closest('.action-btn')) return; 
+                    if (e.target.classList.contains('item-checkbox')) { toggleSelection(item.id, index, card, e.target.checked); return; }
+                    if (e.ctrlKey || e.metaKey) { e.preventDefault(); const isSelected = selectedItems.has(item.id); toggleSelection(item.id, index, card, !isSelected); } 
+                    else if (e.shiftKey) { e.preventDefault(); handleShiftSelect(index); } 
+                    else { if (item.isFolder) { historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); } else { triggerDownload(item); } }
+                };
+                card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); }; container.appendChild(card);
+            });
+            if (allCurrentItems.length === 0) container.innerHTML += '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
+            showLoader(false);
+        }
+
+        function showContextMenu(e, item) {
+            selectedItemForContext = item; const menu = document.getElementById('contextMenu');
+            if(item.isFolder) { document.getElementById('ctxDownloadIcon').innerText = "open_in_new"; document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Drive'a Yönlendirir)"; } 
+            else { document.getElementById('ctxDownloadIcon').innerText = "download"; document.getElementById('ctxDownloadText').innerText = "Hemen İndir"; }
+            menu.style.display = 'block'; let x = e.clientX; let y = e.clientY;
+            if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth - 10; if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight - 10;
+            menu.style.left = x + 'px'; menu.style.top = y + 'px';
+        }
+
+        document.addEventListener('click', (e) => { if (!e.target.closest('.item-card')) document.getElementById('contextMenu').style.display = 'none'; });
+        
+        function handleContextAction(action) { 
+            document.getElementById('contextMenu').style.display = 'none'; 
+            if (!selectedItemForContext) return; 
+            if (action === 'download') { if (selectedItemForContext.isFolder) window.open(`https://drive.google.com/drive/folders/${selectedItemForContext.id}`, '_blank'); else triggerDownload(selectedItemForContext); } 
+            else if (action === 'details') { openDetailsModal(selectedItemForContext); } 
+        }
+
+        function triggerDownload(fileOrIndex) {
+            let item = typeof fileOrIndex === 'number' ? allCurrentItems[fileOrIndex] : fileOrIndex;
+            if (!item.type || !item.type.includes('google-apps')) {
+                const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${item.id}`; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            } else {
+                const link = document.createElement('a'); link.href = item.url; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            }
+        }
+
+        function openDetailsModal(item) {
+            const modal = document.getElementById('detailsModal'); document.getElementById('modalIcon').innerText = item.isFolder ? 'folder' : item.iconName || 'insert_drive_file'; document.getElementById('modalIcon').style.color = item.isFolder ? '#fbbc04' : '#4285f4';
+            document.getElementById('modalBody').innerHTML = `<div class="detail-row"><span class="detail-label">Dosya Adı</span><span class="detail-value" style="font-weight:500;">${item.name}</span></div><div class="detail-row"><span class="detail-label">Tür</span><span class="detail-value">${item.isFolder ? 'Dosya Klasörü' : item.type}</span></div><div class="detail-row"><span class="detail-label">Boyut</span><span class="detail-value">${item.isFolder ? 'Klasör boyutu hesaplanmıyor' : formatBytes(item.size)}</span></div><div class="detail-row"><span class="detail-label">Son Değiştirilme</span><span class="detail-value">${formatDate(item.date)}</span></div>`;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(force = false) { if (force || event.target.id === 'detailsModal') document.getElementById('detailsModal').style.display = 'none'; }
         function goBack() { if (historyStack.length > 0) { pathArray.pop(); loadFolder(historyStack.pop()); } }
         function updateBackButton() { document.getElementById('backBtn').disabled = historyStack.length === 0; }
         function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; document.getElementById('gridContainer').style.display = show ? 'none' : 'grid'; }
-        function changeView(v, i) { document.getElementById('gridContainer').className = 'grid-container ' + v; document.getElementById('currentViewIcon').innerText = i; document.getElementById('viewDropdown').classList.remove('show'); }
-        function refreshCurrentFolder() { loadFolder(currentActiveFolderId, true); }
-        
-        function showContextMenu(e, item) {
-            selectedItemForContext = item; const menu = document.getElementById('contextMenu');
-            document.getElementById('ctxText').innerText = item.isFolder ? 'Drive\'da Aç' : 'İndir';
-            menu.style.display = 'block'; menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px';
-        }
-        document.addEventListener('click', () => document.getElementById('contextMenu').style.display = 'none');
-        function handleContextAction(act) { if(act === 'download') triggerDownload(allCurrentItems.indexOf(selectedItemForContext)); }
     </script>
 </body>
 </html>
