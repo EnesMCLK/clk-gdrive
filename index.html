@@ -133,6 +133,7 @@
                 </div>
             </div>
 
+            <!-- Kullanıcı rumuzu buraya yazdırılıyor -->
             <span id="activeUserName" style="margin-left:auto; margin-right:8px; font-weight:500; font-size:14px; color:var(--text-muted);"></span>
             <button class="btn-icon" onclick="logout()" title="Çıkış Yap"><span class="material-icons-round" style="color: #d93025;">logout</span></button>
             <button class="btn-icon" onclick="refreshCurrentFolder()" title="Verileri Yenile"><span class="material-icons-round">refresh</span></button>
@@ -162,7 +163,7 @@
     </div>
 
     <script>
-        // Sadece URL'mizi bıraktık. Şifreler artık burada veya Render'da DEĞİL!
+        // Web App URL'inizi buraya yapıştırmayı unutmayın!
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
 
         let historyStack = []; let currentActiveFolderId = null; let selectedItemForContext = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
@@ -175,7 +176,9 @@
 
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 const loggedInUser = sessionStorage.getItem('authUser') || '';
-                document.getElementById('activeUserName').innerText = loggedInUser.toUpperCase();
+                // Hafızada displayName varsa onu, yoksa fallback olarak kullanıcı adını göster
+                const displayName = sessionStorage.getItem('displayName') || loggedInUser.toUpperCase();
+                document.getElementById('activeUserName').innerText = displayName;
                 showApp();
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
@@ -183,7 +186,6 @@
             }
         });
 
-        // --- YENİ SUNUCU TABANLI GİRİŞ SORGUSU ---
         function checkLogin() {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
@@ -196,11 +198,9 @@
                 return;
             }
 
-            // Butonu bekleme moduna al
             loginBtn.innerText = 'Doğrulanıyor...';
             loginBtn.disabled = true;
 
-            // Google'a Şifreyi Sor!
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
 
             fetch(fetchUrl)
@@ -210,19 +210,24 @@
                     loginBtn.disabled = false;
 
                     if (result.success) {
-                        // Eğer Google "Şifre Doğru" (success: true) derse içeri al
                         sessionStorage.setItem('isLoggedIn', 'true');
                         sessionStorage.setItem('authUser', user);
                         sessionStorage.setItem('authPass', pass);
-                        document.getElementById('activeUserName').innerText = user.toUpperCase();
+                        
+                        // Backend'den gelen Rumuz'u (displayName) kaydedip ekrana basalım
+                        if(result.displayName) {
+                            sessionStorage.setItem('displayName', result.displayName);
+                            document.getElementById('activeUserName').innerText = result.displayName;
+                        } else {
+                            document.getElementById('activeUserName').innerText = user.toUpperCase();
+                        }
+
                         errorLabel.style.display = 'none';
                         
-                        // Zaten ilk dosyaları çekmiş oldu, hemen ekrana bas
                         const cacheKey = 'folderCache_rootFolder';
                         sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
                         showApp(result.data); 
                     } else {
-                        // Google "Hatalı" dediyse içeriğini ekrana bas
                         errorLabel.innerText = result.error || 'Hatalı kullanıcı adı veya şifre!';
                         errorLabel.style.display = 'block';
                     }
@@ -251,6 +256,7 @@
             sessionStorage.removeItem('isLoggedIn');
             sessionStorage.removeItem('authUser');
             sessionStorage.removeItem('authPass');
+            sessionStorage.removeItem('displayName');
             document.getElementById('appContainer').style.display = 'none';
             document.getElementById('loginOverlay').style.display = 'flex';
             document.getElementById('usernameInput').value = '';
@@ -276,7 +282,6 @@
 
             if (!forceRefresh) { const localCache = sessionStorage.getItem(cacheKey); if (localCache) { renderItems(JSON.parse(localCache)); updateBackButton(); return; } }
 
-            // Her klasör değişiminde Google'a kullanıcının kimliğini göndeririz ki güvenli kalsın
             const activeUser = sessionStorage.getItem('authUser');
             const activePass = sessionStorage.getItem('authPass');
 
@@ -285,10 +290,19 @@
             if (forceRefresh) fetchUrl += `refresh=true&`;
 
             fetch(fetchUrl).then(r => r.json()).then(result => {
-                if (result.success) { sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); renderItems(result.data); updateBackButton(); } 
+                if (result.success) { 
+                    // Güvenlik amaçlı: Arka plandan her zaman displayName geliyor, bunu da yenileyelim
+                    if(result.displayName) {
+                        sessionStorage.setItem('displayName', result.displayName);
+                        document.getElementById('activeUserName').innerText = result.displayName;
+                    }
+                    sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); 
+                    renderItems(result.data); 
+                    updateBackButton(); 
+                } 
                 else { 
                     alert("Erişim Reddedildi: " + result.error); 
-                    if (result.error.includes("şifre") || result.error.includes("yetkisiz")) logout(); // Biri şifreyi sonradan değiştirirse sistemden atsın
+                    if (result.error.includes("şifre") || result.error.includes("yetkisiz")) logout();
                     showLoader(false); 
                 }
             }).catch(e => { alert("Bağlantı Hatası: " + e.message); showLoader(false); });
