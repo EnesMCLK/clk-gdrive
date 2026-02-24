@@ -4,136 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulut Depom</title>
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>" type="image/svg+xml">
-
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-
+    
     <style>
         :root {
-            --bg-color: #f8fafd;
-            --surface-color: #ffffff;
-            --primary-color: #0b57d0;
-            --text-main: #1f1f1f;
-            --text-muted: #444746;
-            --hover-color: #edf2fa;
-            --border-color: #e0e0e0;
+            --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0;
+            --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0;
         }
-
-        body {
-            margin: 0;
-            font-family: 'Product Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* Üst Menü / Navbar */
-        .navbar {
-            display: flex;
-            align-items: center;
-            padding: 12px 24px;
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            gap: 16px;
-        }
-
-        .navbar h1 {
-            font-size: 22px;
-            font-weight: 500;
-            margin: 0;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-back {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            transition: background 0.2s;
-        }
-
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Navbar ve Butonlar */
+        .navbar { display: flex; align-items: center; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); gap: 16px; }
+        .navbar h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .btn-back { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: 0.2s; }
         .btn-back:hover { background-color: var(--hover-color); }
         .btn-back:disabled { opacity: 0.3; cursor: not-allowed; }
+        .main-content { padding: 24px; flex: 1; overflow-y: auto; }
 
-        /* Ana İçerik Alanı */
-        .main-content {
-            padding: 24px;
-            flex: 1;
-            overflow-y: auto;
-        }
+        /* --- GÖRÜNÜM MENÜSÜ (DROPDOWN) --- */
+        .dropdown { position: relative; display: inline-block; margin-left: auto; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 10; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 5px; }
+        .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; }
+        .dropdown-content a:hover { background-color: var(--hover-color); }
+        .show { display: block; }
 
-        /* Izgara Yapısı */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-        }
+        /* --- ORTAK KART YAPISI --- */
+        .grid-container { display: grid; gap: 16px; }
+        .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; }
+        .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
+        .item-name-wrapper { display: flex; align-items: center; overflow: hidden; }
+        .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-details { display: none; font-size: 13px; color: var(--text-muted); }
+        .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
+        .details-header { display: none; } /* Sadece ayrıntılar görünümünde açılacak */
 
-        /* Dosya / Klasör Kartları */
-        .item-card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
+        /* --- 1. BÜYÜK SİMGELER (Varsayılan) --- */
+        .view-large { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+        .view-large .item-card { padding: 24px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; }
+        .view-large .item-icon { font-size: 48px; }
+        .view-large .item-name-wrapper { flex-direction: column; width: 100%; }
 
-        .item-card:hover {
-            background-color: var(--hover-color);
-            border-color: #c2e7ff;
-        }
+        /* --- 2. KÜÇÜK SİMGELER --- */
+        .view-small { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .view-small .item-card { padding: 12px 16px; display: flex; align-items: center; }
+        .view-small .item-icon { font-size: 24px; margin-right: 12px; }
 
-        .item-icon {
-            font-size: 28px;
-        }
+        /* --- 3. LİSTELE --- */
+        .view-list { grid-template-columns: 1fr; gap: 8px; }
+        .view-list .item-card { padding: 12px 16px; display: flex; align-items: center; }
+        .view-list .item-icon { font-size: 24px; margin-right: 16px; }
 
-        /* İkon Renkleri */
-        .icon-folder { color: #fbbc04; } /* Klasör Sarısı */
-        .icon-pdf { color: #ea4335; } /* PDF Kırmızısı */
-        .icon-image { color: #188038; } /* Resim Yeşili */
-        .icon-doc { color: #4285f4; } /* Döküman Mavisi */
+        /* --- 4. AYRINTILAR (Windows Klasör İçi) --- */
+        .view-details { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white;}
+        .view-details .details-header { display: grid; grid-template-columns: 3fr 1fr 1fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        .view-details .item-card { border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; display: grid; grid-template-columns: 3fr 1fr 1fr; align-items: center; padding: 10px 24px; }
+        .view-details .item-card:last-child { border-bottom: none; }
+        .view-details .item-icon { font-size: 24px; margin-right: 16px; }
+        .view-details .item-details { display: block; } /* Tarih ve Boyutu Göster */
 
-        .item-name {
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Yükleniyor Ekranı */
-        .loader-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 50vh;
-            color: var(--primary-color);
-        }
-
-        .spinner {
-            animation: spin 1s linear infinite;
-            font-size: 40px;
-            margin-bottom: 16px;
-        }
-
+        /* Yükleniyor */
+        .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--primary-color); }
+        .spinner { animation: spin 1s linear infinite; font-size: 40px; margin-bottom: 16px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -143,11 +76,21 @@
         <button class="btn-back" id="backBtn" onclick="goBack()" disabled title="Geri Git">
             <span class="material-icons-round">arrow_back</span>
         </button>
-        <h1>
-            <span class="material-icons-round" style="color: var(--primary-color);">cloud</span>
-            Bulut Depom
-        </h1>
-        <button class="btn-back" style="margin-left: auto;" onclick="refreshCurrentFolder()" title="Verileri Yenile">
+        <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
+        
+        <div class="dropdown">
+            <button class="btn-back" onclick="toggleViewMenu()" title="Görünüm Seçenekleri">
+                <span class="material-icons-round" id="currentViewIcon">grid_view</span>
+            </button>
+            <div class="dropdown-content" id="viewDropdown">
+                <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
+                <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
+                <a onclick="changeView('view-list', 'view_list')"><span class="material-icons-round">view_list</span> Listele</a>
+                <a onclick="changeView('view-details', 'table_rows')"><span class="material-icons-round">table_rows</span> Ayrıntılar</a>
+            </div>
+        </div>
+
+        <button class="btn-back" onclick="refreshCurrentFolder()" title="Verileri Yenile">
             <span class="material-icons-round">refresh</span>
         </button>
     </div>
@@ -155,93 +98,130 @@
     <div class="main-content">
         <div id="loader" class="loader-container">
             <span class="material-icons-round spinner">autorenew</span>
-            <span style="color: var(--text-muted); font-weight: 500;">Dosyalar getiriliyor...</span>
+            <span style="color: var(--text-muted); font-weight: 500;">Sorgulanıyor...</span>
         </div>
-
-        <div class="grid-container" id="gridContainer" style="display: none;">
-            </div>
+        
+        <div class="grid-container view-large" id="gridContainer" style="display: none;"></div>
     </div>
 
     <script>
         // --- AYARLAR ---
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUNiaNw7Ryg21tGMSHYT3aYU5tnN0TAfLw5nhTgQUyDLq-_t_qnG3fH8m6HBlf3C8f/exec'; 
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMB9YrfgzrFeZMHRxdTjj8G60NCfrrMpahjPp63LnOc_A5nbvnp4H6divgIoR6jqSR/exec'; 
 
         let historyStack = [];
         let currentActiveFolderId = null;
 
+        // Sayfa Yüklenince
         document.addEventListener('DOMContentLoaded', () => {
-            loadFolder(); // Sayfa açılır açılmaz doğrudan ana klasörü yükle
+            // Kullanıcının en son seçtiği görünümü hatırla
+            const savedView = localStorage.getItem('userView') || 'view-large';
+            const savedIcon = localStorage.getItem('userViewIcon') || 'grid_view';
+            changeView(savedView, savedIcon, false); // Tasarımı uygula
+            
+            loadFolder(); 
         });
+
+        // Dropdown Menüyü Aç/Kapat
+        function toggleViewMenu() { document.getElementById("viewDropdown").classList.toggle("show"); }
+        window.onclick = function(event) {
+            if (!event.target.closest('.dropdown')) {
+                let dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) { dropdowns[i].classList.remove('show'); }
+            }
+        }
+
+        // Görünümü Değiştirme Fonksiyonu
+        function changeView(viewClass, iconName, save = true) {
+            const container = document.getElementById('gridContainer');
+            // Eski classları sil, yenisini ekle
+            container.className = 'grid-container ' + viewClass;
+            document.getElementById('currentViewIcon').innerText = iconName;
+            
+            if (save) {
+                localStorage.setItem('userView', viewClass);
+                localStorage.setItem('userViewIcon', iconName);
+            }
+        }
+
+        // Boyutu Formatlama (Bayt -> KB, MB)
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            if (!bytes) return '--';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Tarihi Formatlama (Örn: 24 Şub 2026)
+        function formatDate(timestamp) {
+            if (!timestamp) return '--';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
 
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true);
             currentActiveFolderId = folderId;
-            
-            // Klasörün anında açılması için yerel hafıza anahtarı
             const cacheKey = 'folderCache_' + (folderId || 'rootFolder');
 
-            // 1. ZORUNLU YENİLEME YOKSA ÖNCE YEREL HAFIZAYA BAK
             if (!forceRefresh) {
                 const localCache = sessionStorage.getItem(cacheKey);
                 if (localCache) {
                     renderItems(JSON.parse(localCache));
                     updateBackButton();
-                    return; // Veri bulundu, Google'a bağlanmadan işlemi bitir
+                    return; 
                 }
             }
 
-            // 2. HAFIZADA YOKSA GOOGLE'DAN ÇEK
             let fetchUrl = APPS_SCRIPT_URL + '?';
             if (folderId) fetchUrl += `id=${folderId}&`;
             if (forceRefresh) fetchUrl += `refresh=true&`;
 
             fetch(fetchUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("HTTP Hatası: " + response.status);
-                    return response.json();
-                })
+                .then(r => r.json())
                 .then(result => {
                     if (result.success) {
-                        // Gelen güncel veriyi bir sonraki giriş için hafızaya kaydet
                         sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
                         renderItems(result.data);
                         updateBackButton();
-                    } else {
-                        alert("Hata: " + result.error);
-                        showLoader(false);
-                    }
+                    } else { alert("Hata: " + result.error); showLoader(false); }
                 })
-                .catch(error => {
-                    alert("Bağlantı Başarısız. Gerçek Hata: " + error.message);
-                    showLoader(false);
-                });
+                .catch(e => { alert("Bağlantı Hatası: " + e.message); showLoader(false); });
         }
 
-
-        // Yenile butonuna basıldığında çalışacak fonksiyon
-        function refreshCurrentFolder() {
-            // Bulunduğumuz klasörü "forceRefresh = true" ile tekrar yükle
-            loadFolder(currentActiveFolderId, true);
-        }
+        function refreshCurrentFolder() { loadFolder(currentActiveFolderId, true); }
 
         function renderItems(data) {
             const container = document.getElementById('gridContainer');
             container.innerHTML = ''; 
 
+            // Ayrıntılar Görünümü İçin Üst Başlık (Sadece Ayrıntılar seçiliyse görünür olur)
+            container.innerHTML += `
+                <div class="details-header">
+                    <div>Ad</div>
+                    <div>Değiştirilme Tarihi</div>
+                    <div>Boyut</div>
+                </div>
+            `;
+
             data.folders.forEach(folder => {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = `<span class="material-icons-round item-icon icon-folder">folder</span><span class="item-name" title="${folder.name}">${folder.name}</span>`;
-                card.onclick = () => {
-                    historyStack.push(data.currentId); 
-                    loadFolder(folder.id); 
-                };
+                card.innerHTML = `
+                    <div class="item-name-wrapper">
+                        <span class="material-icons-round item-icon icon-folder">folder</span>
+                        <span class="item-name" title="${folder.name}">${folder.name}</span>
+                    </div>
+                    <div class="item-details">${formatDate(folder.date)}</div>
+                    <div class="item-details">--</div>
+                `;
+                card.onclick = () => { historyStack.push(data.currentId); loadFolder(folder.id); };
                 container.appendChild(card);
             });
 
             data.files.forEach(file => {
-                let iconName = 'insert_drive_file';
-                let iconColorClass = 'icon-doc';
+                let iconName = 'insert_drive_file'; let iconColorClass = 'icon-doc';
                 if (file.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; }
                 else if (file.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; }
                 else if (file.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; }
@@ -249,56 +229,39 @@
 
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = `<span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${file.name}">${file.name}</span>`;
+                card.innerHTML = `
+                    <div class="item-name-wrapper">
+                        <span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span>
+                        <span class="item-name" title="${file.name}">${file.name}</span>
+                    </div>
+                    <div class="item-details">${formatDate(file.date)}</div>
+                    <div class="item-details">${formatBytes(file.size)}</div>
+                `;
+                
                 card.onclick = () => {
                     if (!file.type.includes('google-apps')) {
                         const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
-        
                         const link = document.createElement('a');
-                        link.href = directDownloadUrl;
-                        link.target = '_blank'; // Kesinlikle yeni sekmede açması için
-        
-                        // Linki geçici olarak sayfaya ekle, tıkla ve anında sil
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-        
+                        link.href = directDownloadUrl; link.target = '_blank';
+                        document.body.appendChild(link); link.click(); document.body.removeChild(link);
                     } else {
-                        // Google dökümanları için standart açılış
                         const link = document.createElement('a');
-                        link.href = file.url;
-                        link.target = '_blank';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+                        link.href = file.url; link.target = '_blank';
+                        document.body.appendChild(link); link.click(); document.body.removeChild(link);
                     }
                 };
-
-
                 container.appendChild(card);
             });
 
             if (data.folders.length === 0 && data.files.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
+                container.innerHTML += '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
             }
             showLoader(false);
         }
 
-        function goBack() {
-            if (historyStack.length > 0) {
-                const previousFolderId = historyStack.pop();
-                loadFolder(previousFolderId);
-            }
-        }
-
-        function updateBackButton() {
-            document.getElementById('backBtn').disabled = historyStack.length === 0;
-        }
-
-        function showLoader(show) {
-            document.getElementById('loader').style.display = show ? 'flex' : 'none';
-            document.getElementById('gridContainer').style.display = show ? 'none' : 'grid';
-        }
+        function goBack() { if (historyStack.length > 0) loadFolder(historyStack.pop()); }
+        function updateBackButton() { document.getElementById('backBtn').disabled = historyStack.length === 0; }
+        function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; document.getElementById('gridContainer').style.display = show ? 'none' : 'grid'; }
     </script>
 </body>
 </html>
