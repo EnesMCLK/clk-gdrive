@@ -15,7 +15,7 @@
         }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* --- YENİ EKLENEN: GİRİŞ EKRANI (LOGIN DASHBOARD) --- */
+        /* GİRİŞ EKRANI (LOGIN DASHBOARD) */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
         .login-header { margin-bottom: 24px; }
@@ -153,6 +153,7 @@
                 </div>
             </div>
 
+            <span id="activeUserName" style="margin-left:auto; margin-right:8px; font-weight:500; font-size:14px; color:var(--text-muted);"></span>
             <button class="btn-icon" onclick="logout()" title="Çıkış Yap"><span class="material-icons-round" style="color: #d93025;">logout</span></button>
             <button class="btn-icon" onclick="refreshCurrentFolder()" title="Verileri Yenile"><span class="material-icons-round">refresh</span></button>
         </div>
@@ -181,10 +182,9 @@
     </div>
 
     <script>
-        // --- ORTAM DEĞİŞKENLERİ İÇİN YER TUTUCULAR (RENDER BURAYI DOLDURACAK) ---
+        // --- ÇOKLU KULLANICI İÇİN TEK BİR LİSTE DEĞİŞKENİ ---
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
-        const ENV_USERNAME = 'BURAYA_KULLANICI_ADI_GELECEK'; 
-        const ENV_PASSWORD = 'BURAYA_SIFRE_GELECEK'; 
+        const ENV_AUTH_USERS = 'BURAYA_KULLANICI_LISTESI_GELECEK'; 
 
         let historyStack = []; let currentActiveFolderId = null; let selectedItemForContext = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
         let selectedItems = new Set(); let lastSelectedIdx = -1; let allCurrentItems = []; 
@@ -196,6 +196,8 @@
 
             // Giriş kontrolü
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                const loggedInUser = sessionStorage.getItem('currentUser') || '';
+                document.getElementById('activeUserName').innerText = loggedInUser.toUpperCase();
                 showApp();
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
@@ -203,17 +205,50 @@
             }
         });
 
-        // --- YENİ EKLENEN: GİRİŞ VE ÇIKIŞ FONKSİYONLARI ---
+        // --- ÇOKLU KULLANICI DENETİM MANTIĞI ---
         function checkLogin() {
-            const user = document.getElementById('usernameInput').value;
-            const pass = document.getElementById('passwordInput').value;
+            const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
+            const errorLabel = document.getElementById('loginError');
 
-            if (user === ENV_USERNAME && pass === ENV_PASSWORD) {
+            if (!user || !pass) {
+                errorLabel.innerText = 'Lütfen kullanıcı adı ve şifre girin.';
+                errorLabel.style.display = 'block';
+                return;
+            }
+
+            let isValid = false;
+
+            // Eğer değişken Render tarafından başarıyla değiştirildiyse kontrol yap
+            if (ENV_AUTH_USERS && ENV_AUTH_USERS !== 'BURAYA_KULLANICI_LISTESI_GELECEK') {
+                // Listeyi virgüllerden ayır -> ['admin:123', 'enes:456']
+                const userList = ENV_AUTH_USERS.split(',');
+                
+                for (let i = 0; i < userList.length; i++) {
+                    // Her bir öğeyi iki noktadan (:) böl
+                    const parts = userList[i].split(':');
+                    if (parts.length === 2) {
+                        const validUser = parts[0].trim();
+                        const validPass = parts[1].trim();
+                        
+                        // Eşleşme var mı?
+                        if (validUser === user && validPass === pass) {
+                            isValid = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isValid) {
                 sessionStorage.setItem('isLoggedIn', 'true');
-                document.getElementById('loginError').style.display = 'none';
+                sessionStorage.setItem('currentUser', user); // Kimin girdiğini hafızaya al
+                document.getElementById('activeUserName').innerText = user.toUpperCase(); // Ekrana ismini yaz
+                errorLabel.style.display = 'none';
                 showApp();
             } else {
-                document.getElementById('loginError').style.display = 'block';
+                errorLabel.innerText = 'Hatalı kullanıcı adı veya şifre!';
+                errorLabel.style.display = 'block';
             }
         }
 
@@ -227,6 +262,7 @@
 
         function logout() {
             sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('currentUser');
             document.getElementById('appContainer').style.display = 'none';
             document.getElementById('loginOverlay').style.display = 'flex';
             document.getElementById('usernameInput').value = '';
