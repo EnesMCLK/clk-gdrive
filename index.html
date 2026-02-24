@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="application-name" content="Bulut Depom">
     <meta name="theme-color" content="#0b57d0">
@@ -12,7 +11,6 @@
     <meta name="description" content="Bulut Depom, açık kaynak kodlu altyapısı (github.com/enesmclk/clk-gdrive) ile dosyalarınıza her yerden güvenle erişebileceğiniz, şeffaf ve profesyonel bir arşiv yönetim platformudur.">
     <meta name="keywords" content="bulut depolama, dosya yönetimi, kurumsal arşiv, belge yönetimi, online depo, açık kaynak, open source">
     <meta name="author" content="EnesMCLK">
-    
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="googlebot" content="index, follow">
     
@@ -30,7 +28,6 @@
         :root { --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0; --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0; }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* GİRİŞ EKRANI */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
         .login-header { margin-bottom: 24px; }
@@ -43,7 +40,6 @@
         .login-btn:disabled { background-color: #a8c7fa; cursor: not-allowed; }
         .login-error { color: #d93025; font-size: 13px; margin-bottom: 16px; display: none; background: #fce8e6; padding: 8px; border-radius: 6px; }
 
-        /* ANA ARAYÜZ (YENİ YERLEŞİM) */
         .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .navbar-left { display: flex; align-items: center; gap: 16px; }
         .navbar-left h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
@@ -53,7 +49,6 @@
         .btn-icon:hover { background-color: var(--hover-color); }
         .btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        /* DOSYA YOLU VE YENİLEME ALANI */
         .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; flex: 1; }
         .breadcrumb-item { color: var(--text-muted); display: flex; align-items: center; border-radius: 6px; padding: 4px 8px; transition: 0.2s; user-select: none; }
@@ -62,19 +57,16 @@
         .breadcrumb-item.active { font-weight: 500; color: var(--text-main); cursor: default; }
         .breadcrumb-separator { font-size: 18px; color: var(--text-muted); user-select: none; }
 
-        /* HESAP BUTONU */
         .account-btn { background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 12px 4px 8px; cursor: pointer; font-weight: 500; font-family: inherit; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s; }
         .account-btn:hover { background-color: #e1e9f7; }
         .account-avatar { background-color: var(--primary-color); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-        /* AÇILIR MENÜLER (Görünüm ve Hesap) */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 10; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 5px; }
         .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; }
         .dropdown-content a:hover { background-color: var(--hover-color); }
         .show { display: block; }
 
-        /* KARTLAR VE GÖRÜNÜM AYARLARI */
         .main-content { padding: 24px; flex: 1; overflow-y: auto; position: relative; }
         .grid-container { display: grid; gap: 16px; }
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
@@ -84,10 +76,25 @@
         .item-name-wrapper { display: flex; align-items: center; overflow: hidden; position: relative; }
         .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .item-details { display: none; font-size: 13px; color: var(--text-muted); }
-        .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
-        .details-header { display: none; }
+        
+        /* -- YENİ EKLENEN DOSYA TÜRÜ RENKLERİ -- */
+        .icon-folder { color: #fbbc04; } 
+        .icon-pdf { color: #ea4335; } 
+        .icon-word { color: #4285f4; }
+        .icon-excel { color: #188038; }
+        .icon-slide { color: #f4b400; }
+        .icon-archive { color: #8d6e63; }
+        .icon-exe { color: #546e7a; }
+        .icon-code { color: #9c27b0; }
+        .icon-image { color: #009688; }
+        .icon-video { color: #e91e63; }
+        .icon-audio { color: #00bcd4; }
+        .icon-3d { color: #3f51b5; }
+        .icon-db { color: #ff5722; }
+        .icon-uyap { color: #795548; }
+        .icon-default { color: #757575; }
 
-        /* Checkbox ve Aksiyonlar */
+        .details-header { display: none; }
         .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
         .item-card:hover .item-checkbox, .item-card.selected .item-checkbox { display: block; }
         .item-actions { display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; }
@@ -96,7 +103,6 @@
         .action-btn:hover { background-color: var(--hover-color); color: var(--text-main); }
         .action-btn .material-icons-round { font-size: 20px; }
         
-        /* Görünümler (CSS Grid) */
         .view-large { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; text-align: center; }
         .view-large .item-checkbox { position: absolute; top: 12px; left: 12px; z-index: 2; margin: 0; }
@@ -126,7 +132,6 @@
         .view-details .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
         .view-details .item-details { display: block; }
 
-        /* Modallar ve Yardımcı Sınıflar */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface-color); padding: 24px; border-radius: 16px; width: 320px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
         .modal-header { font-size: 18px; font-weight: 500; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -224,7 +229,6 @@
     </div>
 
     <script>
-        // --- GOOGLE APPS SCRIPT LİNKİ (KENDİ LİNKİNİZİ BURAYA YAZIN VEYA RENDER ÜZERİNDEN GELECEK) ---
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
 
         let historyStack = []; let currentActiveFolderId = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
@@ -362,15 +366,60 @@
             else if (action === 'details') { openDetailsModal(item); }
         }
 
+        // --- YENİ EKLENEN İKON BULUCU MOTOR ---
+        function getFileIcon(fileName, mimeType) {
+            if (!fileName) return { icon: 'insert_drive_file', color: 'icon-default' };
+            const ext = fileName.split('.').pop().toLowerCase();
+            const mime = (mimeType || '').toLowerCase();
+
+            // Belgeler
+            if (ext === 'pdf' || mime.includes('pdf')) return { icon: 'picture_as_pdf', color: 'icon-pdf' };
+            if (['doc', 'docx', 'rtf'].includes(ext) || mime.includes('document')) return { icon: 'description', color: 'icon-word' };
+            if (['xls', 'xlsx', 'csv'].includes(ext) || mime.includes('spreadsheet')) return { icon: 'table_chart', color: 'icon-excel' };
+            if (['ppt', 'pptx'].includes(ext) || mime.includes('presentation')) return { icon: 'slideshow', color: 'icon-slide' };
+            
+            // Resmi ve Özel Türkiye Formatları (UYAP & EYP)
+            if (ext === 'udf') return { icon: 'gavel', color: 'icon-uyap' };
+            if (ext === 'eyp') return { icon: 'folder_zip', color: 'icon-archive' };
+            if (ext === 'txt') return { icon: 'article', color: 'icon-default' };
+
+            // Sıkıştırılmış Dosyalar
+            if (['zip', 'rar', '7z', 'tar', 'gz', 'jar', 'cab'].includes(ext) || mime.includes('zip') || mime.includes('compressed')) return { icon: 'folder_zip', color: 'icon-archive' };
+            
+            // Çalıştırılabilir & Sistem Dosyaları
+            if (['exe', 'msi', 'bin', 'bat', 'cmd', 'sh'].includes(ext)) return { icon: 'settings_applications', color: 'icon-exe' };
+            
+            // Yazılım & Geliştirici & Mobil Dosyaları (.apk, .java, .rs, vs.)
+            if (['py', 'c', 'cpp', 'cs', 'js', 'html', 'css', 'java', 'rs', 'go', 'php', 'json', 'xml', 'ts', 'apk'].includes(ext)) return { icon: 'code', color: 'icon-code' };
+            
+            // 3D Model ve CAD Formatları (.dwg, .dxf, .stl vs.)
+            if (['obj', 'stl', 'fbx', 'step', 'iges', 'dwg', 'dxf', 'blend'].includes(ext) || mime.includes('model')) return { icon: 'view_in_ar', color: 'icon-3d' };
+
+            // Veritabanı
+            if (['mdb', 'sql', 'sqlite', 'db', 'accdb'].includes(ext)) return { icon: 'storage', color: 'icon-db' };
+            
+            // Medya
+            if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico'].includes(ext) || mime.includes('image')) return { icon: 'image', color: 'icon-image' };
+            if (['mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm'].includes(ext) || mime.includes('video')) return { icon: 'movie', color: 'icon-video' };
+            if (['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(ext) || mime.includes('audio')) return { icon: 'audiotrack', color: 'icon-audio' };
+
+            return { icon: 'insert_drive_file', color: 'icon-default' };
+        }
+
         function renderItems(data) {
             const container = document.getElementById('gridContainer'); container.innerHTML = ''; container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
             allCurrentItems = []; selectedItems.clear(); lastSelectedIdx = -1;
             data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
 
             allCurrentItems.forEach((item, index) => {
-                let iconName = item.isFolder ? 'folder' : 'insert_drive_file'; let iconColorClass = item.isFolder ? 'icon-folder' : 'icon-doc';
+                let iconName = 'folder'; 
+                let iconColorClass = 'icon-folder';
+
+                // Dosyaysa İkon Motoruna Sor
                 if (!item.isFolder) {
-                    if (item.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; } else if (item.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('spreadsheet') || item.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
+                    const iconData = getFileIcon(item.name, item.type);
+                    iconName = iconData.icon;
+                    iconColorClass = iconData.color;
                 }
 
                 const actionHtml = `<div class="item-actions"><button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})"><span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button><button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})"><span class="material-icons-round">info</span></button></div>`;
@@ -418,8 +467,16 @@
         }
 
         function openDetailsModal(item) {
-            const modal = document.getElementById('detailsModal'); document.getElementById('modalIcon').innerText = item.isFolder ? 'folder' : item.iconName || 'insert_drive_file'; document.getElementById('modalIcon').style.color = item.isFolder ? '#fbbc04' : '#4285f4';
-            document.getElementById('modalBody').innerHTML = `<div class="detail-row"><span class="detail-label">Dosya Adı</span><span class="detail-value" style="font-weight:500;">${item.name}</span></div><div class="detail-row"><span class="detail-label">Tür</span><span class="detail-value">${item.isFolder ? 'Dosya Klasörü' : item.type}</span></div><div class="detail-row"><span class="detail-label">Boyut</span><span class="detail-value">${item.isFolder ? 'Klasör boyutu hesaplanmıyor' : formatBytes(item.size)}</span></div><div class="detail-row"><span class="detail-label">Son Değiştirilme</span><span class="detail-value">${formatDate(item.date)}</span></div>`;
+            const modal = document.getElementById('detailsModal'); 
+            let iconData = item.isFolder ? { icon: 'folder', color: 'icon-folder' } : getFileIcon(item.name, item.type);
+            
+            document.getElementById('modalIcon').innerText = iconData.icon; 
+            
+            // Modal içindeki ikon rengini dinamik atıyoruz
+            const colors = { 'icon-folder': '#fbbc04', 'icon-pdf': '#ea4335', 'icon-word': '#4285f4', 'icon-excel': '#188038', 'icon-slide': '#f4b400', 'icon-archive': '#8d6e63', 'icon-exe': '#546e7a', 'icon-code': '#9c27b0', 'icon-image': '#009688', 'icon-video': '#e91e63', 'icon-audio': '#00bcd4', 'icon-3d': '#3f51b5', 'icon-db': '#ff5722', 'icon-uyap': '#795548', 'icon-default': '#757575' };
+            document.getElementById('modalIcon').style.color = colors[iconData.color];
+            
+            document.getElementById('modalBody').innerHTML = `<div class="detail-row"><span class="detail-label">Dosya Adı</span><span class="detail-value" style="font-weight:500;">${item.name}</span></div><div class="detail-row"><span class="detail-label">Tür</span><span class="detail-value">${item.isFolder ? 'Dosya Klasörü' : (item.name.split('.').pop().toUpperCase() + ' Dosyası')}</span></div><div class="detail-row"><span class="detail-label">Boyut</span><span class="detail-value">${item.isFolder ? 'Klasör boyutu hesaplanmıyor' : formatBytes(item.size)}</span></div><div class="detail-row"><span class="detail-label">Son Değiştirilme</span><span class="detail-value">${formatDate(item.date)}</span></div>`;
             modal.style.display = 'flex';
         }
 
