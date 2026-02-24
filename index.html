@@ -15,6 +15,18 @@
         }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
+        /* --- YENİ EKLENEN: GİRİŞ EKRANI (LOGIN DASHBOARD) --- */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
+        .login-header { margin-bottom: 24px; }
+        .login-header h2 { margin: 12px 0 4px 0; font-size: 24px; font-weight: 500; color: var(--text-main); }
+        .login-header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+        .login-input { width: 100%; padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; font-family: inherit; box-sizing: border-box; transition: 0.2s; outline: none; }
+        .login-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(11, 87, 208, 0.1); }
+        .login-btn { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; transition: 0.2s; }
+        .login-btn:hover { background-color: #0842a0; box-shadow: 0 2px 6px rgba(11, 87, 208, 0.3); }
+        .login-error { color: #d93025; font-size: 13px; margin-bottom: 16px; display: none; background: #fce8e6; padding: 8px; border-radius: 6px; }
+
         /* Navbar ve Breadcrumb */
         .navbar { display: flex; align-items: center; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); gap: 16px; flex-shrink: 0; }
         .navbar h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
@@ -38,7 +50,7 @@
         .dropdown-content a:hover { background-color: var(--hover-color); }
         .show { display: block; }
 
-        /* Ortak Kart Yapısı ve Seçim Stilleri */
+        /* Ortak Kart Yapısı */
         .grid-container { display: grid; gap: 16px; }
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
         .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
@@ -50,21 +62,17 @@
         .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
         .details-header { display: none; }
 
-        /* CHECKBOX (ONAY KUTUSU) */
+        /* Checkbox ve Aksiyonlar */
         .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
         .item-card:hover .item-checkbox, .item-card.selected .item-checkbox { display: block; }
 
-        /* --- YENİ: HIZLI İŞLEM BUTONLARI (HOVER ACTIONS) --- */
-        .item-actions {
-            display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10;
-        }
+        .item-actions { display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; }
         .item-card:hover .item-actions, .item-card.selected .item-actions { display: flex; }
         .action-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .action-btn:hover { background-color: var(--hover-color); color: var(--text-main); }
         .action-btn .material-icons-round { font-size: 20px; }
         
-        /* Büyük Simgelerde Checkbox solda, Hızlı İşlemler sağ üstte */
+        /* Görünümler */
         .view-large { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; text-align: center; }
         .view-large .item-checkbox { position: absolute; top: 12px; left: 12px; z-index: 2; margin: 0; }
@@ -73,7 +81,6 @@
         .view-large .item-name-wrapper { flex-direction: column; width: 100%; align-items: center; }
         .view-large .item-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; overflow-wrap: anywhere; width: 100%; line-height: 1.4; }
 
-        /* Diğer görünümlerde Checkbox solda, Hızlı İşlemler sağda ortalanmış */
         .view-small { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
         .view-small .item-card { padding: 12px 16px; display: flex; align-items: center; }
         .view-small .item-icon { font-size: 24px; margin-right: 12px; }
@@ -95,7 +102,7 @@
         .view-details .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
         .view-details .item-details { display: block; }
 
-        /* Modal ve Context Menu CSS (Aynı) */
+        /* Modal ve Context Menu CSS */
         #contextMenu { display: none; position: fixed; background-color: var(--surface-color); border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; min-width: 160px; padding: 8px 0; }
         .context-menu-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-main); transition: background 0.1s; }
         .context-menu-item:hover { background-color: var(--hover-color); }
@@ -110,7 +117,6 @@
         .detail-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
         .detail-value { font-size: 14px; color: var(--text-main); word-break: break-all; }
 
-        /* Yükleniyor */
         .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--primary-color); }
         .spinner { animation: spin 1s linear infinite; font-size: 40px; margin-bottom: 16px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -118,336 +124,229 @@
 </head>
 <body>
 
-    <div class="navbar">
-        <button class="btn-icon" id="backBtn" onclick="goBack()" disabled title="Geri Git">
-            <span class="material-icons-round">arrow_back</span>
-        </button>
-        <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
-        
-        <div class="dropdown">
-            <button class="btn-icon" onclick="toggleViewMenu()" title="Görünüm Seçenekleri">
-                <span class="material-icons-round" id="currentViewIcon">grid_view</span>
-            </button>
-            <div class="dropdown-content" id="viewDropdown">
-                <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
-                <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
-                <a onclick="changeView('view-list', 'view_list')"><span class="material-icons-round">view_list</span> Listele</a>
-                <a onclick="changeView('view-details', 'table_rows')"><span class="material-icons-round">table_rows</span> Ayrıntılar</a>
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-header">
+                <span class="material-icons-round" style="color: var(--primary-color); font-size: 48px;">cloud</span>
+                <h2>Bulut Depom</h2>
+                <p>Güvenli Kurumsal Erişim</p>
             </div>
+            <div class="login-error" id="loginError">Hatalı kullanıcı adı veya şifre!</div>
+            <input type="text" id="usernameInput" class="login-input" placeholder="Kullanıcı Adı" autocomplete="off">
+            <input type="password" id="passwordInput" class="login-input" placeholder="Şifre" autocomplete="off" onkeypress="handleEnterKey(event)">
+            <button class="login-btn" onclick="checkLogin()">Giriş Yap</button>
         </div>
-
-        <button class="btn-icon" onclick="refreshCurrentFolder()" title="Verileri Yenile">
-            <span class="material-icons-round">refresh</span>
-        </button>
     </div>
 
-    <div class="breadcrumb" id="breadcrumbContainer"></div>
+    <div id="appContainer" style="display: none; flex-direction: column; height: 100vh;">
+        <div class="navbar">
+            <button class="btn-icon" id="backBtn" onclick="goBack()" disabled title="Geri Git"><span class="material-icons-round">arrow_back</span></button>
+            <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
+            
+            <div class="dropdown">
+                <button class="btn-icon" onclick="toggleViewMenu()" title="Görünüm Seçenekleri"><span class="material-icons-round" id="currentViewIcon">grid_view</span></button>
+                <div class="dropdown-content" id="viewDropdown">
+                    <a onclick="changeView('view-large', 'grid_view')"><span class="material-icons-round">grid_view</span> Büyük Simgeler</a>
+                    <a onclick="changeView('view-small', 'apps')"><span class="material-icons-round">apps</span> Küçük Simgeler</a>
+                    <a onclick="changeView('view-list', 'view_list')"><span class="material-icons-round">view_list</span> Listele</a>
+                    <a onclick="changeView('view-details', 'table_rows')"><span class="material-icons-round">table_rows</span> Ayrıntılar</a>
+                </div>
+            </div>
 
-    <div class="main-content" id="mainArea">
-        <div id="loader" class="loader-container">
-            <span class="material-icons-round spinner">autorenew</span>
-            <span style="color: var(--text-muted); font-weight: 500;">Sorgulanıyor...</span>
+            <button class="btn-icon" onclick="logout()" title="Çıkış Yap"><span class="material-icons-round" style="color: #d93025;">logout</span></button>
+            <button class="btn-icon" onclick="refreshCurrentFolder()" title="Verileri Yenile"><span class="material-icons-round">refresh</span></button>
         </div>
-        <div class="grid-container view-large" id="gridContainer" style="display: none;"></div>
+
+        <div class="breadcrumb" id="breadcrumbContainer"></div>
+
+        <div class="main-content" id="mainArea">
+            <div id="loader" class="loader-container">
+                <span class="material-icons-round spinner">autorenew</span>
+                <span style="color: var(--text-muted); font-weight: 500;">Sorgulanıyor...</span>
+            </div>
+            <div class="grid-container view-large" id="gridContainer" style="display: none;"></div>
+        </div>
     </div>
 
     <div id="contextMenu">
-        <div class="context-menu-item" onclick="handleContextAction('download')">
-            <span class="material-icons-round" id="ctxDownloadIcon">download</span> <span id="ctxDownloadText">Hemen İndir</span>
-        </div>
-        <div class="context-menu-item" onclick="handleContextAction('details')">
-            <span class="material-icons-round">info</span> Ayrıntılar
-        </div>
+        <div class="context-menu-item" onclick="handleContextAction('download')"><span class="material-icons-round" id="ctxDownloadIcon">download</span> <span id="ctxDownloadText">Hemen İndir</span></div>
+        <div class="context-menu-item" onclick="handleContextAction('details')"><span class="material-icons-round">info</span> Ayrıntılar</div>
     </div>
 
     <div class="modal-overlay" id="detailsModal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <span style="display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons-round" id="modalIcon">info</span> Özellikler
-                </span>
-                <span class="material-icons-round modal-close" onclick="closeModal(true)">close</span>
-            </div>
+            <div class="modal-header"><span style="display:flex; align-items:center; gap:8px;"><span class="material-icons-round" id="modalIcon">info</span> Özellikler</span><span class="material-icons-round modal-close" onclick="closeModal(true)">close</span></div>
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
     <script>
+        // --- ORTAM DEĞİŞKENLERİ İÇİN YER TUTUCULAR (RENDER BURAYI DOLDURACAK) ---
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
+        const ENV_USERNAME = 'BURAYA_KULLANICI_ADI_GELECEK'; 
+        const ENV_PASSWORD = 'BURAYA_SIFRE_GELECEK'; 
 
-        let historyStack = [];
-        let currentActiveFolderId = null;
-        let selectedItemForContext = null; 
-        let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
-
-        let selectedItems = new Set();
-        let lastSelectedIdx = -1;
-        let allCurrentItems = []; 
+        let historyStack = []; let currentActiveFolderId = null; let selectedItemForContext = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
+        let selectedItems = new Set(); let lastSelectedIdx = -1; let allCurrentItems = []; 
 
         document.addEventListener('DOMContentLoaded', () => {
             const savedView = localStorage.getItem('userView') || 'view-large';
             const savedIcon = localStorage.getItem('userViewIcon') || 'grid_view';
             changeView(savedView, savedIcon, false); 
-            loadFolder(); 
+
+            // Giriş kontrolü
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showApp();
+            } else {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('appContainer').style.display = 'none';
+            }
         });
 
-        document.addEventListener('click', hideContextMenu);
-        document.addEventListener('contextmenu', (e) => {
-            if (!e.target.closest('.item-card')) hideContextMenu();
-        });
+        // --- YENİ EKLENEN: GİRİŞ VE ÇIKIŞ FONKSİYONLARI ---
+        function checkLogin() {
+            const user = document.getElementById('usernameInput').value;
+            const pass = document.getElementById('passwordInput').value;
 
-        function toggleViewMenu() { document.getElementById("viewDropdown").classList.toggle("show"); }
-        window.onclick = function(event) {
-            if (!event.target.closest('.dropdown')) {
-                let dropdowns = document.getElementsByClassName("dropdown-content");
-                for (let i = 0; i < dropdowns.length; i++) dropdowns[i].classList.remove('show');
+            if (user === ENV_USERNAME && pass === ENV_PASSWORD) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                document.getElementById('loginError').style.display = 'none';
+                showApp();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
             }
         }
 
+        function handleEnterKey(e) { if (e.key === 'Enter') checkLogin(); }
+
+        function showApp() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            loadFolder(); // Uygulama açılınca dosyaları çekmeye başla
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // --- MEVCUT SİSTEM FONKSİYONLARI ---
+        document.addEventListener('click', hideContextMenu);
+        document.addEventListener('contextmenu', (e) => { if (!e.target.closest('.item-card')) hideContextMenu(); });
+
+        function toggleViewMenu() { document.getElementById("viewDropdown").classList.toggle("show"); }
+        window.onclick = function(event) { if (!event.target.closest('.dropdown')) { let dropdowns = document.getElementsByClassName("dropdown-content"); for (let i = 0; i < dropdowns.length; i++) dropdowns[i].classList.remove('show'); } }
+
         function changeView(viewClass, iconName, save = true) {
             const container = document.getElementById('gridContainer');
-            container.className = 'grid-container ' + viewClass;
-            document.getElementById('currentViewIcon').innerText = iconName;
+            container.className = 'grid-container ' + viewClass; document.getElementById('currentViewIcon').innerText = iconName;
             if (save) { localStorage.setItem('userView', viewClass); localStorage.setItem('userViewIcon', iconName); }
         }
 
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B'; if (!bytes) return '--';
-            const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        function formatDate(timestamp) {
-            if (!timestamp) return '--'; const date = new Date(timestamp);
-            return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' });
-        }
+        function formatBytes(bytes) { if (bytes === 0) return '0 B'; if (!bytes) return '--'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]; }
+        function formatDate(timestamp) { if (!timestamp) return '--'; const date = new Date(timestamp); return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' }); }
 
         function loadFolder(folderId = null, forceRefresh = false) {
-            showLoader(true);
-            currentActiveFolderId = folderId;
-            const cacheKey = 'folderCache_' + (folderId || 'rootFolder');
-
-            renderBreadcrumb(); 
+            showLoader(true); currentActiveFolderId = folderId; const cacheKey = 'folderCache_' + (folderId || 'rootFolder'); renderBreadcrumb(); 
 
             if (!forceRefresh) {
                 const localCache = sessionStorage.getItem(cacheKey);
-                if (localCache) {
-                    renderItems(JSON.parse(localCache)); updateBackButton(); return; 
-                }
+                if (localCache) { renderItems(JSON.parse(localCache)); updateBackButton(); return; }
             }
 
             let fetchUrl = APPS_SCRIPT_URL + '?';
             if (folderId) fetchUrl += `id=${folderId}&`;
             if (forceRefresh) fetchUrl += `refresh=true&`;
 
-            fetch(fetchUrl)
-                .then(r => r.json())
-                .then(result => {
-                    if (result.success) {
-                        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
-                        renderItems(result.data); updateBackButton();
-                    } else { alert("Hata: " + result.error); showLoader(false); }
-                }).catch(e => { alert("Bağlantı Hatası: " + e.message); showLoader(false); });
+            fetch(fetchUrl).then(r => r.json()).then(result => {
+                if (result.success) { sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); renderItems(result.data); updateBackButton(); } 
+                else { alert("Hata: " + result.error); showLoader(false); }
+            }).catch(e => { alert("Bağlantı Hatası: " + e.message); showLoader(false); });
         }
 
         function refreshCurrentFolder() { loadFolder(currentActiveFolderId, true); }
 
         function renderBreadcrumb() {
-            const container = document.getElementById('breadcrumbContainer');
-            container.innerHTML = '';
-            
+            const container = document.getElementById('breadcrumbContainer'); container.innerHTML = '';
             pathArray.forEach((item, index) => {
-                const span = document.createElement('span');
-                span.className = 'breadcrumb-item';
-                span.innerText = item.name;
-                
+                const span = document.createElement('span'); span.className = 'breadcrumb-item'; span.innerText = item.name;
                 if (index < pathArray.length - 1) {
                     span.classList.add('clickable');
-                    span.onclick = () => {
-                        const stepsBack = pathArray.length - 1 - index;
-                        for (let i = 0; i < stepsBack; i++) { historyStack.pop(); pathArray.pop(); }
-                        loadFolder(item.id);
-                    };
+                    span.onclick = () => { const stepsBack = pathArray.length - 1 - index; for (let i = 0; i < stepsBack; i++) { historyStack.pop(); pathArray.pop(); } loadFolder(item.id); };
                     container.appendChild(span);
-                    const separator = document.createElement('span');
-                    separator.className = 'material-icons-round breadcrumb-separator';
-                    separator.innerText = 'chevron_right';
-                    container.appendChild(separator);
-                } else {
-                    span.classList.add('active'); 
-                    container.appendChild(span);
-                }
+                    const separator = document.createElement('span'); separator.className = 'material-icons-round breadcrumb-separator'; separator.innerText = 'chevron_right'; container.appendChild(separator);
+                } else { span.classList.add('active'); container.appendChild(span); }
             });
         }
 
         function toggleSelection(id, index, cardElem, forceSelect) {
             const checkbox = cardElem.querySelector('.item-checkbox');
-            if (forceSelect) {
-                selectedItems.add(id); cardElem.classList.add('selected'); checkbox.checked = true; lastSelectedIdx = index;
-            } else {
-                selectedItems.delete(id); cardElem.classList.remove('selected'); checkbox.checked = false;
-                if (lastSelectedIdx === index) lastSelectedIdx = -1;
-            }
+            if (forceSelect) { selectedItems.add(id); cardElem.classList.add('selected'); checkbox.checked = true; lastSelectedIdx = index; } 
+            else { selectedItems.delete(id); cardElem.classList.remove('selected'); checkbox.checked = false; if (lastSelectedIdx === index) lastSelectedIdx = -1; }
         }
 
         function handleShiftSelect(currentIndex) {
-            if (lastSelectedIdx === -1) {
-                const cardElem = document.querySelectorAll('.item-card')[currentIndex];
-                toggleSelection(allCurrentItems[currentIndex].id, currentIndex, cardElem, true); return;
-            }
-            const start = Math.min(lastSelectedIdx, currentIndex); const end = Math.max(lastSelectedIdx, currentIndex);
-            const cards = document.querySelectorAll('.item-card');
-            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false);
-            cards.forEach(c => c.classList.remove('selected')); selectedItems.clear();
-
-            for (let i = start; i <= end; i++) {
-                selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true;
-            }
+            if (lastSelectedIdx === -1) { const cardElem = document.querySelectorAll('.item-card')[currentIndex]; toggleSelection(allCurrentItems[currentIndex].id, currentIndex, cardElem, true); return; }
+            const start = Math.min(lastSelectedIdx, currentIndex); const end = Math.max(lastSelectedIdx, currentIndex); const cards = document.querySelectorAll('.item-card');
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false); cards.forEach(c => c.classList.remove('selected')); selectedItems.clear();
+            for (let i = start; i <= end; i++) { selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true; }
         }
 
-        // YENİ: Hızlı Buton İşlemlerini Yöneten Fonksiyon
         function executeAction(action, index) {
             const item = allCurrentItems[index];
-            if (action === 'download') {
-                if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank');
-                else triggerDownload(item);
-            } else if (action === 'details') {
-                openDetailsModal(item);
-            }
+            if (action === 'download') { if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank'); else triggerDownload(item); } 
+            else if (action === 'details') { openDetailsModal(item); }
         }
 
         function renderItems(data) {
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = ''; 
-            container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
-
+            const container = document.getElementById('gridContainer'); container.innerHTML = ''; container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
             allCurrentItems = []; selectedItems.clear(); lastSelectedIdx = -1;
-
-            data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true }));
-            data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
+            data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
 
             allCurrentItems.forEach((item, index) => {
-                let iconName = item.isFolder ? 'folder' : 'insert_drive_file'; 
-                let iconColorClass = item.isFolder ? 'icon-folder' : 'icon-doc';
-                
+                let iconName = item.isFolder ? 'folder' : 'insert_drive_file'; let iconColorClass = item.isFolder ? 'icon-folder' : 'icon-doc';
                 if (!item.isFolder) {
-                    if (item.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; }
-                    else if (item.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; }
-                    else if (item.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; }
-                    else if (item.type.includes('spreadsheet') || item.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
+                    if (item.type.includes('pdf')) { iconName = 'picture_as_pdf'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('image')) { iconName = 'image'; iconColorClass = 'icon-image'; } else if (item.type.includes('video')) { iconName = 'movie'; iconColorClass = 'icon-pdf'; } else if (item.type.includes('spreadsheet') || item.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
                 }
 
-                // YENİ: Karta Hızlı İşlem Menüsü HTML'ini Ekle
-                const actionHtml = `
-                    <div class="item-actions">
-                        <button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})">
-                            <span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span>
-                        </button>
-                        <button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})">
-                            <span class="material-icons-round">info</span>
-                        </button>
-                    </div>
-                `;
-
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.innerHTML = `
-                    <div class="item-name-wrapper">
-                        <input type="checkbox" class="item-checkbox">
-                        <span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span>
-                        <span class="item-name" title="${item.name}">${item.name}</span>
-                    </div>
-                    <div class="item-details">${formatDate(item.date)}</div>
-                    <div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>
-                    ${actionHtml}
-                `;
+                const actionHtml = `<div class="item-actions"><button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})"><span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button><button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})"><span class="material-icons-round">info</span></button></div>`;
+                const card = document.createElement('div'); card.className = 'item-card';
+                card.innerHTML = `<div class="item-name-wrapper"><input type="checkbox" class="item-checkbox"><span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${item.name}">${item.name}</span></div><div class="item-details">${formatDate(item.date)}</div><div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>${actionHtml}`;
                 
                 card.onclick = (e) => { 
-                    if (e.target.closest('.action-btn')) return; // Hızlı butona tıklandıysa ana tıklamayı durdur
-                    
-                    if (e.target.classList.contains('item-checkbox')) {
-                        toggleSelection(item.id, index, card, e.target.checked); return;
-                    }
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault(); const isSelected = selectedItems.has(item.id); toggleSelection(item.id, index, card, !isSelected);
-                    } else if (e.shiftKey) {
-                        e.preventDefault(); handleShiftSelect(index);
-                    } else {
-                        if (item.isFolder) {
-                            historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); 
-                        } else { triggerDownload(item); }
-                    }
+                    if (e.target.closest('.action-btn')) return; 
+                    if (e.target.classList.contains('item-checkbox')) { toggleSelection(item.id, index, card, e.target.checked); return; }
+                    if (e.ctrlKey || e.metaKey) { e.preventDefault(); const isSelected = selectedItems.has(item.id); toggleSelection(item.id, index, card, !isSelected); } 
+                    else if (e.shiftKey) { e.preventDefault(); handleShiftSelect(index); } 
+                    else { if (item.isFolder) { historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); } else { triggerDownload(item); } }
                 };
-
-                card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); };
-                container.appendChild(card);
+                card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); }; container.appendChild(card);
             });
-
             if (allCurrentItems.length === 0) container.innerHTML += '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
             showLoader(false);
         }
 
         function showContextMenu(e, item) {
-            selectedItemForContext = item;
-            const menu = document.getElementById('contextMenu');
-            if(item.isFolder) {
-                document.getElementById('ctxDownloadIcon').innerText = "open_in_new";
-                document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Drive'a Yönlendirir)";
-            } else {
-                document.getElementById('ctxDownloadIcon').innerText = "download";
-                document.getElementById('ctxDownloadText').innerText = "Hemen İndir";
-            }
-            menu.style.display = 'block';
-            
-            let x = e.clientX; let y = e.clientY;
-            if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth - 10;
-            if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight - 10;
+            selectedItemForContext = item; const menu = document.getElementById('contextMenu');
+            if(item.isFolder) { document.getElementById('ctxDownloadIcon').innerText = "open_in_new"; document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Drive'a Yönlendirir)"; } 
+            else { document.getElementById('ctxDownloadIcon').innerText = "download"; document.getElementById('ctxDownloadText').innerText = "Hemen İndir"; }
+            menu.style.display = 'block'; let x = e.clientX; let y = e.clientY;
+            if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth - 10; if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight - 10;
             menu.style.left = x + 'px'; menu.style.top = y + 'px';
         }
-
         function hideContextMenu() { document.getElementById('contextMenu').style.display = 'none'; }
-
-        function handleContextAction(action) {
-            hideContextMenu();
-            if (!selectedItemForContext) return;
-            if (action === 'download') {
-                if (selectedItemForContext.isFolder) window.open(`https://drive.google.com/drive/folders/${selectedItemForContext.id}`, '_blank');
-                else triggerDownload(selectedItemForContext);
-            } else if (action === 'details') { openDetailsModal(selectedItemForContext); }
-        }
-
-        function triggerDownload(file) {
-            if (!file.type.includes('google-apps')) {
-                const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${file.id}`; link.target = '_blank';
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            } else {
-                const link = document.createElement('a'); link.href = file.url; link.target = '_blank';
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            }
-        }
-
+        function handleContextAction(action) { hideContextMenu(); if (!selectedItemForContext) return; if (action === 'download') { if (selectedItemForContext.isFolder) window.open(`https://drive.google.com/drive/folders/${selectedItemForContext.id}`, '_blank'); else triggerDownload(selectedItemForContext); } else if (action === 'details') { openDetailsModal(selectedItemForContext); } }
+        function triggerDownload(file) { if (!file.type.includes('google-apps')) { const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${file.id}`; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link); } else { const link = document.createElement('a'); link.href = file.url; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link); } }
         function openDetailsModal(item) {
-            const modal = document.getElementById('detailsModal');
-            document.getElementById('modalIcon').innerText = item.isFolder ? 'folder' : item.iconName || 'insert_drive_file';
-            document.getElementById('modalIcon').style.color = item.isFolder ? '#fbbc04' : '#4285f4';
-            document.getElementById('modalBody').innerHTML = `
-                <div class="detail-row"><span class="detail-label">Dosya Adı</span><span class="detail-value" style="font-weight:500;">${item.name}</span></div>
-                <div class="detail-row"><span class="detail-label">Tür</span><span class="detail-value">${item.isFolder ? 'Dosya Klasörü' : item.type}</span></div>
-                <div class="detail-row"><span class="detail-label">Boyut</span><span class="detail-value">${item.isFolder ? 'Klasör boyutu hesaplanmıyor' : formatBytes(item.size)}</span></div>
-                <div class="detail-row"><span class="detail-label">Son Değiştirilme</span><span class="detail-value">${formatDate(item.date)}</span></div>
-            `;
+            const modal = document.getElementById('detailsModal'); document.getElementById('modalIcon').innerText = item.isFolder ? 'folder' : item.iconName || 'insert_drive_file'; document.getElementById('modalIcon').style.color = item.isFolder ? '#fbbc04' : '#4285f4';
+            document.getElementById('modalBody').innerHTML = `<div class="detail-row"><span class="detail-label">Dosya Adı</span><span class="detail-value" style="font-weight:500;">${item.name}</span></div><div class="detail-row"><span class="detail-label">Tür</span><span class="detail-value">${item.isFolder ? 'Dosya Klasörü' : item.type}</span></div><div class="detail-row"><span class="detail-label">Boyut</span><span class="detail-value">${item.isFolder ? 'Klasör boyutu hesaplanmıyor' : formatBytes(item.size)}</span></div><div class="detail-row"><span class="detail-label">Son Değiştirilme</span><span class="detail-value">${formatDate(item.date)}</span></div>`;
             modal.style.display = 'flex';
         }
-
         function closeModal(force = false) { if (force || event.target.id === 'detailsModal') document.getElementById('detailsModal').style.display = 'none'; }
-
-        function goBack() { 
-            if (historyStack.length > 0) {
-                pathArray.pop(); 
-                loadFolder(historyStack.pop()); 
-            }
-        }
+        function goBack() { if (historyStack.length > 0) { pathArray.pop(); loadFolder(historyStack.pop()); } }
         function updateBackButton() { document.getElementById('backBtn').disabled = historyStack.length === 0; }
         function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; document.getElementById('gridContainer').style.display = show ? 'none' : 'grid'; }
     </script>
