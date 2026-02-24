@@ -42,8 +42,6 @@
         .grid-container { display: grid; gap: 16px; }
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
         .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
-        
-        /* Seçili Kart Stili */
         .item-card.selected { background-color: #e8f0fe; border-color: var(--primary-color); }
 
         .item-name-wrapper { display: flex; align-items: center; overflow: hidden; position: relative; }
@@ -52,28 +50,41 @@
         .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-image { color: #188038; } .icon-doc { color: #4285f4; }
         .details-header { display: none; }
 
-        /* CHECKBOX (ONAY KUTUSU) TASARIMI */
+        /* CHECKBOX (ONAY KUTUSU) */
         .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
         .item-card:hover .item-checkbox, .item-card.selected .item-checkbox { display: block; }
+
+        /* --- YENİ: HIZLI İŞLEM BUTONLARI (HOVER ACTIONS) --- */
+        .item-actions {
+            display: none; position: absolute; background-color: var(--surface-color); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 2px; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10;
+        }
+        .item-card:hover .item-actions, .item-card.selected .item-actions { display: flex; }
+        .action-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .action-btn:hover { background-color: var(--hover-color); color: var(--text-main); }
+        .action-btn .material-icons-round { font-size: 20px; }
         
-        /* Büyük Simgelerde Checkbox köşede durur */
+        /* Büyük Simgelerde Checkbox solda, Hızlı İşlemler sağ üstte */
         .view-large { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .view-large .item-card { padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; text-align: center; }
         .view-large .item-checkbox { position: absolute; top: 12px; left: 12px; z-index: 2; margin: 0; }
+        .view-large .item-actions { top: 8px; right: 8px; }
         .view-large .item-icon { font-size: 48px; margin: 0; }
         .view-large .item-name-wrapper { flex-direction: column; width: 100%; align-items: center; }
         .view-large .item-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; overflow-wrap: anywhere; width: 100%; line-height: 1.4; }
 
-        /* Diğer görünümlerde Checkbox ikonun yanında durur */
+        /* Diğer görünümlerde Checkbox solda, Hızlı İşlemler sağda ortalanmış */
         .view-small { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
         .view-small .item-card { padding: 12px 16px; display: flex; align-items: center; }
         .view-small .item-icon { font-size: 24px; margin-right: 12px; }
         .view-small .item-checkbox { margin-right: 12px; flex-shrink: 0; }
+        .view-small .item-actions { top: 50%; transform: translateY(-50%); right: 12px; }
 
         .view-list { grid-template-columns: 1fr; gap: 8px; }
         .view-list .item-card { padding: 12px 16px; display: flex; align-items: center; }
         .view-list .item-icon { font-size: 24px; margin-right: 16px; }
         .view-list .item-checkbox { margin-right: 12px; flex-shrink: 0; }
+        .view-list .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
 
         .view-details { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white;}
         .view-details .details-header { display: grid; grid-template-columns: 3fr 1fr 1fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
@@ -81,6 +92,7 @@
         .view-details .item-card:last-child { border-bottom: none; }
         .view-details .item-icon { font-size: 24px; margin-right: 16px; }
         .view-details .item-checkbox { margin-right: 12px; flex-shrink: 0; }
+        .view-details .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
         .view-details .item-details { display: block; }
 
         /* Modal ve Context Menu CSS (Aynı) */
@@ -168,7 +180,6 @@
         let selectedItemForContext = null; 
         let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
 
-        // SEÇİM (MULTI-SELECT) DEĞİŞKENLERİ
         let selectedItems = new Set();
         let lastSelectedIdx = -1;
         let allCurrentItems = []; 
@@ -270,18 +281,12 @@
             });
         }
 
-        // SEÇİM YAPMA FONKSİYONLARI
         function toggleSelection(id, index, cardElem, forceSelect) {
             const checkbox = cardElem.querySelector('.item-checkbox');
             if (forceSelect) {
-                selectedItems.add(id);
-                cardElem.classList.add('selected');
-                checkbox.checked = true;
-                lastSelectedIdx = index;
+                selectedItems.add(id); cardElem.classList.add('selected'); checkbox.checked = true; lastSelectedIdx = index;
             } else {
-                selectedItems.delete(id);
-                cardElem.classList.remove('selected');
-                checkbox.checked = false;
+                selectedItems.delete(id); cardElem.classList.remove('selected'); checkbox.checked = false;
                 if (lastSelectedIdx === index) lastSelectedIdx = -1;
             }
         }
@@ -289,24 +294,26 @@
         function handleShiftSelect(currentIndex) {
             if (lastSelectedIdx === -1) {
                 const cardElem = document.querySelectorAll('.item-card')[currentIndex];
-                toggleSelection(allCurrentItems[currentIndex].id, currentIndex, cardElem, true);
-                return;
+                toggleSelection(allCurrentItems[currentIndex].id, currentIndex, cardElem, true); return;
             }
-            
-            const start = Math.min(lastSelectedIdx, currentIndex);
-            const end = Math.max(lastSelectedIdx, currentIndex);
+            const start = Math.min(lastSelectedIdx, currentIndex); const end = Math.max(lastSelectedIdx, currentIndex);
             const cards = document.querySelectorAll('.item-card');
-            
-            // Tüm seçimleri temizle
             document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false);
-            cards.forEach(c => c.classList.remove('selected'));
-            selectedItems.clear();
+            cards.forEach(c => c.classList.remove('selected')); selectedItems.clear();
 
-            // Sadece aralıktakileri seç
             for (let i = start; i <= end; i++) {
-                selectedItems.add(allCurrentItems[i].id);
-                cards[i].classList.add('selected');
-                cards[i].querySelector('.item-checkbox').checked = true;
+                selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true;
+            }
+        }
+
+        // YENİ: Hızlı Buton İşlemlerini Yöneten Fonksiyon
+        function executeAction(action, index) {
+            const item = allCurrentItems[index];
+            if (action === 'download') {
+                if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank');
+                else triggerDownload(item);
+            } else if (action === 'details') {
+                openDetailsModal(item);
             }
         }
 
@@ -315,10 +322,7 @@
             container.innerHTML = ''; 
             container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
 
-            // Verileri Sıfırla ve Birleştir (Seçimler için ortak indexleme)
-            allCurrentItems = [];
-            selectedItems.clear();
-            lastSelectedIdx = -1;
+            allCurrentItems = []; selectedItems.clear(); lastSelectedIdx = -1;
 
             data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true }));
             data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
@@ -334,6 +338,18 @@
                     else if (item.type.includes('spreadsheet') || item.type.includes('excel')) { iconName = 'table_chart'; iconColorClass = 'icon-image'; }
                 }
 
+                // YENİ: Karta Hızlı İşlem Menüsü HTML'ini Ekle
+                const actionHtml = `
+                    <div class="item-actions">
+                        <button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})">
+                            <span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span>
+                        </button>
+                        <button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})">
+                            <span class="material-icons-round">info</span>
+                        </button>
+                    </div>
+                `;
+
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `
@@ -344,36 +360,23 @@
                     </div>
                     <div class="item-details">${formatDate(item.date)}</div>
                     <div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>
+                    ${actionHtml}
                 `;
                 
-                // MASAÜSTÜ KLİK SİSTEMİ (CTRL, SHIFT, CHECKBOX)
                 card.onclick = (e) => { 
-                    // 1. Direkt Checkbox'a tıklanırsa sadece seçimi değiştir
+                    if (e.target.closest('.action-btn')) return; // Hızlı butona tıklandıysa ana tıklamayı durdur
+                    
                     if (e.target.classList.contains('item-checkbox')) {
-                        toggleSelection(item.id, index, card, e.target.checked);
-                        return;
+                        toggleSelection(item.id, index, card, e.target.checked); return;
                     }
-
-                    // 2. CTRL tuşuyla tıklanırsa (Tekli Seçim)
                     if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        const isSelected = selectedItems.has(item.id);
-                        toggleSelection(item.id, index, card, !isSelected);
-                    } 
-                    // 3. SHIFT tuşuyla tıklanırsa (Çoklu Aralık Seçimi)
-                    else if (e.shiftKey) {
-                        e.preventDefault();
-                        handleShiftSelect(index);
-                    } 
-                    // 4. Normal Tıklama (Dosyayı İndir veya Klasöre Gir)
-                    else {
+                        e.preventDefault(); const isSelected = selectedItems.has(item.id); toggleSelection(item.id, index, card, !isSelected);
+                    } else if (e.shiftKey) {
+                        e.preventDefault(); handleShiftSelect(index);
+                    } else {
                         if (item.isFolder) {
-                            historyStack.push(currentActiveFolderId); 
-                            pathArray.push({ id: item.id, name: item.name }); 
-                            loadFolder(item.id); 
-                        } else {
-                            triggerDownload(item);
-                        }
+                            historyStack.push(currentActiveFolderId); pathArray.push({ id: item.id, name: item.name }); loadFolder(item.id); 
+                        } else { triggerDownload(item); }
                     }
                 };
 
