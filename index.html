@@ -8,17 +8,9 @@
     <meta name="theme-color" content="#0b57d0">
     
     <title>Bulut Depom | Açık Kaynak Kurumsal Dosya Yönetimi</title>
-    <meta name="description" content="Bulut Depom, açık kaynak kodlu altyapısı (github.com/enesmclk/clk-gdrive) ile dosyalarınıza her yerden güvenle erişebileceğiniz, şeffaf ve profesyonel bir arşiv yönetim platformudur.">
-    <meta name="keywords" content="bulut depolama, dosya yönetimi, kurumsal arşiv, belge yönetimi, online depo, açık kaynak, open source">
+    <meta name="description" content="Bulut Depom, açık kaynak kodlu altyapısı ile dosyalarınıza her yerden güvenle erişebileceğiniz, şeffaf ve profesyonel bir arşiv yönetim platformudur.">
     <meta name="author" content="EnesMCLK">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Bulut Depom | Kurumsal Yönetim">
-    <meta property="og:description" content="enesmclk/clk-gdrive reposu üzerinden %100 açık kaynak kodlu olarak geliştirilen, yüksek güvenlikli bulut dosya yönetim sistemi.">
-    <meta property="og:site_name" content="Bulut Depom">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Google_Drive_icon_%282020%29.svg/512px-Google_Drive_icon_%282020%29.svg.png"> 
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -28,8 +20,9 @@
         :root { --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0; --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0; }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
+        /* GİRİŞ EKRANI VE SUNUCU DURUMU */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; position: relative; }
+        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
         .login-header { margin-bottom: 24px; }
         .login-header h2 { margin: 12px 0 4px 0; font-size: 24px; font-weight: 500; color: var(--text-main); }
         .login-header p { margin: 0; color: var(--text-muted); font-size: 14px; }
@@ -40,35 +33,39 @@
         .login-btn:disabled { background-color: #a8c7fa; cursor: not-allowed; }
         .login-error { color: #d93025; font-size: 13px; margin-bottom: 16px; display: none; background: #fce8e6; padding: 8px; border-radius: 6px; }
 
-        /* --- YENİ EKLENEN: SUNUCU DURUMU (SERVER STATUS) CSS --- */
         .server-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); user-select: none; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #9e9e9e; transition: 0.3s; }
         .status-dot.online { background-color: #188038; box-shadow: 0 0 6px rgba(24, 128, 56, 0.6); }
         .status-dot.offline { background-color: #d93025; box-shadow: 0 0 6px rgba(217, 48, 37, 0.6); }
         .status-dot.checking { animation: pulse 1s infinite alternate; }
         @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
-        
         .login-status-widget { position: fixed; bottom: 20px; right: 24px; background: var(--surface-color); padding: 8px 16px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 10000; }
-        .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; }
-        @media (max-width: 768px) { .navbar-center { display: none; } /* Mobilde ortadaki yazıyı gizler, çok sıkışmasın diye */ }
-        /* ----------------------------------------------------- */
 
+        /* NAVBAR VE ARAMA KUTUSU */
         .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; position: relative; }
         .navbar-left { display: flex; align-items: center; gap: 16px; }
         .navbar-left h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; }
+        @media (max-width: 768px) { .navbar-center { display: none; } }
         .navbar-right { display: flex; align-items: center; gap: 12px; }
-
         .btn-icon { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: 0.2s; }
         .btn-icon:hover { background-color: var(--hover-color); }
         .btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; gap: 16px;}
         .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; flex: 1; }
         .breadcrumb-item { color: var(--text-muted); display: flex; align-items: center; border-radius: 6px; padding: 4px 8px; transition: 0.2s; user-select: none; }
         .breadcrumb-item.clickable { cursor: pointer; }
         .breadcrumb-item.clickable:hover { background-color: var(--hover-color); color: var(--text-main); }
         .breadcrumb-item.active { font-weight: 500; color: var(--text-main); cursor: default; }
         .breadcrumb-separator { font-size: 18px; color: var(--text-muted); user-select: none; }
+
+        /* YENİ: ARAMA KUTUSU CSS */
+        .search-box { display: flex; align-items: center; background: var(--hover-color); border-radius: 20px; padding: 4px 12px; border: 1px solid transparent; transition: 0.2s; }
+        .search-box:focus-within { background: white; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(11, 87, 208, 0.1); }
+        .search-box input { border: none; background: transparent; outline: none; padding: 4px 8px; font-family: inherit; font-size: 14px; width: 140px; transition: width 0.2s; }
+        .search-box input:focus { width: 220px; }
+        .search-box .material-icons-round { font-size: 18px; color: var(--text-muted); }
 
         .account-btn { background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px 12px 4px 8px; cursor: pointer; font-weight: 500; font-family: inherit; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: 0.2s; }
         .account-btn:hover { background-color: #e1e9f7; }
@@ -80,6 +77,7 @@
         .dropdown-content a:hover { background-color: var(--hover-color); }
         .show { display: block; }
 
+        /* KARTLAR VE GÖRÜNÜM AYARLARI */
         .main-content { padding: 24px; flex: 1; overflow-y: auto; position: relative; }
         .grid-container { display: grid; gap: 16px; }
         .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: 0.2s; user-select: none; position: relative; }
@@ -95,6 +93,13 @@
         .icon-slide { color: #f4b400; } .icon-archive { color: #8d6e63; } .icon-exe { color: #546e7a; } .icon-code { color: #9c27b0; }
         .icon-image { color: #009688; } .icon-video { color: #e91e63; } .icon-audio { color: #00bcd4; } .icon-3d { color: #3f51b5; }
         .icon-db { color: #ff5722; } .icon-uyap { color: #795548; } .icon-default { color: #757575; }
+
+        /* YENİ: FAVICON GÖRSELLERİ CSS */
+        .item-favicon { object-fit: contain; border-radius: 4px; }
+        .view-large .item-favicon { width: 48px; height: 48px; margin: 0; }
+        .view-small .item-favicon { width: 24px; height: 24px; margin-right: 12px; }
+        .view-list .item-favicon { width: 24px; height: 24px; margin-right: 16px; }
+        .view-details .item-favicon { width: 24px; height: 24px; margin-right: 16px; }
 
         .details-header { display: none; }
         .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
@@ -125,14 +130,20 @@
         .view-list .item-checkbox { margin-right: 12px; flex-shrink: 0; }
         .view-list .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
 
+        /* YENİ: 4 SÜTUNLU AYRINTILAR VE SIRALAMA CSS */
         .view-details { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white;}
-        .view-details .details-header { display: grid; grid-template-columns: 3fr 1fr 1fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
-        .view-details .item-card { border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; display: grid; grid-template-columns: 3fr 1fr 1fr; align-items: center; padding: 10px 24px; }
+        .view-details .details-header { display: grid; grid-template-columns: 4fr 1.5fr 2fr 1.5fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        .view-details .item-card { border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; display: grid; grid-template-columns: 4fr 1.5fr 2fr 1.5fr; align-items: center; padding: 10px 24px; }
         .view-details .item-card:last-child { border-bottom: none; }
         .view-details .item-icon { font-size: 24px; margin-right: 16px; }
         .view-details .item-checkbox { margin-right: 12px; flex-shrink: 0; }
         .view-details .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
-        .view-details .item-details { display: block; }
+        .view-details .item-details { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 10px;}
+        
+        .sortable-header { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; transition: 0.2s; }
+        .sortable-header:hover { color: var(--text-main); }
+        .sort-icon { font-size: 16px; opacity: 0; transition: 0.2s; }
+        .sortable-header.active .sort-icon { opacity: 1; color: var(--primary-color); }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-content { background: var(--surface-color); padding: 24px; border-radius: 16px; width: 320px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
@@ -175,7 +186,6 @@
     </div>
 
     <div id="appContainer" style="display: none; flex-direction: column; height: 100vh;">
-        
         <div class="navbar">
             <div class="navbar-left">
                 <button class="btn-icon" id="backBtn" onclick="goBack()" disabled title="Geri Git"><span class="material-icons-round">arrow_back</span></button>
@@ -215,7 +225,14 @@
 
         <div class="breadcrumb-bar">
             <div class="breadcrumb" id="breadcrumbContainer"></div>
-            <button class="btn-icon" onclick="refreshCurrentFolder()" title="Klasörü Yenile"><span class="material-icons-round">refresh</span></button>
+            
+            <div style="display:flex; gap:8px; align-items:center;">
+                <div class="search-box">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="searchInput" placeholder="Dosyalarda ara..." oninput="handleSearch()">
+                </div>
+                <button class="btn-icon" onclick="refreshCurrentFolder()" title="Klasörü Yenile"><span class="material-icons-round">refresh</span></button>
+            </div>
         </div>
 
         <div class="main-content" id="mainArea">
@@ -246,8 +263,15 @@
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
 
         let historyStack = []; let currentActiveFolderId = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
+        
+        // Ham verileri tuttuğumuz yer (Filtreleme ve sıralama anlık olsun diye)
+        let rawFolderData = { folders: [], files: [] }; 
         let allCurrentItems = []; let selectedItemForContext = null;
         let selectedItems = new Set(); let lastSelectedIdx = -1;
+        
+        // Arama ve Sıralama Durumları
+        let searchQuery = "";
+        let sortConfig = { key: 'name', asc: true };
 
         document.addEventListener('DOMContentLoaded', () => {
             const savedView = localStorage.getItem('userView') || 'view-large';
@@ -261,31 +285,20 @@
                 showApp();
             }
 
-            // --- YENİ EKLENEN: SUNUCU DURUMU KONTROLÜ BAŞLATICI ---
-            checkServerStatus();
-            setInterval(checkServerStatus, 30000); // Her 30 saniyede bir kontrol et
+            checkServerStatus(); setInterval(checkServerStatus, 30000); 
         });
 
-        // --- YENİ EKLENEN: GÖRSEL (PING) İLE SUNUCU KONTROL MOTORU ---
         function checkServerStatus() {
             const img = new Image();
-            // CORS hatasına takılmamak için Drive'ın faviconunu arkada gizlice indirmeyi deneriz. 
-            // Sonuna random sayı ekleriz ki tarayıcı önbelleğinden (cache) getirmesin, gerçekten sunucuya gitsin.
             img.src = "https://drive.google.com/favicon.ico?cb=" + new Date().getTime();
-            
             img.onload = () => updateStatusUI('online');
             img.onerror = () => updateStatusUI('offline');
-            
-            // Eğer 5 saniye boyunca ne hata ne de başarı dönerse (Çok yavaş bağlantı/Kesinti) çevrimdışı say
             setTimeout(() => { if (!img.complete) updateStatusUI('offline'); }, 5000);
         }
 
         function updateStatusUI(state) {
-            const loginDot = document.getElementById('loginStatusDot');
-            const loginText = document.getElementById('loginStatusText');
-            const navDot = document.getElementById('navStatusDot');
-            const navText = document.getElementById('navStatusText');
-            
+            const loginDot = document.getElementById('loginStatusDot'); const loginText = document.getElementById('loginStatusText');
+            const navDot = document.getElementById('navStatusDot'); const navText = document.getElementById('navStatusText');
             if (state === 'online') {
                 loginDot.className = 'status-dot online'; navDot.className = 'status-dot online';
                 loginText.innerText = 'Sunucu: Çevrimiçi'; navText.innerText = 'Sunucu: Çevrimiçi';
@@ -294,13 +307,10 @@
                 loginText.innerText = 'Erişim Engeli (Kurum Ağını Kontrol Edin)'; navText.innerText = 'Sunucu Bağlantısı Yok';
             }
         }
-        // -------------------------------------------------------------
 
         function toggleMenu(menuId) {
             let menus = document.getElementsByClassName("dropdown-content");
-            for (let i = 0; i < menus.length; i++) {
-                if (menus[i].id !== menuId) menus[i].classList.remove('show');
-            }
+            for (let i = 0; i < menus.length; i++) { if (menus[i].id !== menuId) menus[i].classList.remove('show'); }
             document.getElementById(menuId).classList.toggle("show");
         }
 
@@ -318,36 +328,24 @@
         }
 
         function checkLogin() {
-            const user = document.getElementById('usernameInput').value.trim();
-            const pass = document.getElementById('passwordInput').value.trim();
-            const errorLabel = document.getElementById('loginError');
-            const loginBtn = document.getElementById('loginBtnId');
-
+            const user = document.getElementById('usernameInput').value.trim(); const pass = document.getElementById('passwordInput').value.trim();
+            const errorLabel = document.getElementById('loginError'); const loginBtn = document.getElementById('loginBtnId');
             if (!user || !pass) return;
 
             loginBtn.innerText = 'Doğrulanıyor...'; loginBtn.disabled = true;
-
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
 
             fetch(fetchUrl).then(r => r.json()).then(result => {
                 loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false;
                 if (result.success) {
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    sessionStorage.setItem('authUser', user);
-                    sessionStorage.setItem('authPass', pass);
-                    sessionStorage.setItem('displayName', result.displayName); 
-                    
-                    document.getElementById('activeUserName').innerText = result.displayName;
-                    document.getElementById('avatarLetter').innerText = result.displayName.charAt(0).toUpperCase();
+                    sessionStorage.setItem('isLoggedIn', 'true'); sessionStorage.setItem('authUser', user); sessionStorage.setItem('authPass', pass); sessionStorage.setItem('displayName', result.displayName); 
+                    document.getElementById('activeUserName').innerText = result.displayName; document.getElementById('avatarLetter').innerText = result.displayName.charAt(0).toUpperCase();
                     errorLabel.style.display = 'none';
+                    
+                    rawFolderData = result.data; // Veriyi hafızaya al
                     showApp(result.data); 
-                } else {
-                    errorLabel.innerText = result.error || 'Giriş Başarısız!'; errorLabel.style.display = 'block';
-                }
-            }).catch(e => {
-                loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false;
-                errorLabel.innerText = 'Bağlantı hatası!'; errorLabel.style.display = 'block';
-            });
+                } else { errorLabel.innerText = result.error || 'Giriş Başarısız!'; errorLabel.style.display = 'block'; }
+            }).catch(e => { loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false; errorLabel.innerText = 'Bağlantı hatası!'; errorLabel.style.display = 'block'; });
         }
 
         function handleEnterKey(e) { if (e.key === 'Enter') checkLogin(); }
@@ -355,7 +353,7 @@
         function showApp(initialData = null) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appContainer').style.display = 'flex';
-            if (initialData) { renderItems(initialData); updateBackButton(); } else loadFolder();
+            if (initialData) { rawFolderData = initialData; renderItems(); updateBackButton(); } else loadFolder();
         }
 
         function logout() { sessionStorage.clear(); location.reload(); }
@@ -366,17 +364,22 @@
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true); currentActiveFolderId = folderId; const cacheKey = 'folderCache_' + (folderId || 'rootFolder'); renderBreadcrumb(); 
             
-            if (!forceRefresh) { const localCache = sessionStorage.getItem(cacheKey); if (localCache) { renderItems(JSON.parse(localCache)); updateBackButton(); return; } }
+            // Yeni klasöre girildiğinde aramayı sıfırla
+            document.getElementById('searchInput').value = ''; searchQuery = '';
+            
+            if (!forceRefresh) { const localCache = sessionStorage.getItem(cacheKey); if (localCache) { rawFolderData = JSON.parse(localCache); renderItems(); updateBackButton(); return; } }
             
             const u = sessionStorage.getItem('authUser'); const p = sessionStorage.getItem('authPass');
-
             let fetchUrl = `${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`;
             if (folderId) fetchUrl += `&id=${folderId}`;
             if (forceRefresh) fetchUrl += `&refresh=true`;
 
             fetch(fetchUrl).then(r => r.json()).then(result => {
-                if (result.success) { sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); renderItems(result.data); updateBackButton(); }
-                else { alert(result.error); if(result.error.includes("yetki") || result.error.includes("şifre")) logout(); showLoader(false); }
+                if (result.success) { 
+                    rawFolderData = result.data; 
+                    sessionStorage.setItem(cacheKey, JSON.stringify(result.data)); 
+                    renderItems(); updateBackButton(); 
+                } else { alert(result.error); if(result.error.includes("yetki") || result.error.includes("şifre")) logout(); showLoader(false); }
             }).catch(() => { alert("Veri çekilemedi."); showLoader(false); });
         }
 
@@ -385,12 +388,10 @@
         function renderBreadcrumb() {
             const container = document.getElementById('breadcrumbContainer'); container.innerHTML = '';
             pathArray.forEach((item, index) => {
-                const span = document.createElement('span'); span.className = 'breadcrumb-item ' + (index === pathArray.length-1 ? 'active' : 'clickable');
-                span.innerText = item.name;
+                const span = document.createElement('span'); span.className = 'breadcrumb-item ' + (index === pathArray.length-1 ? 'active' : 'clickable'); span.innerText = item.name;
                 if (index < pathArray.length - 1) {
                     span.onclick = () => { const count = pathArray.length - 1 - index; for(let i=0; i<count; i++) { historyStack.pop(); pathArray.pop(); } loadFolder(item.id); };
-                    container.appendChild(span);
-                    const sep = document.createElement('span'); sep.className = 'material-icons-round breadcrumb-separator'; sep.innerText = 'chevron_right'; container.appendChild(sep);
+                    container.appendChild(span); const sep = document.createElement('span'); sep.className = 'material-icons-round breadcrumb-separator'; sep.innerText = 'chevron_right'; container.appendChild(sep);
                 } else container.appendChild(span);
             });
         }
@@ -408,10 +409,44 @@
             for (let i = start; i <= end; i++) { selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true; }
         }
 
+        // --- YENİ EKLENEN: İSİMDEN DOMAIN BULMA VE FAVICON YAKALAMA ---
+        function extractDomain(fileName) {
+            const match = fileName.match(/([a-zA-Z0-9-]+\.[a-zA-Z]{2,})/);
+            return match ? match[1] : null;
+        }
+
         function executeAction(action, index) {
             const item = allCurrentItems[index];
-            if (action === 'download') { if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank'); else triggerDownload(item); } 
-            else if (action === 'details') { openDetailsModal(item); }
+            if (action === 'download') { 
+                if (item.isFolder) window.open(`https://drive.google.com/drive/folders/${item.id}`, '_blank'); 
+                else triggerDownload(item); 
+            } else if (action === 'details') { openDetailsModal(item); }
+        }
+
+        function triggerDownload(item) {
+            // Eğer .url veya .html dosyasıysa ve tıklandıysa domaini yakalayıp faviconu çek
+            if (!item.isFolder && (item.name.toLowerCase().endsWith('.html') || item.name.toLowerCase().endsWith('.url') || item.name.toLowerCase().endsWith('.webloc'))) {
+                let domain = extractDomain(item.name);
+                if (domain) {
+                    let favUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                    localStorage.setItem('fav_' + item.id, favUrl); // Faviconu önbelleğe al
+                    
+                    // DOM üzerinde anlık ikon değişimi yap (sayfayı yenilemeden)
+                    let imgElem = document.getElementById('icon-img-' + item.id);
+                    let matElem = document.getElementById('icon-mat-' + item.id);
+                    if (imgElem && matElem) {
+                        imgElem.src = favUrl;
+                        imgElem.style.display = 'block';
+                        matElem.style.display = 'none';
+                    }
+                }
+            }
+
+            if (!item.type || !item.type.includes('google-apps')) {
+                const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${item.id}`; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            } else {
+                const link = document.createElement('a'); link.href = item.url; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            }
         }
 
         function getFileIcon(fileName, mimeType) {
@@ -425,31 +460,97 @@
             if (['ppt', 'pptx'].includes(ext) || mime.includes('presentation')) return { icon: 'slideshow', color: 'icon-slide' };
             if (ext === 'udf') return { icon: 'gavel', color: 'icon-uyap' };
             if (ext === 'eyp') return { icon: 'folder_zip', color: 'icon-archive' };
-            if (ext === 'txt') return { icon: 'article', color: 'icon-default' };
+            if (['html', 'url', 'webloc'].includes(ext)) return { icon: 'language', color: 'icon-code' }; // Link/HTML dosyaları dünya ikonu
             if (['zip', 'rar', '7z', 'tar', 'gz', 'jar', 'cab'].includes(ext) || mime.includes('zip') || mime.includes('compressed')) return { icon: 'folder_zip', color: 'icon-archive' };
             if (['exe', 'msi', 'bin', 'bat', 'cmd', 'sh'].includes(ext)) return { icon: 'settings_applications', color: 'icon-exe' };
-            if (['py', 'c', 'cpp', 'cs', 'js', 'html', 'css', 'java', 'rs', 'go', 'php', 'json', 'xml', 'ts', 'apk'].includes(ext)) return { icon: 'code', color: 'icon-code' };
+            if (['py', 'c', 'cpp', 'cs', 'js', 'css', 'java', 'rs', 'go', 'php', 'json', 'xml', 'ts', 'apk'].includes(ext)) return { icon: 'code', color: 'icon-code' };
             if (['obj', 'stl', 'fbx', 'step', 'iges', 'dwg', 'dxf', 'blend'].includes(ext) || mime.includes('model')) return { icon: 'view_in_ar', color: 'icon-3d' };
             if (['mdb', 'sql', 'sqlite', 'db', 'accdb'].includes(ext)) return { icon: 'storage', color: 'icon-db' };
             if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico'].includes(ext) || mime.includes('image')) return { icon: 'image', color: 'icon-image' };
             if (['mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm'].includes(ext) || mime.includes('video')) return { icon: 'movie', color: 'icon-video' };
             if (['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(ext) || mime.includes('audio')) return { icon: 'audiotrack', color: 'icon-audio' };
-
             return { icon: 'insert_drive_file', color: 'icon-default' };
         }
 
-        function renderItems(data) {
-            const container = document.getElementById('gridContainer'); container.innerHTML = ''; container.innerHTML += `<div class="details-header"><div>Ad</div><div>Değiştirilme Tarihi</div><div>Boyut</div></div>`;
+        // --- YENİ EKLENEN: ARAMA VE SIRALAMA SİSTEMİ ---
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderItems(); // Sadece DOM'u baştan çizer, Google'a gitmez (Çok Hızlı)
+        }
+
+        function handleSort(column) {
+            if (sortConfig.key === column) { sortConfig.asc = !sortConfig.asc; } 
+            else { sortConfig.key = column; sortConfig.asc = true; }
+            renderItems();
+        }
+
+        function getSortedAndFilteredData() {
+            if(!rawFolderData) return { folders: [], files: [] };
+            
+            // 1. Filtreleme
+            let f_folders = rawFolderData.folders.filter(f => f.name.toLowerCase().includes(searchQuery));
+            let f_files = rawFolderData.files.filter(f => f.name.toLowerCase().includes(searchQuery));
+
+            // 2. Sıralama Fonksiyonu
+            const sortFn = (a, b) => {
+                let valA, valB;
+                if (sortConfig.key === 'name') { valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); }
+                else if (sortConfig.key === 'date') { valA = a.date || 0; valB = b.date || 0; }
+                else if (sortConfig.key === 'size') { valA = a.size || 0; valB = b.size || 0; }
+                else if (sortConfig.key === 'type') {
+                    valA = a.name.split('.').pop().toLowerCase();
+                    valB = b.name.split('.').pop().toLowerCase();
+                }
+                if (valA < valB) return sortConfig.asc ? -1 : 1;
+                if (valA > valB) return sortConfig.asc ? 1 : -1;
+                return 0;
+            };
+
+            f_folders.sort(sortFn);
+            f_files.sort(sortFn);
+            return { folders: f_folders, files: f_files };
+        }
+
+        function renderItems() {
+            if(!rawFolderData) return;
+            const container = document.getElementById('gridContainer'); container.innerHTML = '';
+            const processedData = getSortedAndFilteredData();
+            
             allCurrentItems = []; selectedItems.clear(); lastSelectedIdx = -1;
-            data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
+            processedData.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); 
+            processedData.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
+
+            // Tıklanabilir Başlıklar (Ayrıntılar görünümü için)
+            const getSortIcon = (k) => sortConfig.key === k ? (sortConfig.asc ? 'arrow_upward' : 'arrow_downward') : '';
+            const getActiveCls = (k) => sortConfig.key === k ? 'active' : '';
+
+            container.innerHTML += `
+                <div class="details-header">
+                    <div class="sortable-header ${getActiveCls('name')}" onclick="handleSort('name')">Ad <span class="material-icons-round sort-icon">${getSortIcon('name')}</span></div>
+                    <div class="sortable-header ${getActiveCls('type')}" onclick="handleSort('type')">Tür <span class="material-icons-round sort-icon">${getSortIcon('type')}</span></div>
+                    <div class="sortable-header ${getActiveCls('date')}" onclick="handleSort('date')">Değiştirilme Tarihi <span class="material-icons-round sort-icon">${getSortIcon('date')}</span></div>
+                    <div class="sortable-header ${getActiveCls('size')}" onclick="handleSort('size')">Boyut <span class="material-icons-round sort-icon">${getSortIcon('size')}</span></div>
+                </div>
+            `;
 
             allCurrentItems.forEach((item, index) => {
-                let iconName = 'folder'; let iconColorClass = 'icon-folder';
-                if (!item.isFolder) { const iconData = getFileIcon(item.name, item.type); iconName = iconData.icon; iconColorClass = iconData.color; }
+                let iconName = 'folder'; let iconColorClass = 'icon-folder'; let typeText = 'Dosya Klasörü';
+                if (!item.isFolder) { 
+                    const iconData = getFileIcon(item.name, item.type); iconName = iconData.icon; iconColorClass = iconData.color; 
+                    typeText = item.name.includes('.') ? item.name.split('.').pop().toUpperCase() + ' Dosyası' : 'Dosya';
+                }
+
+                // Favicon Ön Bellek Kontrolü
+                let cachedFav = localStorage.getItem('fav_' + item.id);
+                let visualIconHtml = cachedFav ? 
+                    `<img src="${cachedFav}" class="item-favicon" id="icon-img-${item.id}" style="display:block;">
+                     <span class="material-icons-round item-icon ${iconColorClass}" id="icon-mat-${item.id}" style="display:none;">${iconName}</span>` :
+                    `<img src="" class="item-favicon" id="icon-img-${item.id}" style="display:none;">
+                     <span class="material-icons-round item-icon ${iconColorClass}" id="icon-mat-${item.id}">${iconName}</span>`;
 
                 const actionHtml = `<div class="item-actions"><button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})"><span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button><button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})"><span class="material-icons-round">info</span></button></div>`;
                 const card = document.createElement('div'); card.className = 'item-card';
-                card.innerHTML = `<div class="item-name-wrapper"><input type="checkbox" class="item-checkbox"><span class="material-icons-round item-icon ${iconColorClass}">${iconName}</span><span class="item-name" title="${item.name}">${item.name}</span></div><div class="item-details">${formatDate(item.date)}</div><div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>${actionHtml}`;
+                card.innerHTML = `<div class="item-name-wrapper"><input type="checkbox" class="item-checkbox">${visualIconHtml}<span class="item-name" title="${item.name}">${item.name}</span></div><div class="item-details">${typeText}</div><div class="item-details">${formatDate(item.date)}</div><div class="item-details">${item.isFolder ? '--' : formatBytes(item.size)}</div>${actionHtml}`;
                 
                 card.onclick = (e) => { 
                     if (e.target.closest('.action-btn')) return; 
@@ -460,7 +561,7 @@
                 };
                 card.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, item); }; container.appendChild(card);
             });
-            if (allCurrentItems.length === 0) container.innerHTML += '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Bu klasör boş.</div>';
+            if (allCurrentItems.length === 0) container.innerHTML += '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">Hiçbir şey bulunamadı.</div>';
             showLoader(false);
         }
 
@@ -480,15 +581,6 @@
             if (!selectedItemForContext) return; 
             if (action === 'download') { if (selectedItemForContext.isFolder) window.open(`https://drive.google.com/drive/folders/${selectedItemForContext.id}`, '_blank'); else triggerDownload(selectedItemForContext); } 
             else if (action === 'details') { openDetailsModal(selectedItemForContext); } 
-        }
-
-        function triggerDownload(fileOrIndex) {
-            let item = typeof fileOrIndex === 'number' ? allCurrentItems[fileOrIndex] : fileOrIndex;
-            if (!item.type || !item.type.includes('google-apps')) {
-                const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${item.id}`; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            } else {
-                const link = document.createElement('a'); link.href = item.url; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            }
         }
 
         function openDetailsModal(item) {
