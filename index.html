@@ -29,7 +29,7 @@
         body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
+        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; position: relative; }
         .login-header { margin-bottom: 24px; }
         .login-header h2 { margin: 12px 0 4px 0; font-size: 24px; font-weight: 500; color: var(--text-main); }
         .login-header p { margin: 0; color: var(--text-muted); font-size: 14px; }
@@ -40,7 +40,20 @@
         .login-btn:disabled { background-color: #a8c7fa; cursor: not-allowed; }
         .login-error { color: #d93025; font-size: 13px; margin-bottom: 16px; display: none; background: #fce8e6; padding: 8px; border-radius: 6px; }
 
-        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        /* --- YENİ EKLENEN: SUNUCU DURUMU (SERVER STATUS) CSS --- */
+        .server-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); user-select: none; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #9e9e9e; transition: 0.3s; }
+        .status-dot.online { background-color: #188038; box-shadow: 0 0 6px rgba(24, 128, 56, 0.6); }
+        .status-dot.offline { background-color: #d93025; box-shadow: 0 0 6px rgba(217, 48, 37, 0.6); }
+        .status-dot.checking { animation: pulse 1s infinite alternate; }
+        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+        
+        .login-status-widget { position: fixed; bottom: 20px; right: 24px; background: var(--surface-color); padding: 8px 16px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 10000; }
+        .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; }
+        @media (max-width: 768px) { .navbar-center { display: none; } /* Mobilde ortadaki yazıyı gizler, çok sıkışmasın diye */ }
+        /* ----------------------------------------------------- */
+
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; position: relative; }
         .navbar-left { display: flex; align-items: center; gap: 16px; }
         .navbar-left h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
         .navbar-right { display: flex; align-items: center; gap: 12px; }
@@ -77,22 +90,11 @@
         .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .item-details { display: none; font-size: 13px; color: var(--text-muted); }
         
-        /* -- YENİ EKLENEN DOSYA TÜRÜ RENKLERİ -- */
-        .icon-folder { color: #fbbc04; } 
-        .icon-pdf { color: #ea4335; } 
-        .icon-word { color: #4285f4; }
-        .icon-excel { color: #188038; }
-        .icon-slide { color: #f4b400; }
-        .icon-archive { color: #8d6e63; }
-        .icon-exe { color: #546e7a; }
-        .icon-code { color: #9c27b0; }
-        .icon-image { color: #009688; }
-        .icon-video { color: #e91e63; }
-        .icon-audio { color: #00bcd4; }
-        .icon-3d { color: #3f51b5; }
-        .icon-db { color: #ff5722; }
-        .icon-uyap { color: #795548; }
-        .icon-default { color: #757575; }
+        /* Dosya Türü Renkleri */
+        .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-word { color: #4285f4; } .icon-excel { color: #188038; }
+        .icon-slide { color: #f4b400; } .icon-archive { color: #8d6e63; } .icon-exe { color: #546e7a; } .icon-code { color: #9c27b0; }
+        .icon-image { color: #009688; } .icon-video { color: #e91e63; } .icon-audio { color: #00bcd4; } .icon-3d { color: #3f51b5; }
+        .icon-db { color: #ff5722; } .icon-uyap { color: #795548; } .icon-default { color: #757575; }
 
         .details-header { display: none; }
         .item-checkbox { display: none; cursor: pointer; width: 18px; height: 18px; accent-color: var(--primary-color); }
@@ -144,8 +146,6 @@
 
         .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--primary-color); }
         .spinner { animation: spin 1s linear infinite; font-size: 40px; margin-bottom: 16px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
         #contextMenu { display: none; position: fixed; background-color: var(--surface-color); border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; min-width: 160px; padding: 8px 0; }
         .context-menu-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-main); transition: background 0.1s; }
         .context-menu-item:hover { background-color: var(--hover-color); }
@@ -165,6 +165,13 @@
             <input type="password" id="passwordInput" class="login-input" placeholder="Şifre" autocomplete="off" onkeypress="handleEnterKey(event)">
             <button class="login-btn" id="loginBtnId" onclick="checkLogin()">Giriş Yap</button>
         </div>
+        
+        <div class="login-status-widget">
+            <div class="server-status">
+                <div class="status-dot checking" id="loginStatusDot"></div>
+                <span id="loginStatusText">Bağlantı Kontrol Ediliyor...</span>
+            </div>
+        </div>
     </div>
 
     <div id="appContainer" style="display: none; flex-direction: column; height: 100vh;">
@@ -175,6 +182,13 @@
                 <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud</span>Bulut Depom</h1>
             </div>
             
+            <div class="navbar-center">
+                <div class="server-status" title="Google Drive Sunucu Durumu">
+                    <div class="status-dot checking" id="navStatusDot"></div>
+                    <span id="navStatusText">Bağlantı Kontrol Ediliyor...</span>
+                </div>
+            </div>
+
             <div class="navbar-right">
                 <div class="dropdown">
                     <button class="btn-icon" onclick="toggleMenu('viewDropdown')" title="Görünüm Seçenekleri"><span class="material-icons-round" id="currentViewIcon">grid_view</span></button>
@@ -246,7 +260,41 @@
                 document.getElementById('avatarLetter').innerText = displayName.charAt(0).toUpperCase();
                 showApp();
             }
+
+            // --- YENİ EKLENEN: SUNUCU DURUMU KONTROLÜ BAŞLATICI ---
+            checkServerStatus();
+            setInterval(checkServerStatus, 30000); // Her 30 saniyede bir kontrol et
         });
+
+        // --- YENİ EKLENEN: GÖRSEL (PING) İLE SUNUCU KONTROL MOTORU ---
+        function checkServerStatus() {
+            const img = new Image();
+            // CORS hatasına takılmamak için Drive'ın faviconunu arkada gizlice indirmeyi deneriz. 
+            // Sonuna random sayı ekleriz ki tarayıcı önbelleğinden (cache) getirmesin, gerçekten sunucuya gitsin.
+            img.src = "https://drive.google.com/favicon.ico?cb=" + new Date().getTime();
+            
+            img.onload = () => updateStatusUI('online');
+            img.onerror = () => updateStatusUI('offline');
+            
+            // Eğer 5 saniye boyunca ne hata ne de başarı dönerse (Çok yavaş bağlantı/Kesinti) çevrimdışı say
+            setTimeout(() => { if (!img.complete) updateStatusUI('offline'); }, 5000);
+        }
+
+        function updateStatusUI(state) {
+            const loginDot = document.getElementById('loginStatusDot');
+            const loginText = document.getElementById('loginStatusText');
+            const navDot = document.getElementById('navStatusDot');
+            const navText = document.getElementById('navStatusText');
+            
+            if (state === 'online') {
+                loginDot.className = 'status-dot online'; navDot.className = 'status-dot online';
+                loginText.innerText = 'Sunucu: Çevrimiçi'; navText.innerText = 'Sunucu: Çevrimiçi';
+            } else {
+                loginDot.className = 'status-dot offline'; navDot.className = 'status-dot offline';
+                loginText.innerText = 'Erişim Engeli (Kurum Ağını Kontrol Edin)'; navText.innerText = 'Sunucu Bağlantısı Yok';
+            }
+        }
+        // -------------------------------------------------------------
 
         function toggleMenu(menuId) {
             let menus = document.getElementsByClassName("dropdown-content");
@@ -366,39 +414,23 @@
             else if (action === 'details') { openDetailsModal(item); }
         }
 
-        // --- YENİ EKLENEN İKON BULUCU MOTOR ---
         function getFileIcon(fileName, mimeType) {
             if (!fileName) return { icon: 'insert_drive_file', color: 'icon-default' };
             const ext = fileName.split('.').pop().toLowerCase();
             const mime = (mimeType || '').toLowerCase();
 
-            // Belgeler
             if (ext === 'pdf' || mime.includes('pdf')) return { icon: 'picture_as_pdf', color: 'icon-pdf' };
             if (['doc', 'docx', 'rtf'].includes(ext) || mime.includes('document')) return { icon: 'description', color: 'icon-word' };
             if (['xls', 'xlsx', 'csv'].includes(ext) || mime.includes('spreadsheet')) return { icon: 'table_chart', color: 'icon-excel' };
             if (['ppt', 'pptx'].includes(ext) || mime.includes('presentation')) return { icon: 'slideshow', color: 'icon-slide' };
-            
-            // Resmi ve Özel Türkiye Formatları (UYAP & EYP)
             if (ext === 'udf') return { icon: 'gavel', color: 'icon-uyap' };
             if (ext === 'eyp') return { icon: 'folder_zip', color: 'icon-archive' };
             if (ext === 'txt') return { icon: 'article', color: 'icon-default' };
-
-            // Sıkıştırılmış Dosyalar
             if (['zip', 'rar', '7z', 'tar', 'gz', 'jar', 'cab'].includes(ext) || mime.includes('zip') || mime.includes('compressed')) return { icon: 'folder_zip', color: 'icon-archive' };
-            
-            // Çalıştırılabilir & Sistem Dosyaları
             if (['exe', 'msi', 'bin', 'bat', 'cmd', 'sh'].includes(ext)) return { icon: 'settings_applications', color: 'icon-exe' };
-            
-            // Yazılım & Geliştirici & Mobil Dosyaları (.apk, .java, .rs, vs.)
             if (['py', 'c', 'cpp', 'cs', 'js', 'html', 'css', 'java', 'rs', 'go', 'php', 'json', 'xml', 'ts', 'apk'].includes(ext)) return { icon: 'code', color: 'icon-code' };
-            
-            // 3D Model ve CAD Formatları (.dwg, .dxf, .stl vs.)
             if (['obj', 'stl', 'fbx', 'step', 'iges', 'dwg', 'dxf', 'blend'].includes(ext) || mime.includes('model')) return { icon: 'view_in_ar', color: 'icon-3d' };
-
-            // Veritabanı
             if (['mdb', 'sql', 'sqlite', 'db', 'accdb'].includes(ext)) return { icon: 'storage', color: 'icon-db' };
-            
-            // Medya
             if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico'].includes(ext) || mime.includes('image')) return { icon: 'image', color: 'icon-image' };
             if (['mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm'].includes(ext) || mime.includes('video')) return { icon: 'movie', color: 'icon-video' };
             if (['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(ext) || mime.includes('audio')) return { icon: 'audiotrack', color: 'icon-audio' };
@@ -412,15 +444,8 @@
             data.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); data.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
 
             allCurrentItems.forEach((item, index) => {
-                let iconName = 'folder'; 
-                let iconColorClass = 'icon-folder';
-
-                // Dosyaysa İkon Motoruna Sor
-                if (!item.isFolder) {
-                    const iconData = getFileIcon(item.name, item.type);
-                    iconName = iconData.icon;
-                    iconColorClass = iconData.color;
-                }
+                let iconName = 'folder'; let iconColorClass = 'icon-folder';
+                if (!item.isFolder) { const iconData = getFileIcon(item.name, item.type); iconName = iconData.icon; iconColorClass = iconData.color; }
 
                 const actionHtml = `<div class="item-actions"><button class="action-btn" title="${item.isFolder ? 'Drive\'da İndir' : 'İndir'}" onclick="event.stopPropagation(); executeAction('download', ${index})"><span class="material-icons-round">${item.isFolder ? 'open_in_new' : 'download'}</span></button><button class="action-btn" title="Ayrıntılar" onclick="event.stopPropagation(); executeAction('details', ${index})"><span class="material-icons-round">info</span></button></div>`;
                 const card = document.createElement('div'); card.className = 'item-card';
@@ -471,8 +496,6 @@
             let iconData = item.isFolder ? { icon: 'folder', color: 'icon-folder' } : getFileIcon(item.name, item.type);
             
             document.getElementById('modalIcon').innerText = iconData.icon; 
-            
-            // Modal içindeki ikon rengini dinamik atıyoruz
             const colors = { 'icon-folder': '#fbbc04', 'icon-pdf': '#ea4335', 'icon-word': '#4285f4', 'icon-excel': '#188038', 'icon-slide': '#f4b400', 'icon-archive': '#8d6e63', 'icon-exe': '#546e7a', 'icon-code': '#9c27b0', 'icon-image': '#009688', 'icon-video': '#e91e63', 'icon-audio': '#00bcd4', 'icon-3d': '#3f51b5', 'icon-db': '#ff5722', 'icon-uyap': '#795548', 'icon-default': '#757575' };
             document.getElementById('modalIcon').style.color = colors[iconData.color];
             
