@@ -415,8 +415,7 @@
             } else if (action === 'details') { openDetailsModal(item); }
         }
 
-        function triggerDownload(item) {
-            // Dinamik favicon çekimi
+          function triggerDownload(item) {
             if (!item.isFolder && (item.name.toLowerCase().endsWith('.html') || item.name.toLowerCase().endsWith('.url') || item.name.toLowerCase().endsWith('.webloc'))) {
                 let domain = extractDomain(item.name);
                 if (domain) {
@@ -432,8 +431,8 @@
                 }
             }
 
-            // Dosya indirme tetikleyicisi
-            const dlUrl = `${SECURE_DL_GATEWAY}/?id=${item.id}&type=${encodeURIComponent(item.type)}`;
+            // YENİ: Linkin sonuna "&name=..." ekleyerek orijinal dosya adını Cloudflare'e yolluyoruz
+            const dlUrl = `${SECURE_DL_GATEWAY}/?id=${item.id}&type=${encodeURIComponent(item.type)}&name=${encodeURIComponent(item.name)}`;
             const link = document.createElement('a'); 
             link.href = dlUrl; 
             link.target = '_blank'; 
@@ -441,6 +440,7 @@
             link.click(); 
             document.body.removeChild(link);
         }
+
 
         function getFileIcon(fileName, mimeType) {
             if (!fileName) return { icon: 'insert_drive_file', color: 'icon-default' };
