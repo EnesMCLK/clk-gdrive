@@ -7,8 +7,8 @@
     <meta name="application-name" content="Bulut Depom">
     <meta name="theme-color" content="#0b57d0">
     
-    <title>Bulut Depom | Açık Kaynak Kurumsal Dosya Yönetimi</title>
-    <meta name="description" content="Bulut Depom, açık kaynak kodlu altyapısı ile dosyalarınıza her yerden güvenle erişebileceğiniz, şeffaf ve profesyonel bir arşiv yönetim platformudur.">
+    <title>Bulut Depom | Kurumsal Dosya Yönetimi</title>
+    <meta name="description" content="Bulut Depom, dosyalarınıza her yerden güvenle erişebileceğiniz, şeffaf ve profesyonel bir arşiv yönetim platformudur.">
     <meta name="author" content="EnesMCLK">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     
@@ -60,7 +60,6 @@
         .breadcrumb-item.active { font-weight: 500; color: var(--text-main); cursor: default; }
         .breadcrumb-separator { font-size: 18px; color: var(--text-muted); user-select: none; }
 
-        /* YENİ: ARAMA KUTUSU CSS */
         .search-box { display: flex; align-items: center; background: var(--hover-color); border-radius: 20px; padding: 4px 12px; border: 1px solid transparent; transition: 0.2s; }
         .search-box:focus-within { background: white; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(11, 87, 208, 0.1); }
         .search-box input { border: none; background: transparent; outline: none; padding: 4px 8px; font-family: inherit; font-size: 14px; width: 140px; transition: width 0.2s; }
@@ -88,13 +87,11 @@
         .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .item-details { display: none; font-size: 13px; color: var(--text-muted); }
         
-        /* Dosya Türü Renkleri */
         .icon-folder { color: #fbbc04; } .icon-pdf { color: #ea4335; } .icon-word { color: #4285f4; } .icon-excel { color: #188038; }
         .icon-slide { color: #f4b400; } .icon-archive { color: #8d6e63; } .icon-exe { color: #546e7a; } .icon-code { color: #9c27b0; }
         .icon-image { color: #009688; } .icon-video { color: #e91e63; } .icon-audio { color: #00bcd4; } .icon-3d { color: #3f51b5; }
         .icon-db { color: #ff5722; } .icon-uyap { color: #795548; } .icon-default { color: #757575; }
 
-        /* YENİ: FAVICON GÖRSELLERİ CSS */
         .item-favicon { object-fit: contain; border-radius: 4px; }
         .view-large .item-favicon { width: 48px; height: 48px; margin: 0; }
         .view-small .item-favicon { width: 24px; height: 24px; margin-right: 12px; }
@@ -130,7 +127,6 @@
         .view-list .item-checkbox { margin-right: 12px; flex-shrink: 0; }
         .view-list .item-actions { top: 50%; transform: translateY(-50%); right: 16px; }
 
-        /* YENİ: 4 SÜTUNLU AYRINTILAR VE SIRALAMA CSS */
         .view-details { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white;}
         .view-details .details-header { display: grid; grid-template-columns: 4fr 1.5fr 2fr 1.5fr; padding: 12px 24px; background-color: #f1f3f4; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
         .view-details .item-card { border: none; border-bottom: 1px solid var(--border-color); border-radius: 0; display: grid; grid-template-columns: 4fr 1.5fr 2fr 1.5fr; align-items: center; padding: 10px 24px; }
@@ -193,7 +189,7 @@
             </div>
             
             <div class="navbar-center">
-                <div class="server-status" title="Google Drive Sunucu Durumu">
+                <div class="server-status" title="Sunucu Durumu">
                     <div class="status-dot checking" id="navStatusDot"></div>
                     <span id="navStatusText">Bağlantı Kontrol Ediliyor...</span>
                 </div>
@@ -260,16 +256,14 @@
     </div>
 
     <script>
+        // LİNK TANIMLAMALARI (Kendi verilerinizi buraya girin)
         const APPS_SCRIPT_URL = 'BURAYA_GOOGLE_SCRIPT_WEP_APP_URL_GELECEK'; 
+        const SECURE_DL_GATEWAY = 'https://bulut-depom.kullaniciadiniz.workers.dev'; // Sunucusuz proxy adresiniz
 
         let historyStack = []; let currentActiveFolderId = null; let pathArray = [{ id: null, name: 'Ana Klasör' }]; 
-        
-        // Ham verileri tuttuğumuz yer (Filtreleme ve sıralama anlık olsun diye)
         let rawFolderData = { folders: [], files: [] }; 
         let allCurrentItems = []; let selectedItemForContext = null;
         let selectedItems = new Set(); let lastSelectedIdx = -1;
-        
-        // Arama ve Sıralama Durumları
         let searchQuery = "";
         let sortConfig = { key: 'name', asc: true };
 
@@ -301,10 +295,10 @@
             const navDot = document.getElementById('navStatusDot'); const navText = document.getElementById('navStatusText');
             if (state === 'online') {
                 loginDot.className = 'status-dot online'; navDot.className = 'status-dot online';
-                loginText.innerText = 'Sunucu: Çevrimiçi'; navText.innerText = 'Sunucu: Çevrimiçi';
+                loginText.innerText = 'Sistem Aktif'; navText.innerText = 'Sistem Aktif';
             } else {
                 loginDot.className = 'status-dot offline'; navDot.className = 'status-dot offline';
-                loginText.innerText = 'Erişim Engeli (Kurum Ağını Kontrol Edin)'; navText.innerText = 'Sunucu Bağlantısı Yok';
+                loginText.innerText = 'Erişim Hatası (Güvenlik Duvarı Engeli)'; navText.innerText = 'Bağlantı Yok';
             }
         }
 
@@ -342,7 +336,7 @@
                     document.getElementById('activeUserName').innerText = result.displayName; document.getElementById('avatarLetter').innerText = result.displayName.charAt(0).toUpperCase();
                     errorLabel.style.display = 'none';
                     
-                    rawFolderData = result.data; // Veriyi hafızaya al
+                    rawFolderData = result.data; 
                     showApp(result.data); 
                 } else { errorLabel.innerText = result.error || 'Giriş Başarısız!'; errorLabel.style.display = 'block'; }
             }).catch(e => { loginBtn.innerText = 'Giriş Yap'; loginBtn.disabled = false; errorLabel.innerText = 'Bağlantı hatası!'; errorLabel.style.display = 'block'; });
@@ -364,7 +358,6 @@
         function loadFolder(folderId = null, forceRefresh = false) {
             showLoader(true); currentActiveFolderId = folderId; const cacheKey = 'folderCache_' + (folderId || 'rootFolder'); renderBreadcrumb(); 
             
-            // Yeni klasöre girildiğinde aramayı sıfırla
             document.getElementById('searchInput').value = ''; searchQuery = '';
             
             if (!forceRefresh) { const localCache = sessionStorage.getItem(cacheKey); if (localCache) { rawFolderData = JSON.parse(localCache); renderItems(); updateBackButton(); return; } }
@@ -409,7 +402,6 @@
             for (let i = start; i <= end; i++) { selectedItems.add(allCurrentItems[i].id); cards[i].classList.add('selected'); cards[i].querySelector('.item-checkbox').checked = true; }
         }
 
-        // --- YENİ EKLENEN: İSİMDEN DOMAIN BULMA VE FAVICON YAKALAMA ---
         function extractDomain(fileName) {
             const match = fileName.match(/([a-zA-Z0-9-]+\.[a-zA-Z]{2,})/);
             return match ? match[1] : null;
@@ -424,14 +416,12 @@
         }
 
         function triggerDownload(item) {
-            // Eğer .url veya .html dosyasıysa ve tıklandıysa domaini yakalayıp faviconu çek
+            // Dinamik favicon çekimi
             if (!item.isFolder && (item.name.toLowerCase().endsWith('.html') || item.name.toLowerCase().endsWith('.url') || item.name.toLowerCase().endsWith('.webloc'))) {
                 let domain = extractDomain(item.name);
                 if (domain) {
                     let favUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                    localStorage.setItem('fav_' + item.id, favUrl); // Faviconu önbelleğe al
-                    
-                    // DOM üzerinde anlık ikon değişimi yap (sayfayı yenilemeden)
+                    localStorage.setItem('fav_' + item.id, favUrl); 
                     let imgElem = document.getElementById('icon-img-' + item.id);
                     let matElem = document.getElementById('icon-mat-' + item.id);
                     if (imgElem && matElem) {
@@ -442,11 +432,14 @@
                 }
             }
 
-            if (!item.type || !item.type.includes('google-apps')) {
-                const link = document.createElement('a'); link.href = `https://drive.google.com/uc?export=download&id=${item.id}`; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            } else {
-                const link = document.createElement('a'); link.href = item.url; link.target = '_blank'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            }
+            // Dosya indirme tetikleyicisi
+            const dlUrl = `${SECURE_DL_GATEWAY}/?id=${item.id}&type=${encodeURIComponent(item.type)}`;
+            const link = document.createElement('a'); 
+            link.href = dlUrl; 
+            link.target = '_blank'; 
+            document.body.appendChild(link); 
+            link.click(); 
+            document.body.removeChild(link);
         }
 
         function getFileIcon(fileName, mimeType) {
@@ -460,7 +453,7 @@
             if (['ppt', 'pptx'].includes(ext) || mime.includes('presentation')) return { icon: 'slideshow', color: 'icon-slide' };
             if (ext === 'udf') return { icon: 'gavel', color: 'icon-uyap' };
             if (ext === 'eyp') return { icon: 'folder_zip', color: 'icon-archive' };
-            if (['html', 'url', 'webloc'].includes(ext)) return { icon: 'language', color: 'icon-code' }; // Link/HTML dosyaları dünya ikonu
+            if (['html', 'url', 'webloc'].includes(ext)) return { icon: 'language', color: 'icon-code' };
             if (['zip', 'rar', '7z', 'tar', 'gz', 'jar', 'cab'].includes(ext) || mime.includes('zip') || mime.includes('compressed')) return { icon: 'folder_zip', color: 'icon-archive' };
             if (['exe', 'msi', 'bin', 'bat', 'cmd', 'sh'].includes(ext)) return { icon: 'settings_applications', color: 'icon-exe' };
             if (['py', 'c', 'cpp', 'cs', 'js', 'css', 'java', 'rs', 'go', 'php', 'json', 'xml', 'ts', 'apk'].includes(ext)) return { icon: 'code', color: 'icon-code' };
@@ -472,10 +465,9 @@
             return { icon: 'insert_drive_file', color: 'icon-default' };
         }
 
-        // --- YENİ EKLENEN: ARAMA VE SIRALAMA SİSTEMİ ---
         function handleSearch() {
             searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            renderItems(); // Sadece DOM'u baştan çizer, Google'a gitmez (Çok Hızlı)
+            renderItems(); 
         }
 
         function handleSort(column) {
@@ -487,11 +479,9 @@
         function getSortedAndFilteredData() {
             if(!rawFolderData) return { folders: [], files: [] };
             
-            // 1. Filtreleme
             let f_folders = rawFolderData.folders.filter(f => f.name.toLowerCase().includes(searchQuery));
             let f_files = rawFolderData.files.filter(f => f.name.toLowerCase().includes(searchQuery));
 
-            // 2. Sıralama Fonksiyonu
             const sortFn = (a, b) => {
                 let valA, valB;
                 if (sortConfig.key === 'name') { valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); }
@@ -520,7 +510,6 @@
             processedData.folders.forEach(f => allCurrentItems.push({ ...f, isFolder: true })); 
             processedData.files.forEach(f => allCurrentItems.push({ ...f, isFolder: false }));
 
-            // Tıklanabilir Başlıklar (Ayrıntılar görünümü için)
             const getSortIcon = (k) => sortConfig.key === k ? (sortConfig.asc ? 'arrow_upward' : 'arrow_downward') : '';
             const getActiveCls = (k) => sortConfig.key === k ? 'active' : '';
 
@@ -540,7 +529,6 @@
                     typeText = item.name.includes('.') ? item.name.split('.').pop().toUpperCase() + ' Dosyası' : 'Dosya';
                 }
 
-                // Favicon Ön Bellek Kontrolü
                 let cachedFav = localStorage.getItem('fav_' + item.id);
                 let visualIconHtml = cachedFav ? 
                     `<img src="${cachedFav}" class="item-favicon" id="icon-img-${item.id}" style="display:block;">
@@ -567,7 +555,7 @@
 
         function showContextMenu(e, item) {
             selectedItemForContext = item; const menu = document.getElementById('contextMenu');
-            if(item.isFolder) { document.getElementById('ctxDownloadIcon').innerText = "open_in_new"; document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Drive'a Yönlendirir)"; } 
+            if(item.isFolder) { document.getElementById('ctxDownloadIcon').innerText = "open_in_new"; document.getElementById('ctxDownloadText').innerText = "Klasörü İndir (Yönlendirir)"; } 
             else { document.getElementById('ctxDownloadIcon').innerText = "download"; document.getElementById('ctxDownloadText').innerText = "Hemen İndir"; }
             menu.style.display = 'block'; let x = e.clientX; let y = e.clientY;
             if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth - 10; if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight - 10;
