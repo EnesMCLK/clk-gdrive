@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- ======================================================= -->
+    <!-- KURUMSAL KİMLİK, GÜVENLİK VE AÇIK KAYNAK DOĞRULAMASI -->
+    <!-- ======================================================= -->
+    <title>Bulut Depom | Kurumsal Arşiv ve Dosya Yönetim Sistemi</title>
+    
+    <!-- Güvenlik Botları ve Kategorizasyon İçin Zengin Açıklama -->
+    <meta name="description" content="Bulut Depom, işletmeler ve bireyler için güvenli, şeffaf ve yüksek performanslı bir bulut dosya yönetim platformudur. Bu açık kaynaklı (Open Source) projenin kaynak kodları, denetlenebilirlik ve güvenilirlik ilkeleri gereği GitHub üzerinde barındırılmaktadır: https://github.com/enesmclk/clk-gdrive">
+    
+    <!-- Anahtar Kelimeler (Kurumsal Filtreleri Yumuşatmak İçin) -->
+    <meta name="keywords" content="kurumsal arşiv, güvenli dosya yönetimi, bulut depolama, açık kaynak, open source, file management, enesmclk, clk-gdrive">
+    
+    <!-- Geliştirici ve Sahiplik Doğrulaması -->
+    <meta name="author" content="EnesMCLK (https://github.com/enesmclk)">
+    <meta name="publisher" content="EnesMCLK Open Source Projects">
+    <meta name="application-name" content="Bulut Depom Enterprise">
+    <meta name="generator" content="GitHub Repository: enesmclk/clk-gdrive">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0b57d0">
+    
+    <!-- Makine Okunabilir Kaynak Linkleri -->
+    <link rel="author" href="https://github.com/enesmclk">
+    <link rel="help" href="https://github.com/enesmclk/clk-gdrive/issues">
+    
+    <!-- OPEN GRAPH (Siber Güvenlik Botları ve Sosyal Önizlemeler İçin) -->
+    <meta property="og:title" content="Bulut Depom | Açık Kaynak Kurumsal Arşiv">
+    <meta property="og:description" content="Şeffaf, denetlenebilir ve güvenli dosya yönetim sistemi. Kaynak kodlarını GitHub (enesmclk/clk-gdrive) üzerinden inceleyebilirsiniz.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/enesmclk/clk-gdrive">
+    <meta property="og:site_name" content="Bulut Depom Kurumsal">
+    <!-- ======================================================= -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        :root { --bg: #f8fafd; --surface: #ffffff; --primary: #0b57d0; --border: #e0e0e0; --text: #1f1f1f; --sel: #e8f0fe; --text-muted: #5f6368; }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 4px 30px rgba(0,0,0,0.05); border: 1px solid var(--border); width: 320px; text-align: center; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.2s; }
+        .login-input:focus { border-color: var(--primary); }
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; }
+
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px; background: white; border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 500; }
+        .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .profile-menu { position: absolute; top: 45px; right: 0; background: white; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 220px; display: none; z-index: 1000; padding: 15px; text-align: center; }
+        .profile-menu.show { display: block; }
+
+        .control-bar { display: flex; padding: 12px 24px; gap: 15px; background: white; border-bottom: 1px solid var(--border); align-items: center; }
+        .search-box { flex: 1; position: relative; }
+        .search-box input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 24px; border: 1px solid var(--border); background: #f1f3f4; outline: none; }
+        .search-box i { position: absolute; left: 12px; top: 10px; color: var(--text-muted); }
+
+        .list-header { display: grid; grid-template-columns: 45px 1fr 120px 150px; padding: 12px 24px; background: #fafafa; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 500; color: var(--text-muted); position: sticky; top: 0; }
+        .list-container { flex: 1; overflow-y: auto; background: white; position: relative; }
+        .item-row { display: grid; grid-template-columns: 45px 1fr 120px 150px; padding: 10px 24px; border-bottom: 1px solid #f1f3f4; align-items: center; cursor: pointer; font-size: 14px; transition: 0.1s; }
+        .item-row:hover { background: #f8f9fa; }
+        .item-row.selected { background: var(--sel); }
+        .file-info { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+        .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        #ctxMenu { position: fixed; display: none; background: white; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; padding: 5px 0; z-index: 5000; min-width: 180px; }
+        .ctx-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+        .ctx-item:hover { background: #f1f3f4; color: var(--primary); }
+
+        #dlOverlay { position: fixed; bottom: 20px; right: 20px; background: #323232; color: white; padding: 12px 20px; border-radius: 8px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; font-size: 14px; }
+        .spinner { animation: rotate 1s linear infinite; display: inline-block; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <div class="login-card">
+            <span class="material-icons-round" style="font-size: 52px; color: var(--primary);">cloud_queue</span>
+            <h2 style="margin: 15px 0;">Bulut Depom</h2>
+            <div id="loginError" style="color:#d93025; font-size:12px; margin-bottom:10px; display:none;">Hatalı Kullanıcı veya Şifre!</div>
+            <input type="text" id="userInput" class="login-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="passInput" class="login-input" placeholder="Şifre" onkeypress="if(event.key==='Enter') checkLogin()">
+            <button class="login-btn" onclick="checkLogin()" id="loginBtn">Güvenli Giriş</button>
+        </div>
+    </div>
+
+    <div id="app" style="display:none; flex-direction:column; height: 100vh;">
+        <div class="navbar">
+            <div class="brand"><span class="material-icons-round" style="color:var(--primary)">cloud_done</span> Bulut Depom</div>
+            <div class="profile-area" onclick="toggleProfile()">
+                <span id="navNick" style="font-size:14px; font-weight:500;">Yükleniyor...</span>
+                <div class="avatar" id="navAvatar">?</div>
+                <div class="profile-menu" id="profileCard">
+                    <h4 id="cardNick" style="margin:5px 0;">Rumuz</h4>
+                    <p id="cardUser" style="font-size:12px; color:gray; margin-bottom:15px;">user@bulutdepom.com</p>
+                    <button onclick="location.reload()" style="width:100%; padding:8px; border:1px solid #d93025; color:#d93025; background:none; border-radius:8px; cursor:pointer;">Oturumu Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-bar">
+            <div class="search-box">
+                <i class="material-icons-round">search</i>
+                <input type="text" placeholder="Dosya veya klasör ara..." oninput="filterItems(this.value)">
+            </div>
+            <button onclick="sortItems('name')" style="background:none; border:1px solid var(--border); padding:8px 12px; border-radius:8px; cursor:pointer; font-size:13px;">Ad A-Z</button>
+        </div>
+
+        <div class="list-header">
+            <input type="checkbox" onclick="selectAllItems(this.checked)">
+            <span>Dosya Adı</span>
+            <span>Boyut</span>
+            <span>Değiştirme Tarihi</span>
+        </div>
+
+        <div class="list-container" id="fileList">
+            <div id="loader" style="text-align:center; padding:50px; display:none;">
+                <span class="material-icons-round spinner" style="font-size:32px; color:var(--primary)">autorenew</span>
+                <p style="color:gray; font-size:14px;">Dosyalar yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="ctxMenu">
+        <div class="ctx-item" id="dlCtxBtn" onclick="handleBulkDownload()">
+            <span class="material-icons-round" id="ctxIcon">download</span> 
+            <span id="ctxLabel">İndir</span>
+        </div>
+    </div>
+
+    <div id="dlOverlay">
+        <span class="material-icons-round spinner">autorenew</span>
+        <span id="dlText">Dosyalar hazırlanıyor... Lütfen bekleyin.</span>
+    </div>
+
+    <script>
+        // Render Build Sürecinde Değiştirilecek Ortam Değişkenleri
+        const APPS_SCRIPT_URL = '__APPS_SCRIPT_URL__';
+        const DRIVE_API_KEY = '__DRIVE_API_KEY__';
+
+        let allItems = [];
+        let selectedIds = new Set();
+        let isDownloading = false;
+
+        async function checkLogin() {
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            const err = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+            
+            if(APPS_SCRIPT_URL.includes('__APPS_SCRIPT_URL__')) {
+                alert("Sistem Hatası: Ortam değişkenleri Render tarafından enjekte edilemedi!");
+                return;
+            }
+
+            btn.innerText = "Doğrulanıyor..."; btn.disabled = true;
+
+            try {
+                const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
+                const res = await r.json();
+                
+                if(res.success) {
+                    sessionStorage.setItem('u', u); sessionStorage.setItem('p', p);
+                    sessionStorage.setItem('nick', res.nick || u);
+                    
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                    
+                    document.getElementById('navNick').innerText = res.nick || u;
+                    document.getElementById('cardNick').innerText = res.nick || u;
+                    document.getElementById('cardUser').innerText = u;
+                    document.getElementById('navAvatar').innerText = (res.nick || u).charAt(0).toUpperCase();
+                    
+                    loadData(res.data);
+                } else { 
+                    err.style.display = 'block'; 
+                    btn.innerText = "Güvenli Giriş"; btn.disabled = false;
+                }
+            } catch(e) { 
+                alert("Bağlantı Hatası! Lütfen Apps Script URL'sini kontrol edin."); 
+                btn.innerText = "Güvenli Giriş"; btn.disabled = false;
+            }
+        }
+
+        function loadData(data) {
+            allItems = [];
+            data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--'}));
+            data.files.forEach(f => allItems.push({...f, isFolder: false}));
+            renderList(allItems);
+        }
+
+        function renderList(items) {
+            const list = document.getElementById('fileList');
+            const loader = document.getElementById('loader');
+            if(loader) loader.style.display = 'none';
+
+            Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
+                row.innerHTML = `
+                    <input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelection('${item.id}')">
+                    <div class="file-info">
+                        <span class="material-icons-round" style="color:${item.isFolder ? '#fbbc04' : '#4285f4'}">
+                            ${item.isFolder ? 'folder' : 'description'}
+                        </span>
+                        <span class="file-name">${item.name}</span>
+                    </div>
+                    <span>${item.size || '--'}</span>
+                    <span>${item.date || '--'}</span>
+                `;
+                
+                row.onclick = () => item.isFolder ? enterFolder(item.id) : toggleSelection(item.id);
+                row.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelection(item.id); }
+                    showContextMenu(e);
+                };
+                list.appendChild(row);
+            });
+        }
+
+        function toggleSelection(id) {
+            if(selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            renderList(allItems);
+        }
+
+        function selectAllItems(checked) {
+            selectedIds.clear();
+            if(checked) allItems.forEach(i => selectedIds.add(i.id));
+            renderList(allItems);
+        }
+
+        function showContextMenu(e) {
+            if(isDownloading) return;
+            const menu = document.getElementById('ctxMenu');
+            menu.style.display = 'block';
+            menu.style.left = e.clientX + 'px';
+            menu.style.top = e.clientY + 'px';
+            document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Ziple ve İndir" : "İndir";
+            
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu() {
+                    menu.style.display = 'none';
+                    document.removeEventListener('click', closeMenu);
+                });
+            }, 10);
+        }
+
+        async function handleBulkDownload() {
+            if(isDownloading) return;
+            const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+            if(selectedItems.length === 0) return;
+
+            document.getElementById('ctxMenu').style.display = 'none';
+            showDownloadToast("İndirme hazırlanıyor...");
+
+            try {
+                if(selectedItems.length === 1 && !selectedItems[0].isFolder) {
+                    await downloadSingleFile(selectedItems[0].id, selectedItems[0].name);
+                } 
+                else {
+                    const zip = new JSZip();
+                    const firstItem = selectedItems[0];
+                    const zipName = selectedItems.length > 1 ? `${firstItem.name.split('.')[0]}vd.zip` : `${firstItem.name}.zip`;
+                    
+                    showDownloadToast(`${zipName} oluşturuluyor...`);
+
+                    for(let item of selectedItems) {
+                        if(item.isFolder) {
+                            await addFolderToZip(item.id, item.name, zip);
+                        } else {
+                            const blob = await fetchFileBlob(item.id);
+                            zip.file(item.name, blob);
+                        }
+                    }
+
+                    showDownloadToast("Paketleniyor...");
+                    const content = await zip.generateAsync({type: "blob"});
+                    triggerBrowserDownload(content, zipName);
+                }
+            } catch (error) {
+                alert("İndirme sırasında bir hata oluştu: " + error.message);
+            } finally {
+                hideDownloadToast();
+            }
+        }
+
+        async function fetchFileBlob(fileId) {
+            const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${DRIVE_API_KEY}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Dosya API\'den çekilemedi.');
+            return await response.blob();
+        }
+
+        async function downloadSingleFile(fileId, fileName) {
+            const blob = await fetchFileBlob(fileId);
+            triggerBrowserDownload(blob, fileName);
+        }
+
+        async function addFolderToZip(id, name, zipObj) {
+            const u = sessionStorage.getItem('u');
+            const p = sessionStorage.getItem('p');
+            const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
+            const res = await r.json();
+            const folder = zipObj.folder(name);
+            
+            for(let f of res.data.files) {
+                const blob = await fetchFileBlob(f.id);
+                folder.file(f.name, blob);
+            }
+            for(let sub of res.data.folders) {
+                await addFolderToZip(sub.id, sub.name, folder);
+            }
+        }
+
+        function triggerBrowserDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function enterFolder(id) {
+            document.getElementById('loader').style.display = 'block';
+            const list = document.getElementById('fileList');
+            Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
+
+            const u = sessionStorage.getItem('u');
+            const p = sessionStorage.getItem('p');
+            const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
+            const res = await r.json();
+            loadData(res.data);
+        }
+
+        function filterItems(val) { renderList(allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase()))); }
+        function sortItems(type) { allItems.sort((a,b) => a.name.localeCompare(b.name)); renderList(allItems); }
+        function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
+
+        function showDownloadToast(msg) {
+            isDownloading = true;
+            document.getElementById('dlText').innerText = msg;
+            document.getElementById('dlOverlay').style.display = 'flex';
+        }
+        function hideDownloadToast() {
+            isDownloading = false;
+            document.getElementById('dlOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
