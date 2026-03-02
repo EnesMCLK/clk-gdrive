@@ -3,8 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bulut Depom | Kurumsal Arşiv</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Bulut Depom | Kurumsal Arşiv ve Dosya Yönetimi</title>
+    <meta name="description" content="Bulut Depom, işletmeler için güvenli, şeffaf ve yüksek performanslı bir bulut dosya yönetim platformudur. Bu açık kaynaklı (Open Source) projenin kaynak kodları ve mimarisi, denetlenebilirlik ilkeleri gereği GitHub üzerinde barındırılmaktadır: https://github.com/enesmclk/clk-gdrive">
+    <meta name="keywords" content="kurumsal arşiv, güvenli dosya yönetimi, bulut depolama, açık kaynak, open source, file management, enterprise cloud storage, enesmclk, clk-gdrive">
+    <meta name="author" content="EnesMCLK (https://github.com/enesmclk)">
+    <meta name="publisher" content="EnesMCLK Open Source Projects">
+    <meta name="application-name" content="Bulut Depom Enterprise">
+    <meta name="generator" content="GitHub Repository: enesmclk/clk-gdrive">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0b57d0">
     
+    <!-- Open Graph (Güvenlik Botları ve Link Önizlemeleri İçin) -->
+    <meta property="og:title" content="Bulut Depom | Açık Kaynak Kurumsal Arşiv">
+    <meta property="og:description" content="Şeffaf, denetlenebilir ve modern dosya yönetim sistemi. Yüksek kapasiteli verileri doğrudan diske akıtır. (enesmclk/clk-gdrive)">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/enesmclk/clk-gdrive">
+    <meta property="og:site_name" content="Bulut Depom Kurumsal">
+    <!-- ======================================================= -->
+
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
@@ -42,6 +59,7 @@
         .ctx-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; }
         .ctx-item:hover { background: #f1f3f4; color: var(--primary); }
 
+        #dlOverlay { position: fixed; bottom: 20px; right: 20px; background: #323232; color: white; padding: 12px 20px; border-radius: 8px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; font-size: 14px; }
         .spinner { animation: rotate 1s linear infinite; display: inline-block; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
@@ -67,7 +85,7 @@
                 <div class="avatar" id="navAvatar">?</div>
                 <div class="profile-menu" id="profileCard">
                     <h4 id="cardNick" style="margin:5px 0;">Rumuz</h4>
-                    <p id="cardUser" style="font-size:12px; color:gray; margin-bottom:15px;">Kullanıcı</p>
+                    <p id="cardUser" style="font-size:12px; color:gray; margin-bottom:15px;">user@bulutdepom.com</p>
                     <button onclick="logout()" style="width:100%; padding:8px; border:1px solid #d93025; color:#d93025; background:none; border-radius:8px; cursor:pointer;">Oturumu Kapat</button>
                 </div>
             </div>
@@ -96,7 +114,6 @@
         </div>
     </div>
 
-    <!-- SAĞ TIK MENÜSÜ -->
     <div id="ctxMenu">
         <div class="ctx-item" onclick="triggerNativeDownload()">
             <span class="material-icons-round">download</span> 
@@ -104,16 +121,20 @@
         </div>
     </div>
 
+    <div id="dlOverlay">
+        <span class="material-icons-round spinner">autorenew</span>
+        <span id="dlText">Dosya diske yazılıyor...</span>
+    </div>
+
     <script>
         // =================================================================
-        // DİKKAT: Yeni Apps Script (Yayınlandıktan sonraki) Linkinizi buraya yapıştırın.
-        // API KEY BURADA YOKTUR! Giriş yapınca Backend'den gizlice gelir.
+        // DİKKAT: BURAYA GOOGLE APPS SCRIPT URL'NİZİ YAZIN
         // =================================================================
         const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK';
         
         let allItems = [];
         let selectedIds = new Set();
-        let sessionKey = null; // Bellekte anlık tutulan zırhlı API Anahtarı
+        let sessionKey = null;
 
         async function checkLogin() {
             const u = document.getElementById('userInput').value;
@@ -124,21 +145,17 @@
             btn.innerText = "Doğrulanıyor..."; btn.disabled = true;
 
             try {
-                // Şifreler GAS'a gönderilir
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
                 const res = await r.json();
                 
                 if(res.success) {
                     sessionStorage.setItem('u', u); 
                     sessionStorage.setItem('p', p);
-                    
-                    // KİLİT NOKTA: Şifre doğruysa Google API Key Backend'den gelir!
                     sessionKey = res.apiKey;
                     
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
                     
-                    // GAS'taki yetkiliKullanicilar'dan gelen "TK" ismini arayüze basıyoruz
                     const ruzmuz = res.displayName || "User";
                     document.getElementById('navNick').innerText = ruzmuz;
                     document.getElementById('cardNick').innerText = ruzmuz;
@@ -159,9 +176,8 @@
 
         function loadData(data) {
             allItems = [];
-            // GAS'tan gelen verileri isFolder flag'i ile tek diziye basıyoruz
-            data.folders.forEach(f => allItems.push(f));
-            data.files.forEach(f => allItems.push(f));
+            data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--'}));
+            data.files.forEach(f => allItems.push({...f, isFolder: false}));
             renderList(allItems);
         }
 
@@ -221,7 +237,7 @@
                 document.getElementById('ctxLabel').innerText = "Klasörler Native İndirilemez";
                 document.getElementById('ctxLabel').style.color = "gray";
             } else {
-                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Native İndir" : "Doğrudan İndir";
+                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu İndir (İsim Korunur)" : "Doğrudan İndir (Akış)";
                 document.getElementById('ctxLabel').style.color = "var(--text)";
             }
 
@@ -234,7 +250,7 @@
         }
 
         // =======================================================================
-        // YENİ MİMARİ: DOĞRUDAN DİSKE YAZMA (RAM KULLANIMI: SIFIR)
+        // YENİ MİMARİ: FILE SYSTEM ACCESS API İLE İSİM KORUMA VE DOĞRUDAN AKIŞ
         // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -246,32 +262,57 @@
             }
 
             if(!sessionKey) {
-                alert("Güvenlik Hatası: Oturum anahtarı bulunamadı. Sayfayı yenileyip tekrar giriş yapın.");
-                return;
+                alert("Güvenlik Hatası: Oturum anahtarı bulunamadı."); return;
             }
 
             document.getElementById('ctxMenu').style.display = 'none';
 
-            // Google API üzerinden (GAS'ı baypas ederek) doğrudan indirme başlatılır
             for (let i = 0; i < selectedItems.length; i++) {
                 const item = selectedItems[i];
-                
                 const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                
-                // Chrome İndirme Yöneticisini tetikle
-                const a = document.createElement('a');
-                a.href = directUrl;
-                a.target = '_blank'; 
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
 
-                // Tarayıcı spam engeline takılmamak için 600ms bekle
-                if(selectedItems.length > 1) {
-                    await new Promise(r => setTimeout(r, 600));
+                try {
+                    // MODERN TARAYICILAR İÇİN (Chrome, Edge vb.): Dosya İsmini Korur ve Diske Akıtır
+                    if ('showSaveFilePicker' in window) {
+                        // 1. Kullanıcıya nereye kaydedeceğini ve dosya adını (item.name) sorar
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: item.name 
+                        });
+                        
+                        showDownloadToast(`${item.name} diske yazılıyor...`);
+                        
+                        // 2. Diskte yazılabilir bir köprü açar
+                        const writable = await handle.createWritable();
+                        
+                        // 3. Dosyayı API'den çekmeye başlar
+                        const response = await fetch(directUrl);
+                        if (!response.ok) throw new Error("Ağ hatası");
+                        
+                        // 4. Suyu borudan akıtır gibi (Stream) RAM'e sokmadan doğrudan diske yazar
+                        await response.body.pipeTo(writable);
+                        
+                    } else {
+                        // ESKİ TARAYICILAR İÇİN (Safari vb.) FALLBACK
+                        showDownloadToast(`${item.name} indiriliyor...`);
+                        const a = document.createElement('a');
+                        a.href = directUrl;
+                        a.target = '_blank'; 
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+
+                        if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
+                    }
+                } catch (err) {
+                    // Kullanıcı "İptal" derse hata verme, gerçek bir hata varsa konsola yaz
+                    if (err.name !== 'AbortError') {
+                        console.error("İndirme Hatası:", err);
+                        alert(`Hata: ${item.name} indirilemedi.`);
+                    }
                 }
             }
 
+            hideDownloadToast();
             selectedIds.clear();
             renderList(allItems);
         }
@@ -292,6 +333,14 @@
         function sortItems(type) { allItems.sort((a,b) => a.name.localeCompare(b.name)); renderList(allItems); }
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
+
+        function showDownloadToast(msg) {
+            document.getElementById('dlText').innerText = msg;
+            document.getElementById('dlOverlay').style.display = 'flex';
+        }
+        function hideDownloadToast() {
+            document.getElementById('dlOverlay').style.display = 'none';
+        }
     </script>
 </body>
 </html>
