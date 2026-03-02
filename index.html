@@ -9,7 +9,6 @@
     <meta name="description" content="Bulut Depom; kurumsal verilerinize güvenli, şifreli ve yüksek hızlı erişim sağlayan profesyonel bir bulut depolama çözümüdür. İş sürekliliği ve güvenli dosya paylaşımı için optimize edilmiştir.">
     <meta name="author" content="EnesMCLK">
     <meta name="publisher" content="Bulut Depom Kurumsal">
-    <meta name="robots" content="index, follow">
     
     <meta property="og:title" content="Bulut Depom - Güvenli Dosya Yönetimi">
     <meta property="og:description" content="Kurumsal dosyalarınıza 7/24 kesintisiz ve güvenli erişim sağlayın.">
@@ -20,257 +19,251 @@
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-    <style>
-        :root { --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0; --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0; }
-        body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+<style>
+        :root { --bg-color: #f8fafd; --surface-color: #ffffff; --primary-color: #0b57d0; --text-main: #1f1f1f; --text-muted: #444746; --hover-color: #edf2fa; --border-color: #e0e0e0; --selection-bg: #e8f0fe; }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
         /* GİRİŞ EKRANI */
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--surface-color); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid var(--border-color); width: 100%; max-width: 340px; text-align: center; }
-        .login-input { width: 100%; padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; box-sizing: border-box; }
-        .login-input:focus { border-color: var(--primary-color); }
-        .login-btn { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .login-btn:hover { background-color: #0842a0; }
+        .login-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 4px 30px rgba(0,0,0,0.05); border: 1px solid var(--border-color); width: 340px; text-align: center; }
+        .login-input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 12px; box-sizing: border-box; outline: none; }
+        .login-btn { width: 100%; padding: 14px; background: var(--primary-color); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; }
 
-        /* NAVBAR VE NAVİGASYON */
-        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-        .navbar-left h1 { font-size: 22px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 12px; }
-        .breadcrumb-bar { padding: 8px 24px; background: white; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; font-size: 14px; align-items: center; }
-        .breadcrumb-item { color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-        .breadcrumb-item:hover { background: var(--hover-color); color: var(--primary-color); }
+        /* NAVBAR */
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px; background: white; border-bottom: 1px solid var(--border-color); }
+        .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 500; }
+        
+        /* PROFİL ALANI */
+        .profile-section { position: relative; cursor: pointer; }
+        .profile-avatar { width: 36px; height: 36px; border-radius: 50%; background: #0b57d0; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .profile-card { position: absolute; top: 48px; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 220px; display: none; z-index: 999; padding: 16px; text-align: center; }
+        .profile-card.active { display: block; }
+        .profile-card h4 { margin: 8px 0; color: var(--text-main); }
+        .profile-card p { margin: 4px 0 16px; font-size: 13px; color: var(--text-muted); }
+        .logout-btn { width: 100%; padding: 8px; border: 1px solid #d93025; color: #d93025; background: none; border-radius: 8px; cursor: pointer; }
 
-        /* DOSYA ALANI */
-        .main-content { padding: 24px; flex: 1; overflow-y: auto; position: relative; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
-        .item-card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px 12px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; user-select: none; }
-        .item-card:hover { background-color: var(--hover-color); border-color: #c2e7ff; }
-        .item-icon { font-size: 48px; margin-bottom: 12px; display: block; }
-        .icon-folder { color: #fbbc04; } .icon-word { color: #4285f4; }
-        .item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* KONTROL ÇUBUĞU (ARAMA & FİLTRE) */
+        .control-bar { display: flex; align-items: center; padding: 12px 24px; gap: 16px; background: white; border-bottom: 1px solid var(--border-color); }
+        .search-box { flex: 1; position: relative; }
+        .search-box input { width: 100%; padding: 10px 12px 10px 40px; border-radius: 24px; border: 1px solid var(--border-color); background: #f1f3f4; outline: none; }
+        .search-box .material-icons-round { position: absolute; left: 12px; top: 10px; color: var(--text-muted); }
 
+        /* DOSYA LİSTESİ */
+        .table-header { display: grid; grid-template-columns: 40px 1fr 150px 150px; padding: 12px 24px; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        .main-content { flex: 1; overflow-y: auto; background: white; }
+        .item-row { display: grid; grid-template-columns: 40px 1fr 150px 150px; padding: 8px 24px; align-items: center; border-bottom: 1px solid #f1f3f4; cursor: pointer; font-size: 14px; transition: 0.1s; }
+        .item-row:hover { background: var(--hover-color); }
+        .item-row.selected { background: var(--selection-bg); }
+        .file-info { display: flex; align-items: center; gap: 12px; }
+        .file-icon { font-size: 24px; }
+        
         /* SAĞ TIK MENÜSÜ */
-        #customCtxMenu { display: none; position: fixed; background: white; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; border-radius: 8px; padding: 6px 0; min-width: 180px; }
-        .ctx-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: 0.1s; }
-        .ctx-item:hover { background-color: var(--hover-color); color: var(--primary-color); }
-
-        .spinner { animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #ctxMenu { position: fixed; display: none; background: white; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 0; z-index: 2000; min-width: 160px; }
+        .ctx-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+        .ctx-item:hover { background: var(--hover-color); }
+        
+        .spinner { animation: rotate 1s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div class="login-overlay" id="loginOverlay">
         <div class="login-card">
-            <span class="material-icons-round" style="color: var(--primary-color); font-size: 48px;">cloud</span>
-            <h2 style="margin: 10px 0;">Bulut Depom</h2>
-            <p style="color:var(--text-muted); font-size:14px; margin-bottom:24px;">Kurumsal Kimlik Doğrulama</p>
-            <div id="loginError" style="color: #d93025; font-size: 13px; margin-bottom: 12px; display: none;">Giriş başarısız!</div>
-            <input type="text" id="usernameInput" class="login-input" placeholder="Kullanıcı Adı" autocomplete="off">
-            <input type="password" id="passwordInput" class="login-input" placeholder="Şifre" onkeypress="if(event.key==='Enter') checkLogin()">
-            <button class="login-btn" id="loginBtnId" onclick="checkLogin()">Giriş Yap</button>
+            <span class="material-icons-round" style="font-size: 48px; color: var(--primary-color);">cloud</span>
+            <h2>Bulut Depom</h2>
+            <input type="text" id="userInput" class="login-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="passInput" class="login-input" placeholder="Şifre" onkeypress="if(event.key==='Enter') checkLogin()">
+            <button class="login-btn" onclick="checkLogin()">Giriş Yap</button>
         </div>
     </div>
 
-    <div id="appContainer" style="display: none; flex-direction: column; height: 100vh;">
+    <div id="app" style="display:none; flex-direction: column; height: 100vh;">
         <div class="navbar">
-            <div class="navbar-left">
-                <h1><span class="material-icons-round" style="color: var(--primary-color);">cloud_done</span> Bulut Depom</h1>
+            <div class="brand"><span class="material-icons-round">cloud_queue</span> Bulut Depom</div>
+            <div class="profile-section" onclick="toggleProfile()">
+                <div class="profile-avatar" id="avatarLetter">E</div>
+                <div class="profile-card" id="profileCard">
+                    <h4 id="profileNick">Rumuz</h4>
+                    <p id="profileUser">user@bulutdepom.com</p>
+                    <button class="logout-btn" onclick="logout()">Güvenli Çıkış</button>
+                </div>
             </div>
-            <div id="statusIndicator" style="font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:#188038;"></div> Çevrimiçi
-            </div>
-            <button onclick="logout()" style="background:none; border:none; cursor:pointer; color:var(--text-muted); font-weight:500;">Çıkış Yap</button>
         </div>
 
-        <div class="breadcrumb-bar" id="breadcrumb">
-            <span class="breadcrumb-item" onclick="goHome()">Ana Klasör</span>
+        <div class="control-bar">
+            <div class="search-box">
+                <span class="material-icons-round">search</span>
+                <input type="text" placeholder="Dosyalarda ara..." oninput="filterFiles(this.value)">
+            </div>
+            <button style="background:none; border:1px solid var(--border-color); border-radius:8px; padding:8px;" onclick="sortItems('name')">Ad A-Z</button>
+            <button style="background:none; border:1px solid var(--border-color); border-radius:8px; padding:8px;" onclick="sortItems('date')">Tarih</button>
         </div>
 
-        <div class="main-content">
-            <div id="loader" style="text-align:center; padding-top:100px; display:none;">
-                <span class="material-icons-round spinner" style="font-size:48px; color:var(--primary-color);">autorenew</span>
-                <p>Veriler işleniyor...</p>
-            </div>
-            <div class="grid-container" id="gridContainer"></div>
+        <div class="table-header">
+            <input type="checkbox" onclick="selectAll(this.checked)">
+            <span>Ad</span>
+            <span>Boyut</span>
+            <span>Son Değişiklik</span>
         </div>
+
+        <div class="main-content" id="fileList"></div>
     </div>
 
-    <div id="customCtxMenu">
-        <div class="ctx-item" id="ctxDownloadBtn">
-            <span class="material-icons-round">download</span> <span id="ctxLabel">Ziple ve İndir</span>
+    <div id="ctxMenu">
+        <div class="ctx-item" onclick="handleBulkDownload()">
+            <span class="material-icons-round">download</span> <span id="ctxLabel">Seçilenleri İndir</span>
         </div>
     </div>
 
     <script>
         const APPS_SCRIPT_URL = 'BURAYA_GERCEK_URL_GELECEK';
         const SECURE_DL_GATEWAY = 'https://indir.bulutdepom.com';
+        
+        let allFiles = [];
+        let selectedIds = new Set();
+        let currentFolderId = null;
 
-        let pathStack = [{id: null, name: 'Ana Klasör'}];
-        let currentItems = [];
-
-        // GİRİŞ FONKSİYONU
-        function checkLogin() {
-            const user = document.getElementById('usernameInput').value;
-            const pass = document.getElementById('passwordInput').value;
-            const btn = document.getElementById('loginBtnId');
+        async function checkLogin() {
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            const r = await fetch(`${APPS_SCRIPT_URL}?user=${u}&pass=${p}`);
+            const res = await r.json();
             
-            if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('BURAYA')) { alert("Hata: Script URL tanımlanmamış!"); return; }
-
-            btn.innerText = 'Doğrulanıyor...'; btn.disabled = true;
-
-            fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`)
-                .then(r => r.json())
-                .then(result => {
-                    if (result.success) {
-                        sessionStorage.setItem('isLoggedIn', 'true');
-                        sessionStorage.setItem('authUser', user);
-                        sessionStorage.setItem('authPass', pass);
-                        showApp(result.data);
-                    } else {
-                        document.getElementById('loginError').style.display = 'block';
-                        btn.innerText = 'Giriş Yap'; btn.disabled = false;
-                    }
-                })
-                .catch(() => { alert("Bağlantı hatası!"); btn.innerText = 'Giriş Yap'; btn.disabled = false; });
+            if(res.success) {
+                sessionStorage.setItem('authUser', u);
+                sessionStorage.setItem('authPass', p);
+                sessionStorage.setItem('nick', res.nick || u); // Apps Script'ten dönen nick
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                document.getElementById('profileNick').innerText = sessionStorage.getItem('nick');
+                document.getElementById('profileUser').innerText = u;
+                document.getElementById('avatarLetter').innerText = (res.nick || u).charAt(0).toUpperCase();
+                loadData(res.data);
+            } else { alert("Hata!"); }
         }
 
-        function showApp(data) {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'flex';
-            renderItems(data);
+        function loadData(data) {
+            allFiles = [];
+            data.folders.forEach(f => allFiles.push({...f, isFolder: true, size: '--'}));
+            data.files.forEach(f => allFiles.push({...f, isFolder: false}));
+            renderList(allFiles);
         }
 
-        function renderItems(data) {
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = '';
-            document.getElementById('loader').style.display = 'none';
-
-            currentItems = [];
-            data.folders.forEach(f => currentItems.push({...f, isFolder: true}));
-            data.files.forEach(f => currentItems.push({...f, isFolder: false}));
-
-            currentItems.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                const icon = item.isFolder ? 'folder' : 'description';
-                const color = item.isFolder ? 'icon-folder' : 'icon-word';
-                
-                card.innerHTML = `
-                    <span class="material-icons-round item-icon ${color}">${icon}</span>
-                    <div class="item-name">${item.name}</div>
+        function renderList(items) {
+            const list = document.getElementById('fileList');
+            list.innerHTML = '';
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
+                row.innerHTML = `
+                    <input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect('${item.id}')">
+                    <div class="file-info">
+                        <span class="material-icons-round file-icon ${item.isFolder ? 'icon-folder' : ''}" style="color:${item.isFolder ? '#fbbc04' : '#4285f4'}">
+                            ${item.isFolder ? 'folder' : 'description'}
+                        </span>
+                        <span>${item.name}</span>
+                    </div>
+                    <span>${item.size || '--'}</span>
+                    <span>${item.date || '--'}</span>
                 `;
-
-                // SOL TIK: Klasörse içeri gir, dosyaysa doğrudan indir
-                card.onclick = () => {
-                    if (item.isFolder) enterFolder(item.id, item.name);
-                    else triggerDownload(item, card);
-                };
-
-                // SAĞ TIK: Menü tetikle
-                card.oncontextmenu = (e) => {
+                
+                row.onclick = () => item.isFolder ? enterFolder(item.id) : toggleSelect(item.id);
+                row.oncontextmenu = (e) => {
                     e.preventDefault();
-                    showContextMenu(e, item, card);
+                    if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelect(item.id); }
+                    showCtx(e);
                 };
-
-                container.appendChild(card);
+                list.appendChild(row);
             });
         }
 
-        function showContextMenu(e, item, card) {
-            const menu = document.getElementById('customCtxMenu');
-            const label = document.getElementById('ctxLabel');
+        function toggleSelect(id) {
+            if(selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            renderList(allFiles);
+        }
+
+        function selectAll(check) {
+            selectedIds.clear();
+            if(check) allFiles.forEach(i => selectedIds.add(i.id));
+            renderList(allFiles);
+        }
+
+        function showCtx(e) {
+            const menu = document.getElementById('ctxMenu');
             menu.style.display = 'block';
             menu.style.left = e.clientX + 'px';
             menu.style.top = e.clientY + 'px';
-            
-            label.innerText = item.isFolder ? "Ziple ve İndir" : "İndir";
-            
-            document.getElementById('ctxDownloadBtn').onclick = () => {
-                menu.style.display = 'none';
-                triggerDownload(item, card);
-            };
-
-            document.addEventListener('click', () => menu.style.display = 'none', {once: true});
+            document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Ziple ve İndir" : "İndir";
+            document.onclick = () => menu.style.display = 'none';
         }
 
-        async function enterFolder(id, name) {
-            document.getElementById('loader').style.display = 'block';
-            const u = sessionStorage.getItem('authUser');
-            const p = sessionStorage.getItem('authPass');
-            
-            try {
-                const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
-                const res = await r.json();
-                if(res.success) {
-                    pathStack.push({id, name});
-                    updateBreadcrumb();
-                    renderItems(res.data);
-                }
-            } catch (e) { alert("Erişim hatası!"); document.getElementById('loader').style.display = 'none'; }
-        }
+        async function handleBulkDownload() {
+            const items = allFiles.filter(i => selectedIds.has(i.id));
+            if(items.length === 0) return;
 
-        async function triggerDownload(item, element) {
-            const originalHtml = element.innerHTML;
-            
-            if (item.isFolder) {
-                element.innerHTML = '<span class="material-icons-round spinner">autorenew</span><p style="font-size:10px">Zipleniyor...</p>';
-                try {
-                    const zip = new JSZip();
-                    await addFolderToZip(item.id, item.name, zip);
-                    const content = await zip.generateAsync({type: "blob"});
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(content);
-                    link.download = item.name + ".zip";
-                    link.click();
-                } catch (e) { alert("ZIP oluşturulamadı!"); }
-                element.innerHTML = originalHtml;
-            } else {
-                const dlUrl = `${SECURE_DL_GATEWAY}/?id=${item.id}&type=${encodeURIComponent(item.type)}&name=${encodeURIComponent(item.name)}`;
-                window.open(dlUrl, '_blank');
+            // Tek dosya ise direkt indir
+            if(items.length === 1 && !items[0].isFolder) {
+                const i = items[0];
+                window.open(`${SECURE_DL_GATEWAY}/?id=${i.id}&name=${encodeURIComponent(i.name)}`, '_blank');
+                return;
             }
+
+            // Çoklu dosya veya klasör ise ZIP
+            const zip = new JSZip();
+            const firstItem = items[0];
+            const zipName = items.length > 1 ? `${firstItem.name.split('.')[0]}vd.zip` : `${firstItem.name}.zip`;
+            
+            for(let item of items) {
+                if(item.isFolder) await addFolderToZip(item.id, item.name, zip);
+                else {
+                    const r = await fetch(`${SECURE_DL_GATEWAY}/?id=${item.id}&name=${encodeURIComponent(item.name)}`);
+                    const b = await r.blob();
+                    zip.file(item.name, b);
+                }
+            }
+
+            const content = await zip.generateAsync({type: "blob"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = zipName;
+            a.click();
         }
 
-        async function addFolderToZip(folderId, folderName, zipObj) {
+        async function addFolderToZip(id, name, zipObj) {
             const u = sessionStorage.getItem('authUser');
             const p = sessionStorage.getItem('authPass');
-            const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${folderId}`);
+            const r = await fetch(`${APPS_SCRIPT_URL}?user=${u}&pass=${p}&id=${id}`);
             const res = await r.json();
-            
-            const folderZip = zipObj.folder(folderName);
-            
-            const filePromises = res.data.files.map(async (f) => {
-                const req = await fetch(`${SECURE_DL_GATEWAY}/?id=${f.id}&type=${encodeURIComponent(f.type)}&name=${encodeURIComponent(f.name)}`);
-                const blob = await req.blob();
-                folderZip.file(f.name, blob);
-            });
-
-            const folderPromises = res.data.folders.map(async (sub) => {
-                await addFolderToZip(sub.id, sub.name, folderZip);
-            });
-
-            await Promise.all([...filePromises, ...folderPromises]);
+            const folder = zipObj.folder(name);
+            for(let f of res.data.files) {
+                const fr = await fetch(`${SECURE_DL_GATEWAY}/?id=${f.id}&name=${encodeURIComponent(f.name)}`);
+                folder.file(f.name, await fr.blob());
+            }
+            for(let sub of res.data.folders) await addFolderToZip(sub.id, sub.name, folder);
         }
 
-        function updateBreadcrumb() {
-            const bc = document.getElementById('breadcrumb');
-            bc.innerHTML = '';
-            pathStack.forEach((p, i) => {
-                const span = document.createElement('span');
-                span.className = 'breadcrumb-item';
-                span.innerText = p.name;
-                span.onclick = () => {
-                    pathStack = pathStack.slice(0, i + 1);
-                    enterFolder(p.id, p.name);
-                };
-                bc.appendChild(span);
-                if(i < pathStack.length - 1) bc.innerHTML += ' / ';
-            });
+        function filterFiles(val) {
+            const filtered = allFiles.filter(f => f.name.toLowerCase().includes(val.toLowerCase()));
+            renderList(filtered);
         }
 
-        function goHome() { pathStack = [{id: null, name: 'Ana Klasör'}]; updateBreadcrumb(); checkLogin(); }
+        function sortItems(type) {
+            allFiles.sort((a,b) => type === 'name' ? a.name.localeCompare(b.name) : new Date(b.date) - new Date(a.date));
+            renderList(allFiles);
+        }
+
+        function toggleProfile() { document.getElementById('profileCard').classList.toggle('active'); }
         function logout() { sessionStorage.clear(); location.reload(); }
+        
+        async function enterFolder(id) {
+            const u = sessionStorage.getItem('authUser');
+            const p = sessionStorage.getItem('authPass');
+            const r = await fetch(`${APPS_SCRIPT_URL}?user=${u}&pass=${p}&id=${id}`);
+            const res = await r.json();
+            loadData(res.data);
+        }
     </script>
 </body>
 </html>
