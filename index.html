@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
     <title>Bulut Depom | Kurumsal Arşiv</title>
-    <meta name="description" content="Güvenli bulut dosya yönetim platformu. Kaynak: https://github.com/enesmclk/clk-gdrive">
-    <meta name="author" content="EnesMCLK">
     
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         :root { --bg: #f8fafd; --surface: #ffffff; --primary: #0b57d0; --border: #e0e0e0; --text: #1f1f1f; --sel: #e8f0fe; --text-muted: #5f6368; }
@@ -47,7 +42,6 @@
         .ctx-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; }
         .ctx-item:hover { background: #f1f3f4; color: var(--primary); }
 
-        #dlOverlay { position: fixed; bottom: 20px; right: 20px; background: #323232; color: white; padding: 12px 20px; border-radius: 8px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; font-size: 14px; }
         .spinner { animation: rotate 1s linear infinite; display: inline-block; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
@@ -73,8 +67,8 @@
                 <div class="avatar" id="navAvatar">?</div>
                 <div class="profile-menu" id="profileCard">
                     <h4 id="cardNick" style="margin:5px 0;">Rumuz</h4>
-                    <p id="cardUser" style="font-size:12px; color:gray; margin-bottom:15px;">user@bulutdepom.com</p>
-                    <button onclick="location.reload()" style="width:100%; padding:8px; border:1px solid #d93025; color:#d93025; background:none; border-radius:8px; cursor:pointer;">Oturumu Kapat</button>
+                    <p id="cardUser" style="font-size:12px; color:gray; margin-bottom:15px;">Kullanıcı</p>
+                    <button onclick="logout()" style="width:100%; padding:8px; border:1px solid #d93025; color:#d93025; background:none; border-radius:8px; cursor:pointer;">Oturumu Kapat</button>
                 </div>
             </div>
         </div>
@@ -102,25 +96,24 @@
         </div>
     </div>
 
+    <!-- SAĞ TIK MENÜSÜ -->
     <div id="ctxMenu">
-        <div class="ctx-item" onclick="handleBulkDownload()">
+        <div class="ctx-item" onclick="triggerNativeDownload()">
             <span class="material-icons-round">download</span> 
-            <span id="ctxLabel">İndir</span>
+            <span id="ctxLabel">Doğrudan İndir</span>
         </div>
     </div>
 
-    <div id="dlOverlay">
-        <span class="material-icons-round spinner">autorenew</span>
-        <span id="dlText">İşlem yapılıyor...</span>
-    </div>
-
     <script>
-        // SADECE GOOGLE APPS SCRIPT LİNKİMİZ VAR (Drive API Key Çöpe Atıldı)
-        const APPS_SCRIPT_URL = '__APPS_SCRIPT_URL__';
-
+        // =================================================================
+        // DİKKAT: Yeni Apps Script (Yayınlandıktan sonraki) Linkinizi buraya yapıştırın.
+        // API KEY BURADA YOKTUR! Giriş yapınca Backend'den gizlice gelir.
+        // =================================================================
+        const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK';
+        
         let allItems = [];
         let selectedIds = new Set();
-        let isDownloading = false;
+        let sessionKey = null; // Bellekte anlık tutulan zırhlı API Anahtarı
 
         async function checkLogin() {
             const u = document.getElementById('userInput').value;
@@ -128,43 +121,47 @@
             const err = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
             
-            if(APPS_SCRIPT_URL.includes('__APPS_SCRIPT_URL__')) {
-                alert("Hata: Render Ortam Değişkeni algılanmadı."); return;
-            }
-
             btn.innerText = "Doğrulanıyor..."; btn.disabled = true;
 
             try {
+                // Şifreler GAS'a gönderilir
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
                 const res = await r.json();
                 
                 if(res.success) {
-                    sessionStorage.setItem('u', u); sessionStorage.setItem('p', p);
-                    sessionStorage.setItem('nick', res.nick || u);
+                    sessionStorage.setItem('u', u); 
+                    sessionStorage.setItem('p', p);
+                    
+                    // KİLİT NOKTA: Şifre doğruysa Google API Key Backend'den gelir!
+                    sessionKey = res.apiKey;
                     
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
                     
-                    document.getElementById('navNick').innerText = res.nick || u;
-                    document.getElementById('cardNick').innerText = res.nick || u;
+                    // GAS'taki yetkiliKullanicilar'dan gelen "TK" ismini arayüze basıyoruz
+                    const ruzmuz = res.displayName || "User";
+                    document.getElementById('navNick').innerText = ruzmuz;
+                    document.getElementById('cardNick').innerText = ruzmuz;
                     document.getElementById('cardUser').innerText = u;
-                    document.getElementById('navAvatar').innerText = (res.nick || u).charAt(0).toUpperCase();
+                    document.getElementById('navAvatar').innerText = ruzmuz.charAt(0).toUpperCase();
                     
                     loadData(res.data);
                 } else { 
+                    err.innerText = res.error || "Hatalı Giriş!";
                     err.style.display = 'block'; 
                     btn.innerText = "Güvenli Giriş"; btn.disabled = false;
                 }
             } catch(e) { 
-                alert("Bağlantı Hatası! Lütfen Apps Script URL'sini kontrol edin."); 
+                alert("Sunucuya ulaşılamıyor. Lütfen Apps Script linkinizi kontrol edin."); 
                 btn.innerText = "Güvenli Giriş"; btn.disabled = false;
             }
         }
 
         function loadData(data) {
             allItems = [];
-            data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--'}));
-            data.files.forEach(f => allItems.push({...f, isFolder: false}));
+            // GAS'tan gelen verileri isFolder flag'i ile tek diziye basıyoruz
+            data.folders.forEach(f => allItems.push(f));
+            data.files.forEach(f => allItems.push(f));
             renderList(allItems);
         }
 
@@ -213,13 +210,21 @@
         }
 
         function showContextMenu(e) {
-            if(isDownloading) return;
             const menu = document.getElementById('ctxMenu');
             menu.style.display = 'block';
             menu.style.left = e.clientX + 'px';
             menu.style.top = e.clientY + 'px';
-            document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Ziple ve İndir" : "İndir";
             
+            const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+            
+            if(selectedItems.some(i => i.isFolder)) {
+                document.getElementById('ctxLabel').innerText = "Klasörler Native İndirilemez";
+                document.getElementById('ctxLabel').style.color = "gray";
+            } else {
+                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Native İndir" : "Doğrudan İndir";
+                document.getElementById('ctxLabel').style.color = "var(--text)";
+            }
+
             setTimeout(() => {
                 document.addEventListener('click', function closeMenu() {
                     menu.style.display = 'none';
@@ -228,94 +233,47 @@
             }, 10);
         }
 
-        // --- İNDİRME MOTORU (TÜMÜ APPS SCRIPT ÜZERİNDEN) ---
-        async function fetchFileBlobFromAppsScript(fileId) {
-            const u = sessionStorage.getItem('u');
-            const p = sessionStorage.getItem('p');
-            
-            // İstek "action=download" olarak gidiyor
-            const url = `${APPS_SCRIPT_URL}?action=download&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${fileId}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            if (!data.success) throw new Error("İndirme izni reddedildi.");
-
-            // Gelen Base64 metnini tekrar gerçek dosyaya (Blob) çevirme
-            const byteCharacters = atob(data.base64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            return new Blob([byteArray], {type: data.mimeType});
-        }
-
-        async function handleBulkDownload() {
-            if(isDownloading) return;
+        // =======================================================================
+        // YENİ MİMARİ: DOĞRUDAN DİSKE YAZMA (RAM KULLANIMI: SIFIR)
+        // =======================================================================
+        async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
 
+            if(selectedItems.some(i => i.isFolder)) {
+                alert("Uyarı: İşletim sistemi klasörleri doğrudan indiremez. Lütfen içine girip dosyaları seçin.");
+                return;
+            }
+
+            if(!sessionKey) {
+                alert("Güvenlik Hatası: Oturum anahtarı bulunamadı. Sayfayı yenileyip tekrar giriş yapın.");
+                return;
+            }
+
             document.getElementById('ctxMenu').style.display = 'none';
-            showDownloadToast("Google Apps Script ile iletişime geçiliyor...");
 
-            try {
-                if(selectedItems.length === 1 && !selectedItems[0].isFolder) {
-                    showDownloadToast(`${selectedItems[0].name} çekiliyor...`);
-                    const blob = await fetchFileBlobFromAppsScript(selectedItems[0].id);
-                    triggerBrowserDownload(blob, selectedItems[0].name);
-                } 
-                else {
-                    const zip = new JSZip();
-                    const firstItem = selectedItems[0];
-                    const zipName = selectedItems.length > 1 ? `${firstItem.name.split('.')[0]}vd.zip` : `${firstItem.name}.zip`;
-                    
-                    showDownloadToast(`${zipName} paketi hazırlanıyor...`);
+            // Google API üzerinden (GAS'ı baypas ederek) doğrudan indirme başlatılır
+            for (let i = 0; i < selectedItems.length; i++) {
+                const item = selectedItems[i];
+                
+                const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                
+                // Chrome İndirme Yöneticisini tetikle
+                const a = document.createElement('a');
+                a.href = directUrl;
+                a.target = '_blank'; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
 
-                    for(let item of selectedItems) {
-                        if(item.isFolder) {
-                            await addFolderToZip(item.id, item.name, zip);
-                        } else {
-                            const blob = await fetchFileBlobFromAppsScript(item.id);
-                            zip.file(item.name, blob);
-                        }
-                    }
-
-                    showDownloadToast("Tarayıcıda Zipleniyor...");
-                    const content = await zip.generateAsync({type: "blob"});
-                    triggerBrowserDownload(content, zipName);
+                // Tarayıcı spam engeline takılmamak için 600ms bekle
+                if(selectedItems.length > 1) {
+                    await new Promise(r => setTimeout(r, 600));
                 }
-            } catch (error) {
-                alert("İndirme sırasında bir hata oluştu: " + error.message);
-            } finally {
-                hideDownloadToast();
             }
-        }
 
-        async function addFolderToZip(id, name, zipObj) {
-            const u = sessionStorage.getItem('u');
-            const p = sessionStorage.getItem('p');
-            const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
-            const res = await r.json();
-            const folder = zipObj.folder(name);
-            
-            for(let f of res.data.files) {
-                const blob = await fetchFileBlobFromAppsScript(f.id);
-                folder.file(f.name, blob);
-            }
-            for(let sub of res.data.folders) {
-                await addFolderToZip(sub.id, sub.name, folder);
-            }
-        }
-
-        function triggerBrowserDownload(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            selectedIds.clear();
+            renderList(allItems);
         }
 
         async function enterFolder(id) {
@@ -333,16 +291,7 @@
         function filterItems(val) { renderList(allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase()))); }
         function sortItems(type) { allItems.sort((a,b) => a.name.localeCompare(b.name)); renderList(allItems); }
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
-
-        function showDownloadToast(msg) {
-            isDownloading = true;
-            document.getElementById('dlText').innerText = msg;
-            document.getElementById('dlOverlay').style.display = 'flex';
-        }
-        function hideDownloadToast() {
-            isDownloading = false;
-            document.getElementById('dlOverlay').style.display = 'none';
-        }
+        function logout() { sessionStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
