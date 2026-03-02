@@ -13,7 +13,7 @@ try {
     }
 
     // 3. Değişkeni HTML içine yerleştir
-    content = content.replace('__APPS_SCRIPT_URL__', scriptUrl);
+    content = content.replace('BURAYA_APPS_SCRIPT_URL_GELECEK', scriptUrl);
     
     // 4. Dosyayı yeni haliyle kaydet
     fs.writeFileSync('index.html', content);
