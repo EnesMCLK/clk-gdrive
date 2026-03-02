@@ -97,13 +97,9 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK';
-        const SECURE_DL_GATEWAY = 'https://indir.bulutdepom.com'; // Kurumsal engeli aşan adres
+        const APPS_SCRIPT_URL = 'BURAYA_GERCEK_URL_GELECEK';
+        const SECURE_DL_GATEWAY = 'https://indir.bulutdepom.com';
 
-        let currentActiveFolderId = null;
-        let allCurrentItems = [];
-
-        // GİRİŞ KONTROLÜ
         function checkLogin() {
             const user = document.getElementById('usernameInput').value;
             const pass = document.getElementById('passwordInput').value;
@@ -120,9 +116,15 @@
                         sessionStorage.setItem('authPass', pass);
                         showApp(result.data);
                     } else {
+                        document.getElementById('loginError').innerText = result.error || "Giriş Başarısız";
                         document.getElementById('loginError').style.display = 'block';
                         btn.innerText = 'Giriş Yap'; btn.disabled = false;
                     }
+                })
+                .catch(err => {
+                    console.error("Bağlantı Hatası:", err);
+                    btn.innerText = 'Giriş Yap'; btn.disabled = false;
+                    alert("Google Script'e ulaşılamıyor. URL'yi kontrol edin.");
                 });
         }
 
