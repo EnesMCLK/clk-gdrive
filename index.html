@@ -44,7 +44,7 @@
             --sel: #c2e7ff; 
             --sel-hover: #b3d4ec;
             --hover-bg: #e1e5ea;
-            --folder-color: #fbbc04; /* Windows/Drive Zengin Klasör Rengi */
+            --folder-color: #fbbc04;
         }
         
         * { box-sizing: border-box; }
@@ -79,7 +79,6 @@
         .breadcrumb-item:hover { background: var(--hover-bg); }
         .breadcrumb-separator { color: var(--text-muted); font-size: 18px; }
         
-        /* Görünüm Menüsü */
         .view-menu-container { position: relative; }
         .view-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text); font-family: inherit; font-size: 14px; background: var(--surface); transition: 0.2s;}
         .view-btn:hover { background: var(--hover-bg); }
@@ -92,7 +91,6 @@
         /* ANA İÇERİK ALANI */
         .main-container { flex: 1; background: var(--surface); margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
-        /* SIRALANABİLİR LİSTE BAŞLIĞI */
         .list-header { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); background: #fafafa;}
         .sortable-col { display: flex; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
         .sortable-col:hover { color: var(--text); }
@@ -103,20 +101,15 @@
 
         .list-container { flex: 1; overflow-y: auto; padding: 8px 0 20px 0; }
         
-        /* METİN TAŞMA DÜZELTMELERİ (Ellipsis Fix) */
         .file-info { display: flex; align-items: center; gap: 16px; overflow: hidden; flex: 1; min-width: 0; }
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
 
-        /* ================= WINDOWS GÖRÜNÜM MODLARI ================= */
-        /* HİTBOX UZAMA HATASI 'align-content: start;' ve 'height: max-content;' İLE ÇÖZÜLDÜ */
-        
-        /* 1. AYRINTILAR (Detaylı Liste) */
+        /* GÖRÜNÜM MODLARI */
         .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid #f1f3f4; align-items: center; cursor: pointer; font-size: 14px; height: 48px; transition: background 0.1s; }
         .view-details .item-row:hover { background: #f4f7fc; }
         .view-details .item-row.selected { background: var(--sel); }
         
-        /* 2. LİSTELE (Sadece İsimler Yan Yana - Metin Kesilmesi Düzeltildi) */
         .view-list { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 4px; padding: 12px; height: 100%; overflow-x: auto;}
         .view-list .list-header { display: none; }
         .view-list .item-row { display: flex; align-items: center; width: 240px; padding: 6px 10px; cursor: pointer; border-radius: 8px; gap: 10px; transition: 0.1s; height: max-content;}
@@ -124,7 +117,6 @@
         .view-list .item-row.selected { background: var(--sel); }
         .view-list .col-type, .view-list .col-size, .view-list .col-date { display: none; }
 
-        /* 3. DÖŞEMELER (Orta İkon + Bilgi) */
         .view-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; padding: 16px; align-content: start; }
         .view-tiles .list-header { display: none; }
         .view-tiles .item-row { display: flex; align-items: center; padding: 10px 12px; background: #f8fafd; border-radius: 12px; cursor: pointer; border: 1px solid transparent; gap: 12px; transition: 0.2s; height: max-content; }
@@ -136,7 +128,6 @@
         .view-tiles .tile-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 100%;}
         .view-tiles .col-type, .view-tiles .col-size, .view-tiles .col-date { display: none; }
 
-        /* 4. BÜYÜK SİMGELER (Hitbox Küçültüldü ve Esnemesi Engellendi) */
         .view-large { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 20px; align-content: start; }
         .view-large .list-header { display: none; }
         .view-large .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 8px; border-radius: 8px; cursor: pointer; text-align: center; gap: 8px; transition: 0.1s; height: max-content; }
@@ -147,7 +138,6 @@
         .view-large .file-name { font-size: 13px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; overflow: hidden;}
         .view-large .col-type, .view-large .col-size, .view-large .col-date, .view-large .checkbox-wrapper { display: none; }
 
-        /* 5. ORTA BOYUTLU SİMGELER (Hitbox Küçültüldü ve Esnemesi Engellendi) */
         .view-medium { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; padding: 16px; align-content: start; }
         .view-medium .list-header { display: none; }
         .view-medium .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 4px; border-radius: 8px; cursor: pointer; text-align: center; gap: 6px; transition: 0.1s; height: max-content; }
@@ -158,7 +148,6 @@
         .view-medium .file-name { font-size: 12px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; overflow: hidden;}
         .view-medium .col-type, .view-medium .col-size, .view-medium .col-date, .view-medium .checkbox-wrapper { display: none; }
 
-        /* 6. KÜÇÜK SİMGELER (Hitbox Küçültüldü ve Esnemesi Engellendi) */
         .view-small { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px; align-content: flex-start; }
         .view-small .list-header { display: none; }
         .view-small .item-row { display: flex; align-items: center; width: auto; max-width: 180px; padding: 4px 8px; border-radius: 6px; cursor: pointer; gap: 8px; height: max-content; }
@@ -168,7 +157,6 @@
         .view-small .file-name { font-size: 12px; }
         .view-small .col-type, .view-small .col-size, .view-small .col-date, .view-small .checkbox-wrapper { display: none; }
 
-        /* 7. İÇERİK (Geniş Okuma) */
         .view-content { display: flex; flex-direction: column; padding: 16px; gap: 8px; }
         .view-content .list-header { display: none; }
         .view-content .item-row { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; gap: 24px; transition: 0.1s; height: max-content; }
@@ -180,21 +168,13 @@
         .view-content .content-meta { font-size: 13px; color: var(--text-muted); display: flex; gap: 16px; }
         .view-content .col-type, .view-content .col-size, .view-content .col-date { display: none; }
 
-        /* ----------------------------------------------------------- */
-
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
-        /* SAĞ TIK MENÜSÜ */
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
         .ctx-item .material-icons-round { color: var(--text-muted); font-size: 20px; }
 
-        #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid var(--border); z-index: 9999; font-size: 14px; font-weight: 500;}
-        .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* İkon Renkleri */
         .icon-folder { color: var(--folder-color); }
         .icon-file { color: var(--primary); }
         .icon-pdf { color: #da3633; }
@@ -202,6 +182,38 @@
         .icon-word { color: #2b579a; }
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
+
+        /* ================================================================= */
+        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI                   */
+        /* ================================================================= */
+        .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dl-manager.minimized { width: 280px; }
+        .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
+        .dl-manager.minimized .dl-header-icon { transform: rotate(180deg); }
+        
+        .dl-header { padding: 14px 20px; background: #f8fafd; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+        .dl-header:hover { background: #eef2f7; }
+        .dl-header-title { font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .dl-header-icon { color: var(--text-muted); transition: transform 0.3s; }
+
+        .dl-list { max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--surface); transition: max-height 0.3s, opacity 0.3s, padding 0.3s; }
+        
+        .dl-item { background: var(--surface); border-radius: 8px; padding: 12px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .dl-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .dl-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); flex: 1; padding-top: 2px;}
+        
+        .dl-controls { display: flex; gap: 4px; }
+        .dl-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .dl-btn:hover { background: var(--hover-bg); color: var(--text); }
+        .dl-btn.cancel:hover { color: #d93025; background: #fce8e6; }
+        
+        .dl-progress-container { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+        .dl-progress-bg { height: 6px; background: #e1e5ea; border-radius: 3px; overflow: hidden; width: 100%; }
+        .dl-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s linear; }
+        
+        .dl-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
+        .dl-meta-speed { font-weight: 500; color: #1d7044; }
+        .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
     </style>
 </head>
 <body>
@@ -286,9 +298,18 @@
         </div>
     </div>
 
-    <div id="dlOverlay">
-        <span class="material-icons-round spinner">autorenew</span>
-        <span id="dlText">Dosya diske yazılıyor...</span>
+    <!-- YENİ GELİŞMİŞ İNDİRME YÖNETİCİSİ -->
+    <div id="dlManager" class="dl-manager" style="display: none;">
+        <div class="dl-header" onclick="toggleDlManager()">
+            <div class="dl-header-title">
+                <span class="material-icons-round" style="color: var(--primary); font-size: 20px;">file_download</span>
+                <span id="dlHeaderText">İndirmeler (0)</span>
+            </div>
+            <span class="material-icons-round dl-header-icon" id="dlHeaderIcon">expand_more</span>
+        </div>
+        <div class="dl-list" id="dlList">
+            <!-- Dinamik İndirme Kartları Buraya Gelecek -->
+        </div>
     </div>
 
     <script>
@@ -301,10 +322,8 @@
         let displayedItems = [];
         let selectedIds = new Set();
         let sessionKey = null;
-        
         let folderCache = {}; 
         let navigationHistory = []; 
-
         let currentSortCol = 'name';
         let isSortAsc = true;
 
@@ -320,89 +339,68 @@
             const p = document.getElementById('passInput').value;
             const err = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
-            
             btn.innerText = "Doğrulanıyor..."; btn.disabled = true;
-
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
                 const res = await r.json();
-                
                 if(res.success) {
-                    sessionStorage.setItem('u', u); 
-                    sessionStorage.setItem('p', p);
+                    sessionStorage.setItem('u', u); sessionStorage.setItem('p', p);
                     sessionKey = res.apiKey;
-                    
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
-                    
                     const ruzmuz = res.displayName || "Kullanıcı";
                     document.getElementById('navAvatar').innerText = ruzmuz.charAt(0).toUpperCase();
                     document.getElementById('cardAvatar').innerText = ruzmuz.charAt(0).toUpperCase();
                     document.getElementById('cardNick').innerText = ruzmuz;
                     document.getElementById('cardUser').innerText = u;
-                    
                     const rootId = res.data.currentId || 'root';
                     folderCache[rootId] = res.data;
                     navigationHistory = [{ id: rootId, name: 'Ana Sayfa' }];
                     renderBreadcrumbs();
-                    
                     loadData(res.data);
                 } else { 
                     err.innerText = res.error || "Hatalı Giriş!";
                     err.style.display = 'block'; 
                     btn.innerText = "Oturum Aç"; btn.disabled = false;
                 }
-            } catch(e) { 
-                alert("Sunucuya ulaşılamıyor."); 
-                btn.innerText = "Oturum Aç"; btn.disabled = false;
-            }
+            } catch(e) { alert("Sunucuya ulaşılamıyor."); btn.innerText = "Oturum Aç"; btn.disabled = false; }
         }
 
         function extractType(filename, isFolder) {
             if(isFolder) return "Dosya Klasörü";
             const parts = filename.split('.');
             if(parts.length === 1) return "Dosya";
-            const ext = parts.pop().toUpperCase();
-            return `${ext} Dosyası`;
+            return `${parts.pop().toUpperCase()} Dosyası`;
         }
 
         function loadData(data) {
             allItems = [];
             data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--', type: "Dosya Klasörü"}));
             data.files.forEach(f => allItems.push({...f, isFolder: false, type: extractType(f.name, false)}));
-            
             displayedItems = [...allItems];
             applySorting(); 
         }
 
         function handleSort(col) {
-            if (currentSortCol === col) isSortAsc = !isSortAsc; 
-            else { currentSortCol = col; isSortAsc = true; }
-            updateSortUI();
-            applySorting();
+            if (currentSortCol === col) isSortAsc = !isSortAsc; else { currentSortCol = col; isSortAsc = true; }
+            updateSortUI(); applySorting();
         }
 
         function updateSortUI() {
             document.querySelectorAll('.sortable-col').forEach(el => {
-                el.classList.remove('active', 'desc');
-                el.querySelector('.sort-icon').innerText = 'arrow_downward';
+                el.classList.remove('active', 'desc'); el.querySelector('.sort-icon').innerText = 'arrow_downward';
             });
             const activeHeader = document.querySelector(`.sortable-col[onclick="handleSort('${currentSortCol}')"]`);
             if (activeHeader) {
                 activeHeader.classList.add('active');
-                if (!isSortAsc) {
-                    activeHeader.classList.add('desc');
-                    activeHeader.querySelector('.sort-icon').innerText = 'arrow_upward';
-                }
+                if (!isSortAsc) { activeHeader.classList.add('desc'); activeHeader.querySelector('.sort-icon').innerText = 'arrow_upward'; }
             }
         }
 
         function parseDateString(dateStr) {
             if(!dateStr || dateStr === '--') return 0;
-            const [datePart, timePart] = dateStr.split(' ');
-            if(!datePart || !timePart) return 0;
-            const [d, m, y] = datePart.split('.');
-            const [hr, min] = timePart.split(':');
+            const [d, m, y, hr, min] = dateStr.split(/[\s.:]/);
+            if(!y) return 0;
             return new Date(y, m-1, d, hr, min).getTime();
         }
 
@@ -421,10 +419,7 @@
                 else if (currentSortCol === 'date') comparison = parseDateString(a.date) - parseDateString(b.date);
                 return isSortAsc ? comparison : -comparison;
             });
-
-            selectedIds.clear();
-            document.getElementById('selectAllCb').checked = false;
-            renderList();
+            selectedIds.clear(); document.getElementById('selectAllCb').checked = false; renderList();
         }
 
         function getFileIcon(filename, isFolder) {
@@ -443,19 +438,15 @@
             const list = document.getElementById('fileList');
             const loader = document.getElementById('loader');
             if(loader) loader.style.display = 'none';
-
             Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
 
             displayedItems.forEach(item => {
                 const row = document.createElement('div');
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
-                
                 const iconInfo = getFileIcon(item.name, item.isFolder);
 
                 row.innerHTML = `
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelection('${item.id}')">
-                    </div>
+                    <div class="checkbox-wrapper"><input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelection('${item.id}')"></div>
                     <div class="file-info">
                         <span class="material-icons-round ${iconInfo.class}">${iconInfo.icon}</span>
                         <div class="file-details-wrapper">
@@ -469,52 +460,21 @@
                     <span class="col-date" style="font-size:13px;">${item.date || '--'}</span>
                 `;
                 
-                row.onclick = (e) => {
-                    if(!e.ctrlKey && !e.metaKey) selectedIds.clear();
-                    toggleSelection(item.id);
-                };
-
-                row.ondblclick = (e) => {
-                    e.stopPropagation();
-                    if(item.isFolder) enterFolder(item.id, item.name);
-                    else {
-                        selectedIds.clear();
-                        selectedIds.add(item.id);
-                        triggerNativeDownload();
-                    }
-                };
-
-                row.oncontextmenu = (e) => {
-                    e.preventDefault(); e.stopPropagation();
-                    if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelection(item.id); }
-                    showContextMenu(e);
-                };
-                
+                row.onclick = (e) => { if(!e.ctrlKey && !e.metaKey) selectedIds.clear(); toggleSelection(item.id); };
+                row.ondblclick = (e) => { e.stopPropagation(); if(item.isFolder) enterFolder(item.id, item.name); else { selectedIds.clear(); selectedIds.add(item.id); triggerNativeDownload(); } };
+                row.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelection(item.id); } showContextMenu(e); };
                 list.appendChild(row);
             });
             updateCheckboxState();
         }
 
-        function toggleViewMenu(e) {
-            e.stopPropagation();
-            document.getElementById('viewDropdown').classList.toggle('show');
-        }
+        function toggleViewMenu(e) { e.stopPropagation(); document.getElementById('viewDropdown').classList.toggle('show'); }
 
         function setViewMode(modeClass, text, icon) {
-            document.getElementById('currentViewText').innerText = text;
-            document.getElementById('currentViewIcon').innerText = icon;
-            document.getElementById('viewDropdown').classList.remove('show');
-            
-            document.querySelectorAll('.view-option').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            const listContainer = document.getElementById('fileList');
-            const headerRow = document.getElementById('listHeaderRow');
-            listContainer.className = `list-container view-${modeClass}`;
-
-            if(modeClass === 'details') headerRow.style.display = 'grid';
-            else headerRow.style.display = 'none';
-
+            document.getElementById('currentViewText').innerText = text; document.getElementById('currentViewIcon').innerText = icon; document.getElementById('viewDropdown').classList.remove('show');
+            document.querySelectorAll('.view-option').forEach(el => el.classList.remove('active')); event.currentTarget.classList.add('active');
+            document.getElementById('fileList').className = `list-container view-${modeClass}`;
+            document.getElementById('listHeaderRow').style.display = (modeClass === 'details') ? 'grid' : 'none';
             document.querySelectorAll('.tile-meta').forEach(el => el.style.display = (modeClass === 'tiles') ? 'flex' : 'none');
             document.querySelectorAll('.content-meta').forEach(el => el.style.display = (modeClass === 'content') ? 'flex' : 'none');
         }
@@ -522,104 +482,146 @@
         async function enterFolder(id, name) {
             document.getElementById('loader').style.display = 'block';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
-
-            if (folderCache[id]) {
-                navigationHistory.push({ id: id, name: name });
-                renderBreadcrumbs();
-                loadData(folderCache[id]);
-                return;
-            }
-
-            const u = sessionStorage.getItem('u');
-            const p = sessionStorage.getItem('p');
+            if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
+            const u = sessionStorage.getItem('u'); const p = sessionStorage.getItem('p');
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
                 const res = await r.json();
-                if(res.success) {
-                    folderCache[id] = res.data; 
-                    navigationHistory.push({ id: id, name: name });
-                    renderBreadcrumbs();
-                    loadData(res.data);
-                }
+                if(res.success) { folderCache[id] = res.data; navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(res.data); }
             } catch (error) { alert("Klasör yüklenemedi."); renderList(); }
         }
 
         function navigateToHistoryIndex(index) {
-            const target = navigationHistory[index];
-            navigationHistory = navigationHistory.slice(0, index + 1);
-            renderBreadcrumbs();
+            const target = navigationHistory[index]; navigationHistory = navigationHistory.slice(0, index + 1); renderBreadcrumbs();
             if(folderCache[target.id]) loadData(folderCache[target.id]);
         }
-
-        function goBack() {
-            if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2);
-        }
+        function goBack() { if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2); }
 
         function renderBreadcrumbs() {
-            const nav = document.getElementById('breadcrumbNav');
-            nav.innerHTML = '';
+            const nav = document.getElementById('breadcrumbNav'); nav.innerHTML = '';
             if (navigationHistory.length > 1) {
-                const backBtn = document.createElement('div');
-                backBtn.className = 'breadcrumb-item';
-                backBtn.innerHTML = `<span class="material-icons-round" style="font-size: 24px;">arrow_back</span>`;
-                backBtn.style.padding = "6px";
-                backBtn.onclick = goBack;
-                nav.appendChild(backBtn);
+                const backBtn = document.createElement('div'); backBtn.className = 'breadcrumb-item'; backBtn.innerHTML = `<span class="material-icons-round" style="font-size: 24px;">arrow_back</span>`;
+                backBtn.style.padding = "6px"; backBtn.onclick = goBack; nav.appendChild(backBtn);
             }
             navigationHistory.forEach((step, index) => {
-                const isLast = index === navigationHistory.length - 1;
-                const item = document.createElement('div');
-                item.className = 'breadcrumb-item';
+                const isLast = index === navigationHistory.length - 1; const item = document.createElement('div'); item.className = 'breadcrumb-item';
                 if(index === 0) item.innerHTML = `<span class="material-icons-round" style="font-size: 22px;">home</span> <span style="font-size:16px;">${step.name}</span>`;
                 else item.innerHTML = `<span style="font-size:16px; font-weight: ${isLast ? '500' : '400'}">${step.name}</span>`;
-                
-                if(!isLast) item.onclick = () => navigateToHistoryIndex(index);
-                else { item.style.cursor = "default"; item.style.backgroundColor = "transparent"; }
+                if(!isLast) item.onclick = () => navigateToHistoryIndex(index); else { item.style.cursor = "default"; item.style.backgroundColor = "transparent"; }
                 nav.appendChild(item);
-
-                if (!isLast) {
-                    const sep = document.createElement('span');
-                    sep.className = 'breadcrumb-separator material-icons-round';
-                    sep.innerText = 'chevron_right';
-                    nav.appendChild(sep);
-                }
+                if (!isLast) { const sep = document.createElement('span'); sep.className = 'breadcrumb-separator material-icons-round'; sep.innerText = 'chevron_right'; nav.appendChild(sep); }
             });
         }
 
-        function toggleSelection(id) {
-            if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
-            updateCheckboxState(); renderList();
-        }
-        function selectAllItems(checked) {
-            selectedIds.clear();
-            if(checked) displayedItems.forEach(i => selectedIds.add(i.id));
-            renderList();
-        }
-        function updateCheckboxState() {
-            const cb = document.getElementById('selectAllCb');
-            if(displayedItems.length === 0) { cb.checked = false; return; }
-            cb.checked = displayedItems.every(i => selectedIds.has(i.id));
-        }
-        function filterItems(val) { 
-            displayedItems = allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase()));
-            applySorting(); 
-        }
+        function toggleSelection(id) { if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateCheckboxState(); renderList(); }
+        function selectAllItems(checked) { selectedIds.clear(); if(checked) displayedItems.forEach(i => selectedIds.add(i.id)); renderList(); }
+        function updateCheckboxState() { const cb = document.getElementById('selectAllCb'); if(displayedItems.length === 0) { cb.checked = false; return; } cb.checked = displayedItems.every(i => selectedIds.has(i.id)); }
+        function filterItems(val) { displayedItems = allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase())); applySorting(); }
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
 
         function showContextMenu(e) {
-            const menu = document.getElementById('ctxMenu');
-            menu.style.display = 'block';
-            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
-            menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+            const menu = document.getElementById('ctxMenu'); menu.style.display = 'block';
+            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+            if(selectedItems.some(i => i.isFolder)) { document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin"; document.getElementById('ctxLabel').style.color = "gray"; } 
+            else { document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
+        }
+
+        // =======================================================================
+        // ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) ALTYAPISI
+        // =======================================================================
+        let activeDownloadsMap = new Map();
+        
+        function toggleDlManager() {
+            document.getElementById('dlManager').classList.toggle('minimized');
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 MB';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
+        }
+
+        function updateDlHeader() {
+            const count = activeDownloadsMap.size;
+            document.getElementById('dlHeaderText').innerText = count > 0 ? `İndirmeler (${count})` : 'İndirme Bekleniyor';
+            const manager = document.getElementById('dlManager');
+            if (count > 0 && manager.style.display === 'none') {
+                manager.style.display = 'flex';
+                manager.classList.remove('minimized');
+            } else if (count === 0) {
+                setTimeout(() => { if(activeDownloadsMap.size === 0) manager.style.display = 'none'; }, 2000);
+            }
+        }
+
+        function createDlCard(dlId, filename, totalBytesStr) {
+            const list = document.getElementById('dlList');
+            const card = document.createElement('div');
+            card.className = 'dl-item';
+            card.id = `dl-card-${dlId}`;
             
-            if(selectedItems.some(i => i.isFolder)) {
-                document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin";
-                document.getElementById('ctxLabel').style.color = "gray";
+            card.innerHTML = `
+                <div class="dl-item-top">
+                    <span class="dl-item-name" title="${filename}">${filename}</span>
+                    <div class="dl-controls" id="dl-controls-${dlId}">
+                        <button class="dl-btn" onclick="pauseResumeDl('${dlId}')" id="dl-btn-pause-${dlId}" title="Durdur"><span class="material-icons-round" style="font-size:18px;">pause</span></button>
+                        <button class="dl-btn cancel" onclick="cancelDl('${dlId}')" title="İptal Et"><span class="material-icons-round" style="font-size:18px;">close</span></button>
+                    </div>
+                </div>
+                <div class="dl-progress-container" id="dl-prog-container-${dlId}">
+                    <div class="dl-progress-bg"><div class="dl-progress-fill" id="dl-fill-${dlId}"></div></div>
+                    <div class="dl-meta">
+                        <span id="dl-meta-size-${dlId}">0 MB / ${totalBytesStr}</span>
+                        <span class="dl-meta-speed" id="dl-meta-speed-${dlId}">Hesaplanıyor...</span>
+                    </div>
+                </div>
+                <div class="dl-status-text" id="dl-status-${dlId}">Tamamlandı</div>
+            `;
+            // Yeni kartı listenin en üstüne ekle (Son başlayan en üstte görünür)
+            list.insertBefore(card, list.firstChild);
+            updateDlHeader();
+        }
+
+        function pauseResumeDl(dlId) {
+            const dl = activeDownloadsMap.get(dlId);
+            if(!dl) return;
+            const btn = document.getElementById(`dl-btn-pause-${dlId}`);
+            
+            if(dl.isPaused) {
+                dl.isPaused = false;
+                if(dl.pausePromiseResolve) dl.pausePromiseResolve();
+                btn.innerHTML = `<span class="material-icons-round" style="font-size:18px;">pause</span>`;
+                btn.title = "Durdur";
             } else {
-                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Akış İndir" : "Doğrudan İndir";
-                document.getElementById('ctxLabel').style.color = "var(--text)";
+                dl.isPaused = true;
+                btn.innerHTML = `<span class="material-icons-round" style="font-size:18px;">play_arrow</span>`;
+                btn.title = "Devam Et";
+                document.getElementById(`dl-meta-speed-${dlId}`).innerText = "Durduruldu";
+            }
+        }
+
+        function cancelDl(dlId) {
+            const dl = activeDownloadsMap.get(dlId);
+            if(dl && dl.controller) dl.controller.abort();
+            
+            const card = document.getElementById(`dl-card-${dlId}`);
+            if(card) {
+                card.style.borderColor = "#d93025";
+                document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
+                document.getElementById(`dl-controls-${dlId}`).style.display = 'none';
+                const statusText = document.getElementById(`dl-status-${dlId}`);
+                statusText.style.display = 'block';
+                statusText.style.color = '#d93025';
+                statusText.innerText = "İptal Edildi";
+                
+                setTimeout(() => { 
+                    card.remove(); 
+                    activeDownloadsMap.delete(dlId);
+                    updateDlHeader();
+                }, 3000);
             }
         }
 
@@ -634,40 +636,115 @@
             for (let i = 0; i < selectedItems.length; i++) {
                 const item = selectedItems[i];
                 const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                
+                // İndirme ID'si
+                const dlId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                const estimatedTotalBytes = parseSizeString(item.size) * 1024 * 1024;
+                const totalBytesStr = item.size !== '--' ? item.size : 'Bilinmiyor';
 
                 try {
+                    // MODERN TARAYICILAR İÇİN (RAM ŞİŞMEZ, ARAYÜZ KONTROLÜ VAR)
                     if ('showSaveFilePicker' in window) {
-                        const handle = await window.showSaveFilePicker({ suggestedName: item.name });
-                        showDownloadToast(`${item.name} diske yazılıyor...`);
+                        // startIn: 'downloads' İLE DOĞRUDAN VARSAYILAN KLASÖRDE AÇILIR!
+                        const handle = await window.showSaveFilePicker({ 
+                            suggestedName: item.name,
+                            startIn: 'downloads' 
+                        });
                         
                         const writable = await handle.createWritable();
-                        const response = await fetch(directUrl);
+                        const controller = new AbortController();
+                        
+                        // İndirme objesini Map'e ekle
+                        activeDownloadsMap.set(dlId, {
+                            controller: controller,
+                            isPaused: false,
+                            pausePromiseResolve: null
+                        });
+                        
+                        createDlCard(dlId, item.name, totalBytesStr);
+
+                        const response = await fetch(directUrl, { signal: controller.signal });
                         if (!response.ok) throw new Error("Ağ hatası");
                         
+                        // İçerik boyutu Header'dan okunabiliyorsa netleştir
+                        const contentLength = response.headers.get('content-length');
+                        const total = contentLength ? parseInt(contentLength, 10) : estimatedTotalBytes;
+                        
                         const reader = response.body.getReader();
+                        let loaded = 0;
+                        let lastLoaded = 0;
+                        let lastTime = Date.now();
+
                         while (true) {
+                            const dlState = activeDownloadsMap.get(dlId);
+                            // PAUSE MANTIĞI (Backpressure yaratır, indirmeyi ağ düzeyinde durdurur)
+                            if (dlState.isPaused) {
+                                await new Promise(resolve => dlState.pausePromiseResolve = resolve);
+                                lastTime = Date.now();
+                                lastLoaded = loaded;
+                            }
+
                             const { done, value } = await reader.read();
                             if (done) break;
+                            
                             await writable.write(value);
+                            loaded += value.length;
+
+                            // Hız ve Yüzde Hesaplama (Her 500ms'de bir UI güncellenir)
+                            const now = Date.now();
+                            if (now - lastTime > 500) {
+                                const diffBytes = loaded - lastLoaded;
+                                const diffTime = (now - lastTime) / 1000;
+                                const speedMBps = (diffBytes / 1024 / 1024 / diffTime).toFixed(1) + " MB/s";
+                                
+                                let percent = 0;
+                                if(total > 0) percent = Math.min(100, (loaded / total) * 100);
+
+                                document.getElementById(`dl-fill-${dlId}`).style.width = percent + '%';
+                                document.getElementById(`dl-meta-size-${dlId}`).innerText = `${formatBytes(loaded)} / ${formatBytes(total)}`;
+                                document.getElementById(`dl-meta-speed-${dlId}`).innerText = speedMBps;
+
+                                lastLoaded = loaded;
+                                lastTime = now;
+                            }
                         }
+                        
                         await writable.close(); 
                         
+                        // Tamamlandı UI Güncellemesi
+                        const card = document.getElementById(`dl-card-${dlId}`);
+                        if(card) {
+                            card.style.borderColor = "#1d7044";
+                            document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
+                            document.getElementById(`dl-controls-${dlId}`).style.display = 'none';
+                            const statusText = document.getElementById(`dl-status-${dlId}`);
+                            statusText.style.display = 'block';
+                            statusText.style.color = '#1d7044';
+                            statusText.innerText = "Tamamlandı";
+                            
+                            setTimeout(() => { 
+                                card.remove(); 
+                                activeDownloadsMap.delete(dlId);
+                                updateDlHeader();
+                            }, 5000);
+                        }
+                        
                     } else {
-                        showDownloadToast(`${item.name} başlatılıyor...`);
+                        // ESKİ TARAYICILAR İÇİN (Düz İndirme, JS Kontrolü Yok)
                         const a = document.createElement('a');
                         a.href = directUrl; a.download = item.name; a.target = '_blank'; 
                         document.body.appendChild(a); a.click(); document.body.removeChild(a);
                         if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
                 } catch (err) {
-                    if (err.name !== 'AbortError') console.error("Hata:", err);
+                    if (err.name !== 'AbortError') {
+                        console.error("İndirme Hatası:", err);
+                        alert(`Hata: ${item.name} indirilemedi.`);
+                    }
                 }
             }
-            hideDownloadToast(); selectedIds.clear(); renderList();
+            selectedIds.clear(); renderList();
         }
-
-        function showDownloadToast(msg) { document.getElementById('dlText').innerText = msg; document.getElementById('dlOverlay').style.display = 'flex'; }
-        function hideDownloadToast() { document.getElementById('dlOverlay').style.display = 'none'; }
     </script>
 </body>
 </html>
