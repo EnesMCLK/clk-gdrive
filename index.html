@@ -8,7 +8,7 @@
     <!-- ======================================================= -->
     <!-- KURUMSAL KİMLİK, GÜVENLİK VE AÇIK KAYNAK DOĞRULAMASI -->
     <!-- ======================================================= -->
-    <title>Bulut Depom | Kurumsal Arşiv</title>
+    <title>Bulut Depom | Kurumsal Arşiv ve Dosya Yönetimi</title>
     <meta name="description" content="Bulut Depom, işletmeler için güvenli, şeffaf ve yüksek performanslı bir bulut dosya yönetim platformudur. Bu açık kaynaklı (Open Source) projenin kaynak kodları ve mimarisi, denetlenebilirlik ilkeleri gereği GitHub üzerinde barındırılmaktadır: https://github.com/enesmclk/clk-gdrive">
     <meta name="keywords" content="kurumsal arşiv, güvenli dosya yönetimi, bulut depolama, açık kaynak, open source, file management, enterprise cloud storage, enesmclk, clk-gdrive">
     <meta name="author" content="EnesMCLK (https://github.com/enesmclk)">
@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <style>
-        /* Google Drive Material 3 Renk Paleti */
+        /* Google Drive + Windows Explorer Tasarım Dili */
         :root { 
             --bg: #f0f4f9; 
             --surface: #ffffff; 
@@ -44,11 +44,11 @@
             --sel: #c2e7ff; 
             --sel-hover: #b3d4ec;
             --hover-bg: #e1e5ea;
-            --folder-color: #1f1f1f;
+            --folder-color: #fbbc04; /* Windows/Drive Zengin Klasör Rengi */
         }
         
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
         /* GİRİŞ EKRANI */
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
@@ -62,7 +62,6 @@
         .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: var(--bg); }
         .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 400; color: var(--text-muted); }
         
-        /* ARAMA ÇUBUĞU */
         .search-box { flex: 0 1 720px; position: relative; margin: 0 20px; }
         .search-box input { width: 100%; padding: 14px 20px 14px 48px; border-radius: 24px; border: none; background: #e9eef6; outline: none; font-size: 16px; font-family: inherit; transition: background 0.2s, box-shadow 0.2s;}
         .search-box input:focus { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
@@ -73,45 +72,112 @@
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid #e0e0e0;}
         .profile-menu.show { display: block; }
 
-        /* ALT KONTROL VE BREADCRUMB (NAVİGASYON) */
+        /* ALT KONTROL (BREADCRUMB VE WINDOWS GÖRÜNÜM MENÜSÜ) */
         .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px 16px 24px; background: var(--bg); }
-        
         .breadcrumb-nav { display: flex; align-items: center; gap: 8px; font-size: 20px; color: var(--text); flex-wrap: wrap;}
         .breadcrumb-item { cursor: pointer; border-radius: 8px; padding: 6px 12px; transition: background 0.2s; display: flex; align-items: center; gap: 6px; }
         .breadcrumb-item:hover { background: var(--hover-bg); }
         .breadcrumb-separator { color: var(--text-muted); font-size: 18px; }
         
-        .action-btns { display: flex; gap: 10px; }
-        .icon-btn { background: none; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: background 0.2s; }
-        .icon-btn:hover { background: var(--hover-bg); color: var(--text); }
-        .icon-btn.active { background: var(--sel); color: var(--primary); }
+        /* Görünüm Menüsü */
+        .view-menu-container { position: relative; }
+        .view-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text); font-family: inherit; font-size: 14px; background: var(--surface); transition: 0.2s;}
+        .view-btn:hover { background: var(--hover-bg); }
+        .view-dropdown { position: absolute; top: 110%; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); width: 220px; display: none; z-index: 2000; padding: 8px 0; }
+        .view-dropdown.show { display: block; }
+        .view-option { padding: 10px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; color: var(--text); transition: background 0.1s;}
+        .view-option:hover { background: var(--hover-bg); color: var(--primary); }
+        .view-option.active { background: var(--sel); color: var(--primary); font-weight: 500;}
 
         /* ANA İÇERİK ALANI */
         .main-container { flex: 1; background: var(--surface); margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
-        .list-header { display: grid; grid-template-columns: 48px 1fr 120px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); }
-        .list-container { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+        /* SIRALANABİLİR LİSTE BAŞLIĞI */
+        .list-header { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); background: #fafafa;}
+        .sortable-col { display: flex; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
+        .sortable-col:hover { color: var(--text); }
+        .sort-icon { font-size: 16px; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+        .sortable-col.active { color: var(--primary); }
+        .sortable-col.active .sort-icon { opacity: 1; }
+        .sortable-col.desc .sort-icon { transform: rotate(180deg); }
 
-        /* LİSTE GÖRÜNÜMÜ */
-        .view-list .item-row { display: grid; grid-template-columns: 48px 1fr 120px 150px; padding: 0 16px; border-bottom: 1px solid #f1f3f4; align-items: center; cursor: pointer; font-size: 14px; height: 48px; transition: background 0.1s; }
-        .view-list .item-row:hover { background: #f4f7fc; }
-        .view-list .item-row.selected { background: var(--sel); }
-        .view-list .item-row.selected:hover { background: var(--sel-hover); }
+        .list-container { flex: 1; overflow-y: auto; padding: 8px 0 20px 0; }
         .file-info { display: flex; align-items: center; gap: 16px; overflow: hidden; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); }
 
-        /* IZGARA (GRID) GÖRÜNÜMÜ */
-        .view-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 16px; }
-        .view-grid .list-header { display: none; } /* Grid modunda başlık gizlenir */
-        .view-grid .item-row { display: flex; align-items: center; padding: 12px 16px; background: #f0f4f9; border-radius: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; height: auto; gap: 12px; }
-        .view-grid .item-row:hover { background: #e9eef6; }
-        .view-grid .item-row.selected { background: var(--sel); border-color: #a8c7fa; }
-        .view-grid .file-info { flex: 1; display: flex; align-items: center; gap: 12px; overflow: hidden; }
-        .view-grid .item-row > span:not(.file-info) { display: none; } /* Tarih ve Boyutu gizle */
-        .view-grid .checkbox-wrapper { display: none; } /* Mobilde/Grid'de temizlik için */
-        .view-grid .item-row.selected .checkbox-wrapper { display: block; } /* Sadece seçilince göster */
+        /* ================= WINDOWS GÖRÜNÜM MODLARI ================= */
+        
+        /* 1. AYRINTILAR (Detaylı Liste) */
+        .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid #f1f3f4; align-items: center; cursor: pointer; font-size: 14px; height: 48px; transition: background 0.1s; }
+        .view-details .item-row:hover { background: #f4f7fc; }
+        .view-details .item-row.selected { background: var(--sel); }
+        
+        /* 2. LİSTELE (Sadece İsimler Yan Yana) */
+        .view-list { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 4px; padding: 12px; height: 100%; overflow-x: auto;}
+        .view-list .list-header { display: none; }
+        .view-list .item-row { display: flex; align-items: center; width: 260px; padding: 8px 12px; cursor: pointer; border-radius: 8px; gap: 12px; transition: 0.1s;}
+        .view-list .item-row:hover { background: #f4f7fc; }
+        .view-list .item-row.selected { background: var(--sel); }
+        .view-list .col-type, .view-list .col-size, .view-list .col-date { display: none; }
 
-        /* SADELEŞTİRİLMİŞ CHECKBOX */
+        /* 3. DÖŞEMELER (Orta İkon + Bilgi) */
+        .view-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; padding: 16px; }
+        .view-tiles .list-header { display: none; }
+        .view-tiles .item-row { display: flex; align-items: center; padding: 12px; background: #f8fafd; border-radius: 12px; cursor: pointer; border: 1px solid transparent; gap: 16px; transition: 0.2s;}
+        .view-tiles .item-row:hover { background: #f0f4f9; border-color: var(--border); }
+        .view-tiles .item-row.selected { background: var(--sel); border-color: #a8c7fa; }
+        .view-tiles .file-info { flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+        .view-tiles .material-icons-round { font-size: 36px; }
+        .view-tiles .file-name { font-size: 15px; width: 100%; }
+        .view-tiles .tile-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; }
+        .view-tiles .col-type, .view-tiles .col-size, .view-tiles .col-date { display: none; }
+
+        /* 4. BÜYÜK SİMGELER */
+        .view-large { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; padding: 24px; }
+        .view-large .list-header { display: none; }
+        .view-large .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 12px; border-radius: 12px; cursor: pointer; text-align: center; gap: 12px; transition: 0.1s;}
+        .view-large .item-row:hover { background: #f4f7fc; }
+        .view-large .item-row.selected { background: var(--sel); }
+        .view-large .material-icons-round { font-size: 72px; }
+        .view-large .file-info { flex-direction: column; gap: 8px; width: 100%;}
+        .view-large .file-name { font-size: 13px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3;}
+        .view-large .col-type, .view-large .col-size, .view-large .col-date, .view-large .checkbox-wrapper { display: none; }
+
+        /* 5. ORTA BOYUTLU SİMGELER (Yeni Eklendi) */
+        .view-medium { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 20px; }
+        .view-medium .list-header { display: none; }
+        .view-medium .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px 8px; border-radius: 12px; cursor: pointer; text-align: center; gap: 8px; transition: 0.1s;}
+        .view-medium .item-row:hover { background: #f4f7fc; }
+        .view-medium .item-row.selected { background: var(--sel); }
+        .view-medium .material-icons-round { font-size: 48px; } /* İkon boyutu Büyük(72) ile Küçük(20) arası */
+        .view-medium .file-info { flex-direction: column; gap: 6px; width: 100%;}
+        .view-medium .file-name { font-size: 13px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3;}
+        .view-medium .col-type, .view-medium .col-size, .view-medium .col-date, .view-medium .checkbox-wrapper { display: none; }
+
+        /* 6. KÜÇÜK SİMGELER */
+        .view-small { display: flex; flex-wrap: wrap; gap: 4px; padding: 16px; }
+        .view-small .list-header { display: none; }
+        .view-small .item-row { display: flex; align-items: center; width: auto; min-width: 180px; padding: 6px 12px; border-radius: 6px; cursor: pointer; gap: 10px;}
+        .view-small .item-row:hover { background: #f4f7fc; }
+        .view-small .item-row.selected { background: var(--sel); }
+        .view-small .material-icons-round { font-size: 20px; }
+        .view-small .file-name { font-size: 13px; }
+        .view-small .col-type, .view-small .col-size, .view-small .col-date, .view-small .checkbox-wrapper { display: none; }
+
+        /* 7. İÇERİK (Geniş Okuma) */
+        .view-content { display: flex; flex-direction: column; padding: 16px; gap: 8px; }
+        .view-content .list-header { display: none; }
+        .view-content .item-row { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; gap: 24px; transition: 0.1s;}
+        .view-content .item-row:hover { background: #fafafa; }
+        .view-content .item-row.selected { background: var(--sel); }
+        .view-content .material-icons-round { font-size: 32px; }
+        .view-content .file-info { flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+        .view-content .file-name { font-size: 16px; }
+        .view-content .content-meta { font-size: 13px; color: var(--text-muted); display: flex; gap: 16px; }
+        .view-content .col-type, .view-content .col-size, .view-content .col-date { display: none; }
+
+        /* ----------------------------------------------------------- */
+
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
         /* SAĞ TIK MENÜSÜ */
@@ -136,7 +202,6 @@
 </head>
 <body>
 
-    <!-- GİRİŞ EKRANI -->
     <div id="loginOverlay">
         <div class="login-card">
             <span class="material-icons-round" style="font-size: 64px; color: var(--primary);">cloud</span>
@@ -148,10 +213,8 @@
         </div>
     </div>
 
-    <!-- ANA UYGULAMA -->
     <div id="app" style="display:none; flex-direction:column; height: 100vh;">
         
-        <!-- Navbar -->
         <div class="navbar">
             <div class="brand">
                 <span class="material-icons-round" style="color:var(--primary); font-size: 32px;">cloud</span> 
@@ -160,7 +223,7 @@
             
             <div class="search-box">
                 <i class="material-icons-round">search</i>
-                <input type="text" placeholder="Drive'da arayın..." oninput="filterItems(this.value)">
+                <input type="text" placeholder="Dosyayı arayın..." oninput="filterItems(this.value)">
             </div>
 
             <div class="profile-area" onclick="toggleProfile()">
@@ -174,32 +237,39 @@
             </div>
         </div>
 
-        <!-- Navigasyon (Breadcrumb) ve Görünüm Kontrolleri -->
         <div class="sub-header">
-            <div class="breadcrumb-nav" id="breadcrumbNav">
-                <!-- Javascript ile Doldurulacak -->
-            </div>
+            <div class="breadcrumb-nav" id="breadcrumbNav"></div>
             
-            <div class="action-btns">
-                <button class="icon-btn active" id="btnListView" onclick="setViewMode('list')" title="Liste Görünümü">
-                    <span class="material-icons-round">view_list</span>
+            <!-- Windows Görünüm Menüsü Güncellendi -->
+            <div class="view-menu-container">
+                <button class="view-btn" onclick="toggleViewMenu(event)">
+                    <span class="material-icons-round" id="currentViewIcon">view_list</span>
+                    <span id="currentViewText">Ayrıntılar</span>
+                    <span class="material-icons-round" style="font-size: 18px;">expand_more</span>
                 </button>
-                <button class="icon-btn" id="btnGridView" onclick="setViewMode('grid')" title="Izgara Görünümü">
-                    <span class="material-icons-round">grid_view</span>
-                </button>
+                <div class="view-dropdown" id="viewDropdown">
+                    <div class="view-option active" onclick="setViewMode('details', 'Ayrıntılar', 'view_list')"><span class="material-icons-round">view_list</span> Ayrıntılar</div>
+                    <div class="view-option" onclick="setViewMode('list', 'Listele', 'list')"><span class="material-icons-round">list</span> Listele</div>
+                    <div class="view-option" onclick="setViewMode('tiles', 'Döşemeler', 'grid_view')"><span class="material-icons-round">grid_view</span> Döşemeler</div>
+                    <div class="view-option" onclick="setViewMode('large', 'Büyük Simgeler', 'view_module')"><span class="material-icons-round">view_module</span> Büyük Simgeler</div>
+                    <div class="view-option" onclick="setViewMode('medium', 'Orta Boyutlu Simgeler', 'apps')"><span class="material-icons-round">apps</span> Orta Boyutlu Simgeler</div>
+                    <div class="view-option" onclick="setViewMode('small', 'Küçük Simgeler', 'view_comfy')"><span class="material-icons-round">view_comfy</span> Küçük Simgeler</div>
+                    <div class="view-option" onclick="setViewMode('content', 'İçerik', 'view_agenda')"><span class="material-icons-round">view_agenda</span> İçerik</div>
+                </div>
             </div>
         </div>
 
-        <!-- Dosya Listesi -->
         <div class="main-container">
+            <!-- Sıralanabilir Başlık -->
             <div class="list-header" id="listHeaderRow">
                 <input type="checkbox" onclick="selectAllItems(this.checked)" id="selectAllCb">
-                <span>Ad</span>
-                <span>Boyut</span>
-                <span>Son değiştirme</span>
+                <div class="sortable-col active" onclick="handleSort('name')">Ad <span class="material-icons-round sort-icon" id="sort-icon-name">arrow_downward</span></div>
+                <div class="sortable-col" onclick="handleSort('type')">Tür <span class="material-icons-round sort-icon" id="sort-icon-type">arrow_downward</span></div>
+                <div class="sortable-col" onclick="handleSort('size')">Boyut <span class="material-icons-round sort-icon" id="sort-icon-size">arrow_downward</span></div>
+                <div class="sortable-col" onclick="handleSort('date')">Son değiştirme <span class="material-icons-round sort-icon" id="sort-icon-date">arrow_downward</span></div>
             </div>
 
-            <div class="list-container view-list" id="fileList">
+            <div class="list-container view-details" id="fileList">
                 <div id="loader" style="text-align:center; padding:80px; display:none;">
                     <span class="material-icons-round spinner" style="font-size:40px;">autorenew</span>
                 </div>
@@ -207,7 +277,6 @@
         </div>
     </div>
 
-    <!-- Sağ Tık Menüsü -->
     <div id="ctxMenu">
         <div class="ctx-item" onclick="triggerNativeDownload()">
             <span class="material-icons-round" style="color:var(--text)">download</span> 
@@ -215,7 +284,6 @@
         </div>
     </div>
 
-    <!-- İndirme Bildirimi -->
     <div id="dlOverlay">
         <span class="material-icons-round spinner">autorenew</span>
         <span id="dlText">Dosya diske yazılıyor...</span>
@@ -231,14 +299,22 @@
         let displayedItems = [];
         let selectedIds = new Set();
         let sessionKey = null;
-        let currentViewMode = 'list'; // 'list' veya 'grid'
         
-        // --- AKILLI ÖNBELLEK VE NAVİGASYON ---
-        let folderCache = {}; // Ziyaret edilen klasörlerin verilerini RAM'de tutar (Hız için)
-        let navigationHistory = []; // Breadcrumb için geçmişi tutar
+        // Önbellek & Navigasyon
+        let folderCache = {}; 
+        let navigationHistory = []; 
 
-        // Tıklama boşluğa gelirse sağ tık menüsünü kapat
-        document.addEventListener('click', () => { document.getElementById('ctxMenu').style.display = 'none'; });
+        // Sıralama Değişkenleri
+        let currentSortCol = 'name';
+        let isSortAsc = true;
+
+        // Dışarı tıklama eventleri
+        document.addEventListener('click', (e) => { 
+            document.getElementById('ctxMenu').style.display = 'none'; 
+            if(!e.target.closest('.view-menu-container')) {
+                document.getElementById('viewDropdown').classList.remove('show');
+            }
+        });
 
         async function checkLogin() {
             const u = document.getElementById('userInput').value;
@@ -266,7 +342,6 @@
                     document.getElementById('cardNick').innerText = ruzmuz;
                     document.getElementById('cardUser').innerText = u;
                     
-                    // Kök dizini (Ana Sayfa) önbelleğe kaydet ve geçmişi başlat
                     const rootId = res.data.currentId || 'root';
                     folderCache[rootId] = res.data;
                     navigationHistory = [{ id: rootId, name: 'Ana Sayfa' }];
@@ -279,33 +354,97 @@
                     btn.innerText = "Oturum Aç"; btn.disabled = false;
                 }
             } catch(e) { 
-                alert("Sunucuya ulaşılamıyor. Lütfen Apps Script linkinizi kontrol edin."); 
+                alert("Sunucuya ulaşılamıyor."); 
                 btn.innerText = "Oturum Aç"; btn.disabled = false;
             }
         }
 
-        // Klasörler Üstte, Dosyalar Altta olacak şekilde düzenler
+        function extractType(filename, isFolder) {
+            if(isFolder) return "Dosya Klasörü";
+            const parts = filename.split('.');
+            if(parts.length === 1) return "Dosya";
+            const ext = parts.pop().toUpperCase();
+            return `${ext} Dosyası`;
+        }
+
         function loadData(data) {
             allItems = [];
-            data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--'}));
-            data.files.forEach(f => allItems.push({...f, isFolder: false}));
+            data.folders.forEach(f => allItems.push({...f, isFolder: true, size: '--', type: "Dosya Klasörü"}));
+            data.files.forEach(f => allItems.push({...f, isFolder: false, type: extractType(f.name, false)}));
             
-            // İsme göre A-Z varsayılan sıralama
-            allItems.sort((a,b) => {
-                if(a.isFolder === b.isFolder) return a.name.localeCompare(b.name);
-                return a.isFolder ? -1 : 1;
+            displayedItems = [...allItems];
+            applySorting(); 
+        }
+
+        // --- GELİŞMİŞ SIRALAMA MOTORU ---
+        function handleSort(col) {
+            if (currentSortCol === col) {
+                isSortAsc = !isSortAsc; 
+            } else {
+                currentSortCol = col;
+                isSortAsc = true; 
+            }
+            updateSortUI();
+            applySorting();
+        }
+
+        function updateSortUI() {
+            document.querySelectorAll('.sortable-col').forEach(el => {
+                el.classList.remove('active', 'desc');
+                el.querySelector('.sort-icon').innerText = 'arrow_downward';
+            });
+            const activeHeader = document.querySelector(`.sortable-col[onclick="handleSort('${currentSortCol}')"]`);
+            if (activeHeader) {
+                activeHeader.classList.add('active');
+                if (!isSortAsc) {
+                    activeHeader.classList.add('desc');
+                    activeHeader.querySelector('.sort-icon').innerText = 'arrow_upward';
+                }
+            }
+        }
+
+        function parseDateString(dateStr) {
+            if(!dateStr || dateStr === '--') return 0;
+            const [datePart, timePart] = dateStr.split(' ');
+            if(!datePart || !timePart) return 0;
+            const [d, m, y] = datePart.split('.');
+            const [hr, min] = timePart.split(':');
+            return new Date(y, m-1, d, hr, min).getTime();
+        }
+
+        function parseSizeString(sizeStr) {
+            if(!sizeStr || sizeStr === '--') return -1;
+            return parseFloat(sizeStr.replace(' MB', ''));
+        }
+
+        function applySorting() {
+            displayedItems.sort((a, b) => {
+                if (a.isFolder !== b.isFolder) {
+                    return a.isFolder ? -1 : 1;
+                }
+
+                let comparison = 0;
+                if (currentSortCol === 'name') {
+                    comparison = a.name.localeCompare(b.name, 'tr');
+                } else if (currentSortCol === 'type') {
+                    comparison = a.type.localeCompare(b.type, 'tr');
+                } else if (currentSortCol === 'size') {
+                    comparison = parseSizeString(a.size) - parseSizeString(b.size);
+                } else if (currentSortCol === 'date') {
+                    comparison = parseDateString(a.date) - parseDateString(b.date);
+                }
+
+                return isSortAsc ? comparison : -comparison;
             });
 
-            displayedItems = [...allItems];
             selectedIds.clear();
             document.getElementById('selectAllCb').checked = false;
             renderList();
         }
 
-        // Uzantıya göre ikon ve renk seçici
+        // --- GÖRÜNÜM (UI) MOTORU ---
         function getFileIcon(filename, isFolder) {
             if(isFolder) return { icon: 'folder', class: 'icon-folder' };
-            
             const ext = filename.split('.').pop().toLowerCase();
             if(['pdf'].includes(ext)) return { icon: 'picture_as_pdf', class: 'icon-pdf' };
             if(['xls', 'xlsx', 'csv'].includes(ext)) return { icon: 'table_view', class: 'icon-excel' };
@@ -313,7 +452,6 @@
             if(['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) return { icon: 'image', class: 'icon-image' };
             if(['mp4', 'avi', 'mov'].includes(ext)) return { icon: 'play_circle', class: 'icon-video' };
             if(['zip', 'rar', '7z'].includes(ext)) return { icon: 'folder_zip', class: 'icon-folder' };
-            
             return { icon: 'insert_drive_file', class: 'icon-file' };
         }
 
@@ -322,7 +460,6 @@
             const loader = document.getElementById('loader');
             if(loader) loader.style.display = 'none';
 
-            // Temizle
             Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
 
             displayedItems.forEach(item => {
@@ -330,32 +467,33 @@
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
                 
                 const iconInfo = getFileIcon(item.name, item.isFolder);
-                const iconFilled = item.isFolder ? 'material-icons-round' : 'material-icons-round';
 
                 row.innerHTML = `
                     <div class="checkbox-wrapper">
                         <input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelection('${item.id}')">
                     </div>
                     <div class="file-info">
-                        <span class="${iconFilled} ${iconInfo.class}">${iconInfo.icon}</span>
-                        <span class="file-name" title="${item.name}">${item.name}</span>
+                        <span class="material-icons-round ${iconInfo.class}">${iconInfo.icon}</span>
+                        <div style="display:flex; flex-direction:column; width:100%;">
+                            <span class="file-name" title="${item.name}">${item.name}</span>
+                            <div class="tile-meta" style="display:none;">${item.type} • ${item.size}</div>
+                            <div class="content-meta" style="display:none;">${item.type} • ${item.size} • ${item.date}</div>
+                        </div>
                     </div>
-                    <span>${item.size}</span>
-                    <span>${item.date || '--'}</span>
+                    <span class="col-type" style="font-size:13px;">${item.type}</span>
+                    <span class="col-size" style="font-size:13px;">${item.size}</span>
+                    <span class="col-date" style="font-size:13px;">${item.date || '--'}</span>
                 `;
                 
-                // Tıklama Olayları (Tek tık: Seç, Çift tık: Gir/İndir)
                 row.onclick = (e) => {
-                    // Sadece tıklananı seç, diğerlerini bırak (Ctrl/Cmd tuşu yoksa)
                     if(!e.ctrlKey && !e.metaKey) selectedIds.clear();
                     toggleSelection(item.id);
                 };
 
                 row.ondblclick = (e) => {
                     e.stopPropagation();
-                    if(item.isFolder) {
-                        enterFolder(item.id, item.name);
-                    } else {
+                    if(item.isFolder) enterFolder(item.id, item.name);
+                    else {
                         selectedIds.clear();
                         selectedIds.add(item.id);
                         triggerNativeDownload();
@@ -363,25 +501,45 @@
                 };
 
                 row.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if(!selectedIds.has(item.id)) { 
-                        selectedIds.clear(); 
-                        toggleSelection(item.id); 
-                    }
+                    e.preventDefault(); e.stopPropagation();
+                    if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelection(item.id); }
                     showContextMenu(e);
                 };
                 
                 list.appendChild(row);
             });
+            updateCheckboxState();
         }
 
-        // --- NAVİGASYON VE BREADCRUMB İŞLEMLERİ ---
+        function toggleViewMenu(e) {
+            e.stopPropagation();
+            document.getElementById('viewDropdown').classList.toggle('show');
+        }
+
+        function setViewMode(modeClass, text, icon) {
+            document.getElementById('currentViewText').innerText = text;
+            document.getElementById('currentViewIcon').innerText = icon;
+            document.getElementById('viewDropdown').classList.remove('show');
+            
+            document.querySelectorAll('.view-option').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const listContainer = document.getElementById('fileList');
+            const headerRow = document.getElementById('listHeaderRow');
+            listContainer.className = `list-container view-${modeClass}`;
+
+            if(modeClass === 'details') headerRow.style.display = 'grid';
+            else headerRow.style.display = 'none';
+
+            document.querySelectorAll('.tile-meta').forEach(el => el.style.display = (modeClass === 'tiles') ? 'flex' : 'none');
+            document.querySelectorAll('.content-meta').forEach(el => el.style.display = (modeClass === 'content') ? 'flex' : 'none');
+        }
+
+        // --- BREADCRUMB ---
         async function enterFolder(id, name) {
             document.getElementById('loader').style.display = 'block';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
 
-            // 1. Klasör Cache'de (Önbellekte) var mı? Varsa anında yükle!
             if (folderCache[id]) {
                 navigationHistory.push({ id: id, name: name });
                 renderBreadcrumbs();
@@ -389,50 +547,34 @@
                 return;
             }
 
-            // 2. Cache'de yoksa Sunucudan Çek
             const u = sessionStorage.getItem('u');
             const p = sessionStorage.getItem('p');
-            
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
                 const res = await r.json();
-                
                 if(res.success) {
-                    folderCache[id] = res.data; // Hafızaya al
-                    navigationHistory.push({ id: id, name: name }); // Geçmişe ekle
+                    folderCache[id] = res.data; 
+                    navigationHistory.push({ id: id, name: name });
                     renderBreadcrumbs();
                     loadData(res.data);
                 }
-            } catch (error) {
-                alert("Klasör yüklenemedi.");
-                document.getElementById('loader').style.display = 'none';
-                renderList();
-            }
+            } catch (error) { alert("Klasör yüklenemedi."); renderList(); }
         }
 
         function navigateToHistoryIndex(index) {
-            // Tıklanan yere kadar geçmişi kırp
             const target = navigationHistory[index];
             navigationHistory = navigationHistory.slice(0, index + 1);
             renderBreadcrumbs();
-            
-            // Hedef klasör kesin Cache'dedir
-            if(folderCache[target.id]) {
-                loadData(folderCache[target.id]);
-            }
+            if(folderCache[target.id]) loadData(folderCache[target.id]);
         }
 
         function goBack() {
-            if(navigationHistory.length > 1) {
-                navigateToHistoryIndex(navigationHistory.length - 2);
-            }
+            if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2);
         }
 
         function renderBreadcrumbs() {
             const nav = document.getElementById('breadcrumbNav');
             nav.innerHTML = '';
-
-            // Geri Butonu (Sadece kök dizinde değilsek)
             if (navigationHistory.length > 1) {
                 const backBtn = document.createElement('div');
                 backBtn.className = 'breadcrumb-item';
@@ -441,31 +583,17 @@
                 backBtn.onclick = goBack;
                 nav.appendChild(backBtn);
             }
-
-            // Yol Çubuğu (Breadcrumb)
             navigationHistory.forEach((step, index) => {
                 const isLast = index === navigationHistory.length - 1;
-                
                 const item = document.createElement('div');
                 item.className = 'breadcrumb-item';
+                if(index === 0) item.innerHTML = `<span class="material-icons-round" style="font-size: 22px;">home</span> <span style="font-size:16px;">${step.name}</span>`;
+                else item.innerHTML = `<span style="font-size:16px; font-weight: ${isLast ? '500' : '400'}">${step.name}</span>`;
                 
-                // Eğer Ana Sayfaysa ikon koy
-                if(index === 0) {
-                    item.innerHTML = `<span class="material-icons-round" style="font-size: 22px;">home</span> <span style="font-size:16px;">${step.name}</span>`;
-                } else {
-                    item.innerHTML = `<span style="font-size:16px; font-weight: ${isLast ? '500' : '400'}">${step.name}</span>`;
-                }
-                
-                if(!isLast) {
-                    item.onclick = () => navigateToHistoryIndex(index);
-                } else {
-                    item.style.cursor = "default";
-                    item.style.backgroundColor = "transparent";
-                }
-
+                if(!isLast) item.onclick = () => navigateToHistoryIndex(index);
+                else { item.style.cursor = "default"; item.style.backgroundColor = "transparent"; }
                 nav.appendChild(item);
 
-                // Ayırıcı (>)
                 if (!isLast) {
                     const sep = document.createElement('span');
                     sep.className = 'breadcrumb-separator material-icons-round';
@@ -475,59 +603,25 @@
             });
         }
 
-        // --- GÖRÜNÜM MODLARI (LİSTE / IZGARA) ---
-        function setViewMode(mode) {
-            currentViewMode = mode;
-            const listContainer = document.getElementById('fileList');
-            const headerRow = document.getElementById('listHeaderRow');
-            const btnList = document.getElementById('btnListView');
-            const btnGrid = document.getElementById('btnGridView');
-
-            if(mode === 'grid') {
-                listContainer.className = 'list-container view-grid';
-                headerRow.style.display = 'none';
-                btnGrid.classList.add('active');
-                btnList.classList.remove('active');
-            } else {
-                listContainer.className = 'list-container view-list';
-                headerRow.style.display = 'grid';
-                btnList.classList.add('active');
-                btnGrid.classList.remove('active');
-            }
-        }
-
-        // --- SEÇİM VE ARAMA İŞLEMLERİ ---
+        // --- YARDIMCI İŞLEMLER ---
         function toggleSelection(id) {
-            if(selectedIds.has(id)) selectedIds.delete(id);
-            else selectedIds.add(id);
-            updateCheckboxState();
-            renderList();
+            if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+            updateCheckboxState(); renderList();
         }
-
         function selectAllItems(checked) {
             selectedIds.clear();
             if(checked) displayedItems.forEach(i => selectedIds.add(i.id));
             renderList();
         }
-
         function updateCheckboxState() {
             const cb = document.getElementById('selectAllCb');
             if(displayedItems.length === 0) { cb.checked = false; return; }
             cb.checked = displayedItems.every(i => selectedIds.has(i.id));
         }
-
         function filterItems(val) { 
             displayedItems = allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase()));
-            renderList();
+            applySorting(); 
         }
-
-        function sortItems(type) { 
-            // Şimdilik sadece A-Z çevrimi
-            allItems.reverse();
-            displayedItems.reverse();
-            renderList(); 
-        }
-
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
 
@@ -537,33 +631,25 @@
             menu.style.display = 'block';
             menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
             menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
-            
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             
             if(selectedItems.some(i => i.isFolder)) {
-                document.getElementById('ctxLabel').innerText = "Klasör İçine Girin";
+                document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin";
                 document.getElementById('ctxLabel').style.color = "gray";
             } else {
-                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu İndir" : "İndir";
+                document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu Akış İndir" : "Doğrudan İndir";
                 document.getElementById('ctxLabel').style.color = "var(--text)";
             }
         }
 
         // =======================================================================
-        // DOĞRUDAN DİSKE YAZMA (SIFIR RAM) - CHUNKING MİMARİSİ
+        // MANUEL CHUNKING İLE DOĞRUDAN DİSKE YAZMA (SIFIR RAM)
         // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
-
-            if(selectedItems.some(i => i.isFolder)) {
-                alert("Uyarı: Klasörleri indirmek için içine girip dosyaları seçmelisiniz.");
-                return;
-            }
-
-            if(!sessionKey) {
-                alert("Oturum süresi doldu. Lütfen tekrar giriş yapın."); return;
-            }
+            if(selectedItems.some(i => i.isFolder)) { alert("Klasörler doğrudan indirilemez."); return; }
+            if(!sessionKey) { alert("Güvenlik Hatası: Oturum süresi doldu."); return; }
 
             document.getElementById('ctxMenu').style.display = 'none';
 
@@ -572,58 +658,38 @@
                 const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
 
                 try {
-                    // Modern Tarayıcılar (Farklı Kaydet ve 0 Bayt Çözümü)
                     if ('showSaveFilePicker' in window) {
                         const handle = await window.showSaveFilePicker({ suggestedName: item.name });
-                        showDownloadToast(`${item.name} diske akıtılıyor...`);
+                        showDownloadToast(`${item.name} diske yazılıyor...`);
                         
                         const writable = await handle.createWritable();
                         const response = await fetch(directUrl);
-                        
                         if (!response.ok) throw new Error("Ağ hatası");
                         
-                        // Chunking - Parçalı Yazma (0 Bayt Hatası Önleyici)
                         const reader = response.body.getReader();
                         while (true) {
                             const { done, value } = await reader.read();
                             if (done) break;
                             await writable.write(value);
                         }
-                        await writable.close(); // Dosyayı mühürle
+                        await writable.close(); 
                         
                     } else {
-                        // Eski tarayıcılar
-                        showDownloadToast(`${item.name} indiriliyor...`);
+                        showDownloadToast(`${item.name} başlatılıyor...`);
                         const a = document.createElement('a');
-                        a.href = directUrl;
-                        a.download = item.name;
-                        a.target = '_blank'; 
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-
+                        a.href = directUrl; a.download = item.name; a.target = '_blank'; 
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
                         if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
                 } catch (err) {
-                    if (err.name !== 'AbortError') { 
-                        console.error("İndirme Hatası:", err);
-                        alert(`Hata: ${item.name} indirilemedi.`);
-                    }
+                    if (err.name !== 'AbortError') console.error("Hata:", err);
                 }
             }
-
-            hideDownloadToast();
-            selectedIds.clear();
-            renderList();
+            hideDownloadToast(); selectedIds.clear(); renderList();
         }
 
-        function showDownloadToast(msg) {
-            document.getElementById('dlText').innerText = msg;
-            document.getElementById('dlOverlay').style.display = 'flex';
-        }
-        function hideDownloadToast() {
-            document.getElementById('dlOverlay').style.display = 'none';
-        }
+        function showDownloadToast(msg) { document.getElementById('dlText').innerText = msg; document.getElementById('dlOverlay').style.display = 'flex'; }
+        function hideDownloadToast() { document.getElementById('dlOverlay').style.display = 'none'; }
     </script>
 </body>
 </html>
