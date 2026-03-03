@@ -170,10 +170,11 @@
 
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
+        /* SAĞ TIK MENÜSÜ */
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
-        .ctx-item .material-icons-round { color: var(--text-muted); font-size: 20px; }
+        .ctx-item .material-icons-round { font-size: 20px; } /* Renk inline olarak js'den verilecek */
 
         .icon-folder { color: var(--folder-color); }
         .icon-file { color: var(--primary); }
@@ -220,6 +221,27 @@
         #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: #323232; color: white; padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; font-size: 14px; font-weight: 500;}
         .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ================================================================= */
+        /* YENİ: DOSYA AYRINTILARI KARTI (MODAL) EKLENTİSİ                   */
+        /* ================================================================= */
+        #detailsOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.2s; }
+        #detailsOverlay.show { display: flex; opacity: 1; }
+        .details-card { background: var(--surface); width: 400px; max-width: 90%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; display: flex; flex-direction: column;}
+        #detailsOverlay.show .details-card { transform: scale(1); }
+        .details-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: #f8fafd; }
+        .details-title { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; color: var(--text); }
+        .details-close { cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 50%; display: flex; transition: background 0.2s; }
+        .details-close:hover { background: var(--hover-bg); color: var(--text); }
+        .details-body { padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
+        .details-icon-wrapper { text-align: center; margin-bottom: 8px; }
+        .details-icon-wrapper .material-icons-round { font-size: 64px; }
+        .details-row { display: flex; flex-direction: column; gap: 4px; }
+        .details-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .details-value { font-size: 14px; color: var(--text); word-break: break-all; }
+        .details-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: #f8fafd; }
+        .details-btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(11, 87, 208, 0.3); }
 
         /* ================= MOBİL UYUM (RESPONSIVE) AYARLARI ================= */
         @media (max-width: 768px) {
@@ -337,14 +359,34 @@
         </div>
     </div>
 
+    <!-- SAĞ TIK MENÜSÜ YENİLENDİ -->
     <div id="ctxMenu">
-        <div class="ctx-item" onclick="triggerNativeDownload()">
-            <span class="material-icons-round" style="color:var(--text)">download</span> 
-            <span id="ctxLabel">İndir</span>
+        <!-- Dinamik Olarak JS İçinden Doldurulacak -->
+    </div>
+
+    <!-- YENİ: AYRINTILAR KARTI (MODAL) -->
+    <div id="detailsOverlay">
+        <div class="details-card">
+            <div class="details-header">
+                <div class="details-title" id="detailsTitleText">
+                    <span class="material-icons-round">info</span> Dosya Ayrıntıları
+                </div>
+                <div class="details-close" onclick="closeDetailsModal()">
+                    <span class="material-icons-round">close</span>
+                </div>
+            </div>
+            <div class="details-body" id="detailsBody">
+                <!-- Javascript ile dinamik doldurulur -->
+            </div>
+            <div class="details-footer">
+                <button class="details-btn-primary" id="detailsDownloadBtn" onclick="downloadFromDetails()">
+                    <span class="material-icons-round" style="font-size:18px;">download</span> İndir
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- YENİ GELİŞMİŞ İNDİRME YÖNETİCİSİ -->
+    <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
@@ -353,9 +395,7 @@
             </div>
             <span class="material-icons-round dl-header-icon" id="dlHeaderIcon">expand_more</span>
         </div>
-        <div class="dl-list" id="dlList">
-            <!-- Dinamik İndirme Kartları Buraya Gelecek -->
-        </div>
+        <div class="dl-list" id="dlList"></div>
     </div>
     
     <div id="dlOverlay">
@@ -378,10 +418,14 @@
         let currentSortCol = 'name';
         let isSortAsc = true;
 
+        // Dışarı tıklamaları dinle (Ayrıntılar ekranını kapatma dahil)
         document.addEventListener('click', (e) => { 
             document.getElementById('ctxMenu').style.display = 'none'; 
             if(!e.target.closest('.view-menu-container')) {
                 document.getElementById('viewDropdown').classList.remove('show');
+            }
+            if(e.target.id === 'detailsOverlay') {
+                closeDetailsModal();
             }
         });
 
@@ -571,16 +615,117 @@
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
 
+        // =======================================================================
+        // YENİ EKLENEN: GELİŞMİŞ SAĞ TIK MENÜSÜ VE AYRINTILAR KARTI
+        // =======================================================================
         function showContextMenu(e) {
-            const menu = document.getElementById('ctxMenu'); menu.style.display = 'block';
-            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+            const menu = document.getElementById('ctxMenu'); 
+            menu.style.display = 'block';
+            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; 
+            menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+            
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
-            if(selectedItems.some(i => i.isFolder)) { document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin"; document.getElementById('ctxLabel').style.color = "gray"; } 
-            else { document.getElementById('ctxLabel').innerText = selectedItems.length > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
+            
+            let dlText = "";
+            let dlStyle = "";
+            let infoText = "";
+
+            if(selectedItems.some(i => i.isFolder)) { 
+                dlText = "Klasörleri Seçmeyin"; 
+                dlStyle = "color:gray; pointer-events:none;"; 
+                infoText = "Ayrıntılar"; 
+            } else { 
+                dlText = selectedItems.length > 1 ? "Toplu İndir" : "İndir"; 
+                dlStyle = "color:var(--text); cursor:pointer;";
+                infoText = selectedItems.length > 1 ? "Toplu Ayrıntılar" : "Ayrıntılar"; 
+            }
+
+            // Menüyü Dinamik Doldur
+            menu.innerHTML = `
+                <div class="ctx-item" style="${dlStyle}" onclick="triggerNativeDownload()">
+                    <span class="material-icons-round" style="color:${selectedItems.some(i => i.isFolder) ? 'gray' : 'var(--text)'}">download</span> 
+                    <span>${dlText}</span>
+                </div>
+                <div class="ctx-item" onclick="showDetailsModal()">
+                    <span class="material-icons-round" style="color:var(--text)">info</span> 
+                    <span>${infoText}</span>
+                </div>
+            `;
+        }
+
+        function showDetailsModal() {
+            document.getElementById('ctxMenu').style.display = 'none';
+            const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+            if(selectedItems.length === 0) return;
+
+            const body = document.getElementById('detailsBody');
+            const title = document.getElementById('detailsTitleText');
+            const btn = document.getElementById('detailsDownloadBtn');
+
+            // TEK DOSYA SEÇİLDİYSE
+            if(selectedItems.length === 1) {
+                const item = selectedItems[0];
+                const iconInfo = getFileIcon(item.name, item.isFolder);
+                title.innerHTML = `<span class="material-icons-round">info</span> Dosya Ayrıntıları`;
+                body.innerHTML = `
+                    <div class="details-icon-wrapper">
+                        <span class="material-icons-round ${iconInfo.class}">${iconInfo.icon}</span>
+                    </div>
+                    <div class="details-row"><span class="details-label">Ad</span><span class="details-value">${item.name}</span></div>
+                    <div class="details-row"><span class="details-label">Tür</span><span class="details-value">${item.type}</span></div>
+                    <div class="details-row"><span class="details-label">Boyut</span><span class="details-value">${item.size}</span></div>
+                    <div class="details-row"><span class="details-label">Değiştirilme Tarihi</span><span class="details-value">${item.date || '--'}</span></div>
+                `;
+            } 
+            // TOPLU SEÇİM YAPILDIYSA
+            else {
+                title.innerHTML = `<span class="material-icons-round">info</span> Toplu Seçim Ayrıntıları`;
+                let totalMB = 0;
+                let hasFolder = false;
+                selectedItems.forEach(item => {
+                    if(item.isFolder) hasFolder = true;
+                    else {
+                        const s = parseFloat(item.size.replace(' MB', ''));
+                        if(!isNaN(s)) totalMB += s;
+                    }
+                });
+                
+                body.innerHTML = `
+                    <div class="details-icon-wrapper">
+                        <span class="material-icons-round" style="color: var(--primary);">library_books</span>
+                    </div>
+                    <div class="details-row"><span class="details-label">Seçilen Öğe Sayısı</span><span class="details-value">${selectedItems.length} adet</span></div>
+                    <div class="details-row"><span class="details-label">Toplam Boyut</span><span class="details-value">${totalMB > 0 ? totalMB.toFixed(2) + ' MB' : '--'}${hasFolder ? ' <span style="color:var(--text-muted);font-size:12px;">(Klasörler Hariç)</span>' : ''}</span></div>
+                `;
+            }
+
+            // Klasör seçiliyse indirme butonunu gizle
+            if(selectedItems.some(i => i.isFolder)) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'flex';
+                btn.innerHTML = `<span class="material-icons-round" style="font-size:18px;">download</span> ${selectedItems.length > 1 ? 'Kuyruğa Ekle' : 'İndir'}`;
+            }
+
+            // Modalı Ekrana Getir
+            const overlay = document.getElementById('detailsOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('show'), 10);
+        }
+
+        function closeDetailsModal() {
+            const overlay = document.getElementById('detailsOverlay');
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.style.display = 'none', 200);
+        }
+        
+        function downloadFromDetails() {
+            closeDetailsModal();
+            triggerNativeDownload();
         }
 
         // =======================================================================
-        // ZENGİN İNDİRME YÖNETİCİSİ VE GÜVENLİK (SANDBOX) UYARILARI
+        // ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) ALTYAPISI
         // =======================================================================
         let activeDownloadsMap = new Map();
         
