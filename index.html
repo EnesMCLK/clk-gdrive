@@ -199,7 +199,7 @@
         .dl-list { max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--surface); transition: max-height 0.3s, opacity 0.3s, padding 0.3s; }
         
         .dl-item { background: var(--surface); border-radius: 8px; padding: 12px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.2s; }
-        .dl-item:hover { background: #f8fafd; } /* Tıklanabilirlik hissi için */
+        .dl-item:hover { background: #f8fafd; }
         
         .dl-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
         .dl-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); flex: 1; padding-top: 2px;}
@@ -671,7 +671,6 @@
             }
         }
 
-        // Manuel kapatma fonksiyonu (İndirme bitince kullanılır)
         function dismissDl(dlId) {
             const card = document.getElementById(`dl-card-${dlId}`);
             if(card) {
@@ -681,10 +680,9 @@
             }
         }
 
-        // TARAYICI GÜVENLİK (SANDBOX) UYARISI
         function showSandboxInfo() {
             showDownloadToast(`Güvenlik: Web tarayıcıları indirilen yerel dosyaları doğrudan çalıştıramaz. Lütfen kaydettiğiniz dizinden dosyayı açınız.`);
-            setTimeout(hideDownloadToast, 6000); // Uyarıyı 6 saniye ekranda tut
+            setTimeout(hideDownloadToast, 6000); 
         }
 
         function showDownloadToast(msg) { 
@@ -775,7 +773,6 @@
                         
                         await writable.close(); 
                         
-                        // TAMAMLANDI UI GÜNCELLEMESİ VE SANDBOX BİLGİLENDİRMESİ
                         const card = document.getElementById(`dl-card-${dlId}`);
                         if(card) {
                             const dlState = activeDownloadsMap.get(dlId);
@@ -785,12 +782,10 @@
                             card.style.cursor = "pointer";
                             card.title = "Bilgi almak için çift tıklayın";
                             
-                            // Çift Tıklama Olayı (Sandbox Uyarısı Verir)
                             card.ondblclick = () => showSandboxInfo();
                             
                             document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
                             
-                            // Klasör İkonu ve Kapat Butonu Ekleme
                             const controls = document.getElementById(`dl-controls-${dlId}`);
                             controls.innerHTML = `
                                 <button class="dl-btn" onclick="event.stopPropagation(); showSandboxInfo()" title="Klasörde Göster"><span class="material-icons-round" style="font-size:18px; color:#1d7044;">folder_open</span></button>
@@ -801,8 +796,6 @@
                             statusText.style.display = 'block';
                             statusText.style.color = '#1d7044';
                             statusText.innerText = "Tamamlandı";
-                            
-                            // Kart otomatik SİLİNMEZ. Kullanıcının çarpı tuşuna basması beklenir.
                         }
                         
                     } else {
