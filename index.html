@@ -525,7 +525,7 @@
             menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.some(i => i.isFolder)) { document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin"; document.getElementById('ctxLabel').style.color = "gray"; } 
-            else { document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
+            else { document.getElementById('ctxLabel').innerText = selectedItems.length > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
         }
 
         // =======================================================================
