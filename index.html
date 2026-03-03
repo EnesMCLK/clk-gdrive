@@ -174,7 +174,7 @@
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
-        .ctx-item .material-icons-round { font-size: 20px; } /* Renk inline olarak js'den verilecek */
+        .ctx-item .material-icons-round { font-size: 20px; }
 
         .icon-folder { color: var(--folder-color); }
         .icon-file { color: var(--primary); }
@@ -184,9 +184,7 @@
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
 
-        /* ================================================================= */
-        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI                   */
-        /* ================================================================= */
+        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
         .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dl-manager.minimized { width: 280px; }
         .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
@@ -218,13 +216,24 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: #323232; color: white; padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; font-size: 14px; font-weight: 500;}
+        /* ================================================================= */
+        /* SARI ÇAKAR IŞIK (FLASHING TOAST) ANİMASYONU                       */
+        /* ================================================================= */
+        @keyframes flashYellow {
+            0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
+            50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
+            100% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
+        }
+        
+        .flash-warning {
+            animation: flashYellow 1.2s infinite;
+        }
+
+        #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 10000; font-size: 14px; font-weight: 500; transition: 0.2s;}
         .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* ================================================================= */
-        /* YENİ: DOSYA AYRINTILARI KARTI (MODAL) EKLENTİSİ                   */
-        /* ================================================================= */
+        /* DOSYA AYRINTILARI KARTI (MODAL) */
         #detailsOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.2s; }
         #detailsOverlay.show { display: flex; opacity: 1; }
         .details-card { background: var(--surface); width: 400px; max-width: 90%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; display: flex; flex-direction: column;}
@@ -243,7 +252,7 @@
         .details-btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(11, 87, 208, 0.3); }
 
-        /* ================= MOBİL UYUM (RESPONSIVE) AYARLARI ================= */
+        /* MOBİL UYUM (RESPONSIVE) AYARLARI */
         @media (max-width: 768px) {
             .navbar { padding: 12px 16px; gap: 8px; }
             .brand span:not(.material-icons-round) { display: none; }
@@ -364,7 +373,7 @@
         <!-- Dinamik Olarak JS İçinden Doldurulacak -->
     </div>
 
-    <!-- YENİ: AYRINTILAR KARTI (MODAL) -->
+    <!-- AYRINTILAR KARTI (MODAL) -->
     <div id="detailsOverlay">
         <div class="details-card">
             <div class="details-header">
@@ -399,7 +408,7 @@
     </div>
     
     <div id="dlOverlay">
-        <span class="material-icons-round" style="color:var(--primary)">info</span>
+        <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
         <span id="dlText">Bilgi</span>
     </div>
 
@@ -615,9 +624,6 @@
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
 
-        // =======================================================================
-        // YENİ EKLENEN: GELİŞMİŞ SAĞ TIK MENÜSÜ VE AYRINTILAR KARTI
-        // =======================================================================
         function showContextMenu(e) {
             const menu = document.getElementById('ctxMenu'); 
             menu.style.display = 'block';
@@ -640,7 +646,6 @@
                 infoText = selectedItems.length > 1 ? "Toplu Ayrıntılar" : "Ayrıntılar"; 
             }
 
-            // Menüyü Dinamik Doldur
             menu.innerHTML = `
                 <div class="ctx-item" style="${dlStyle}" onclick="triggerNativeDownload()">
                     <span class="material-icons-round" style="color:${selectedItems.some(i => i.isFolder) ? 'gray' : 'var(--text)'}">download</span> 
@@ -662,7 +667,6 @@
             const title = document.getElementById('detailsTitleText');
             const btn = document.getElementById('detailsDownloadBtn');
 
-            // TEK DOSYA SEÇİLDİYSE
             if(selectedItems.length === 1) {
                 const item = selectedItems[0];
                 const iconInfo = getFileIcon(item.name, item.isFolder);
@@ -676,9 +680,7 @@
                     <div class="details-row"><span class="details-label">Boyut</span><span class="details-value">${item.size}</span></div>
                     <div class="details-row"><span class="details-label">Değiştirilme Tarihi</span><span class="details-value">${item.date || '--'}</span></div>
                 `;
-            } 
-            // TOPLU SEÇİM YAPILDIYSA
-            else {
+            } else {
                 title.innerHTML = `<span class="material-icons-round">info</span> Toplu Seçim Ayrıntıları`;
                 let totalMB = 0;
                 let hasFolder = false;
@@ -699,7 +701,6 @@
                 `;
             }
 
-            // Klasör seçiliyse indirme butonunu gizle
             if(selectedItems.some(i => i.isFolder)) {
                 btn.style.display = 'none';
             } else {
@@ -707,7 +708,6 @@
                 btn.innerHTML = `<span class="material-icons-round" style="font-size:18px;">download</span> ${selectedItems.length > 1 ? 'Kuyruğa Ekle' : 'İndir'}`;
             }
 
-            // Modalı Ekrana Getir
             const overlay = document.getElementById('detailsOverlay');
             overlay.style.display = 'flex';
             setTimeout(() => overlay.classList.add('show'), 10);
@@ -830,10 +830,44 @@
             setTimeout(hideDownloadToast, 6000); 
         }
 
+        // =======================================================================
+        // YENİ EKLENEN: SARI ÇAKAR IŞIK (FLASHING) VE SEKME BAŞLIĞI UYARISI
+        // =======================================================================
+        let blinkInterval = null;
+        const originalTitle = document.title;
+
+        function startAttentionBlink() {
+            const overlay = document.getElementById('dlOverlay');
+            const icon = document.getElementById('dlOverlayIcon');
+            
+            overlay.classList.add('flash-warning');
+            icon.innerText = "warning";
+            showDownloadToast(`⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`);
+            
+            let isBlinkOn = false;
+            blinkInterval = setInterval(() => {
+                document.title = isBlinkOn ? "⚠️ ONAY BEKLENİYOR..." : originalTitle;
+                isBlinkOn = !isBlinkOn;
+            }, 600);
+        }
+
+        function stopAttentionBlink() {
+            clearInterval(blinkInterval);
+            document.title = originalTitle;
+            
+            const overlay = document.getElementById('dlOverlay');
+            const icon = document.getElementById('dlOverlayIcon');
+            
+            overlay.classList.remove('flash-warning');
+            icon.innerText = "info";
+            hideDownloadToast();
+        }
+
         function showDownloadToast(msg) { 
             document.getElementById('dlText').innerText = msg; 
             document.getElementById('dlOverlay').style.display = 'flex'; 
         }
+        
         function hideDownloadToast() { 
             document.getElementById('dlOverlay').style.display = 'none'; 
         }
@@ -856,10 +890,17 @@
 
                 try {
                     if ('showSaveFilePicker' in window) {
+                        
+                        // SARI ÇAKAR IŞIĞI BAŞLAT (Farklı Kaydet Penceresi Bekleniyor)
+                        startAttentionBlink();
+
                         const handle = await window.showSaveFilePicker({ 
                             suggestedName: item.name,
                             startIn: 'downloads' 
                         });
+                        
+                        // KULLANICI ONAY VERDİĞİ AN IŞIĞI KAPAT
+                        stopAttentionBlink();
                         
                         const writable = await handle.createWritable();
                         const controller = new AbortController();
@@ -950,6 +991,9 @@
                         if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
                 } catch (err) {
+                    // KULLANICI İPTAL EDERSE VEYA HATA ÇIKARSA IŞIĞI KAPAT
+                    stopAttentionBlink();
+                    
                     if (err.name !== 'AbortError') {
                         console.error("İndirme Hatası:", err);
                         alert(`Hata: ${item.name} indirilemedi.`);
