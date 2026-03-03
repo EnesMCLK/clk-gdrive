@@ -218,7 +218,7 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI */
+        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
@@ -368,10 +368,8 @@
         </div>
     </div>
 
-    <!-- SAĞ TIK MENÜSÜ -->
     <div id="ctxMenu"></div>
 
-    <!-- AYRINTILAR KARTI (MODAL) -->
     <div id="detailsOverlay">
         <div class="details-card">
             <div class="details-header">
@@ -391,7 +389,6 @@
         </div>
     </div>
 
-    <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
@@ -719,9 +716,6 @@
             triggerNativeDownload();
         }
 
-        // =======================================================================
-        // ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) ALTYAPISI
-        // =======================================================================
         let activeDownloadsMap = new Map();
         
         function toggleDlManager() {
@@ -825,14 +819,18 @@
         }
 
         // =======================================================================
-        // ÇOKLU İNDİRME (DIRECTORY API) VE SARI ÇAKAR IŞIK
+        // AKILLI UYARI VE YÖNLENDİRME SİSTEMİ
         // =======================================================================
         let blinkInterval = null;
         let toastTimeout = null;
         const originalTitle = document.title;
 
         function startAttentionBlink(isBulk = false) {
-            const msg = isBulk ? `⚠️ Lütfen toplu dosyaların kaydedileceği KLASÖRÜ seçin...` : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
+            // Toplu indirme ve Tekli indirme için özel proaktif uyarilar
+            const msg = isBulk 
+                ? `⚠️ KLASÖR SEÇİN: Tarayıcı kök dizine izin vermez. İndirilenler içine 'Yeni Klasör' açıp onu seçin!` 
+                : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
+                
             showDownloadToast(msg, 'flash', 0); 
             
             let isBlinkOn = false;
@@ -883,7 +881,9 @@
             overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
         }
 
-        // --- ANA İNDİRME TETİKLEYİCİ ---
+        // =======================================================================
+        // ANA İNDİRME TETİKLEYİCİ (0 RAM / DIRECTORY PICKER)
+        // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
@@ -893,11 +893,10 @@
             document.getElementById('ctxMenu').style.display = 'none';
 
             try {
-                // EĞER TARAYICI MODERN API'LERİ (DİSKE YAZMA) DESTEKLİYORSA
                 if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
                     
                     if (selectedItems.length === 1) {
-                        // 1. SENARYO: TEK DOSYA (FARKLI KAYDET)
+                        // 1. SENARYO: TEK DOSYA
                         const item = selectedItems[0];
                         startAttentionBlink(false);
                         const fileHandle = await window.showSaveFilePicker({ suggestedName: item.name, startIn: 'downloads' });
@@ -905,12 +904,11 @@
                         processFileStream(item, fileHandle);
 
                     } else {
-                        // 2. SENARYO: ÇOKLU DOSYA (KLASÖR SEÇİCİ)
+                        // 2. SENARYO: ÇOKLU DOSYA (Kullanıcıdan Kök Olmayan Klasör İster)
                         startAttentionBlink(true);
                         const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
                         stopAttentionBlink();
 
-                        // Kullanıcının seçtiği klasöre dosyaları tek tek gönder (Kuyruk/Queue)
                         for (let i = 0; i < selectedItems.length; i++) {
                             const item = selectedItems[i];
                             const fileHandle = await dirHandle.getFileHandle(item.name, { create: true });
@@ -919,7 +917,6 @@
                     }
 
                 } else {
-                    // ESKİ NESİL TARAYICILAR İÇİN (DÜZ İNDİRME)
                     for (let i = 0; i < selectedItems.length; i++) {
                         const item = selectedItems[i];
                         const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
@@ -933,18 +930,23 @@
 
             } catch (err) {
                 stopAttentionBlink();
+                
+                // KULLANICI İPTAL ETTİ VEYA GÜVENLİK (KÖK KLASÖR) ENGELİNE TAKILDI
                 if (err.name === 'AbortError') {
-                    showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning', 15000);
+                    showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning', 10000);
+                } else if (err.name === 'SecurityError' || err.name === 'NotAllowedError' || err.name === 'TypeError') {
+                    // İŞTE KULLANICIYI DOĞRU YÖNLENDİRECEĞİMİZ ZEKİ UYARI
+                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar kök dizine (İndirilenler vb.) doğrudan yazamaz. Lütfen 'Yeni Klasör' oluşturup onu seçin.`, 'error', 15000);
                 } else {
                     console.error("İndirme Başlatılamadı:", err);
-                    showDownloadToast(`Hata: İndirme paneli açılamadı.`, 'error', 15000);
+                    showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error', 15000);
                 }
             }
             
             selectedIds.clear(); renderList();
         }
 
-        // --- 0 RAM CHUNKING MOTORU (AYRI FONKSİYON YAPILDI) ---
+        // --- 0 RAM CHUNKING MOTORU ---
         async function processFileStream(item, fileHandle) {
             const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
             const dlId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -1009,7 +1011,6 @@
                 
                 await writable.close(); 
                 
-                // BAŞARILI BİTİŞ UI
                 const card = document.getElementById(`dl-card-${dlId}`);
                 if(card) {
                     const dlState = activeDownloadsMap.get(dlId);
@@ -1035,7 +1036,6 @@
                 }
                 
             } catch (err) {
-                // BEKLENMEYEN AĞ HATASI VEYA İPTAL (KART ÜZERİNDEN)
                 const card = document.getElementById(`dl-card-${dlId}`);
                 if(card) {
                     card.style.borderColor = "#d93025";
