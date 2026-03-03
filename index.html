@@ -174,7 +174,7 @@
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
-        .ctx-item .material-icons-round { font-size: 20px; } 
+        .ctx-item .material-icons-round { font-size: 20px; }
 
         .icon-folder { color: var(--folder-color); }
         .icon-file { color: var(--primary); }
@@ -218,9 +218,7 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* ================================================================= */
-        /* SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI                */
-        /* ================================================================= */
+        /* SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
@@ -228,8 +226,6 @@
         }
         
         .flash-warning { animation: flashYellow 1.2s infinite; }
-        
-        /* Hata ve Uyarı Renklendirmeleri */
         .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
         .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
 
@@ -372,10 +368,8 @@
         </div>
     </div>
 
-    <!-- SAĞ TIK MENÜSÜ YENİLENDİ -->
-    <div id="ctxMenu">
-        <!-- Dinamik Olarak JS İçinden Doldurulacak -->
-    </div>
+    <!-- SAĞ TIK MENÜSÜ -->
+    <div id="ctxMenu"></div>
 
     <!-- AYRINTILAR KARTI (MODAL) -->
     <div id="detailsOverlay">
@@ -388,9 +382,7 @@
                     <span class="material-icons-round">close</span>
                 </div>
             </div>
-            <div class="details-body" id="detailsBody">
-                <!-- Javascript ile dinamik doldurulur -->
-            </div>
+            <div class="details-body" id="detailsBody"></div>
             <div class="details-footer">
                 <button class="details-btn-primary" id="detailsDownloadBtn" onclick="downloadFromDetails()">
                     <span class="material-icons-round" style="font-size:18px;">download</span> İndir
@@ -833,14 +825,16 @@
         }
 
         // =======================================================================
-        // YENİ EKLENEN: SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI
+        // ÇOKLU İNDİRME (DIRECTORY API) VE SARI ÇAKAR IŞIK
         // =======================================================================
         let blinkInterval = null;
         let toastTimeout = null;
         const originalTitle = document.title;
 
-        function startAttentionBlink() {
-            showDownloadToast(`⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`, 'flash', 0); // 0 = Kapanmaz
+        function startAttentionBlink(isBulk = false) {
+            const msg = isBulk ? `⚠️ Lütfen toplu dosyaların kaydedileceği KLASÖRÜ seçin...` : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
+            showDownloadToast(msg, 'flash', 0); 
+            
             let isBlinkOn = false;
             blinkInterval = setInterval(() => {
                 document.title = isBlinkOn ? "⚠️ ONAY BEKLENİYOR..." : originalTitle;
@@ -859,7 +853,6 @@
             const icon = document.getElementById('dlOverlayIcon');
             const text = document.getElementById('dlText');
             
-            // Sınıfları Temizle
             overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
             icon.style.color = 'inherit';
 
@@ -881,10 +874,7 @@
             overlay.style.display = 'flex'; 
 
             if (toastTimeout) clearTimeout(toastTimeout);
-            
-            if (duration > 0) {
-                toastTimeout = setTimeout(() => { hideDownloadToast(); }, duration);
-            }
+            if (duration > 0) toastTimeout = setTimeout(() => { hideDownloadToast(); }, duration);
         }
         
         function hideDownloadToast() { 
@@ -893,6 +883,7 @@
             overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
         }
 
+        // --- ANA İNDİRME TETİKLEYİCİ ---
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
@@ -901,128 +892,162 @@
 
             document.getElementById('ctxMenu').style.display = 'none';
 
-            for (let i = 0; i < selectedItems.length; i++) {
-                const item = selectedItems[i];
-                const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                
-                const dlId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                const estimatedTotalBytes = parseSizeString(item.size) * 1024 * 1024;
-                const totalBytesStr = item.size !== '--' ? item.size : 'Bilinmiyor';
-
-                try {
-                    if ('showSaveFilePicker' in window) {
-                        
-                        startAttentionBlink();
-
-                        const handle = await window.showSaveFilePicker({ 
-                            suggestedName: item.name,
-                            startIn: 'downloads' 
-                        });
-                        
+            try {
+                // EĞER TARAYICI MODERN API'LERİ (DİSKE YAZMA) DESTEKLİYORSA
+                if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
+                    
+                    if (selectedItems.length === 1) {
+                        // 1. SENARYO: TEK DOSYA (FARKLI KAYDET)
+                        const item = selectedItems[0];
+                        startAttentionBlink(false);
+                        const fileHandle = await window.showSaveFilePicker({ suggestedName: item.name, startIn: 'downloads' });
                         stopAttentionBlink();
-                        
-                        const writable = await handle.createWritable();
-                        const controller = new AbortController();
-                        
-                        activeDownloadsMap.set(dlId, {
-                            controller: controller,
-                            isPaused: false,
-                            isCompleted: false,
-                            pausePromiseResolve: null
-                        });
-                        
-                        createDlCard(dlId, item.name, totalBytesStr);
+                        processFileStream(item, fileHandle);
 
-                        const response = await fetch(directUrl, { signal: controller.signal });
-                        if (!response.ok) throw new Error("Ağ hatası");
-                        
-                        const contentLength = response.headers.get('content-length');
-                        const total = contentLength ? parseInt(contentLength, 10) : estimatedTotalBytes;
-                        
-                        const reader = response.body.getReader();
-                        let loaded = 0;
-                        let lastLoaded = 0;
-                        let lastTime = Date.now();
-
-                        while (true) {
-                            const dlState = activeDownloadsMap.get(dlId);
-                            if (dlState.isPaused) {
-                                await new Promise(resolve => dlState.pausePromiseResolve = resolve);
-                                lastTime = Date.now();
-                                lastLoaded = loaded;
-                            }
-
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            
-                            await writable.write(value);
-                            loaded += value.length;
-
-                            const now = Date.now();
-                            if (now - lastTime > 500) {
-                                const diffBytes = loaded - lastLoaded;
-                                const diffTime = (now - lastTime) / 1000;
-                                const speedMBps = (diffBytes / 1024 / 1024 / diffTime).toFixed(1) + " MB/s";
-                                
-                                let percent = 0;
-                                if(total > 0) percent = Math.min(100, (loaded / total) * 100);
-
-                                document.getElementById(`dl-fill-${dlId}`).style.width = percent + '%';
-                                document.getElementById(`dl-meta-size-${dlId}`).innerText = `${formatBytes(loaded)} / ${formatBytes(total)}`;
-                                document.getElementById(`dl-meta-speed-${dlId}`).innerText = speedMBps;
-
-                                lastLoaded = loaded;
-                                lastTime = now;
-                            }
-                        }
-                        
-                        await writable.close(); 
-                        
-                        const card = document.getElementById(`dl-card-${dlId}`);
-                        if(card) {
-                            const dlState = activeDownloadsMap.get(dlId);
-                            if (dlState) dlState.isCompleted = true;
-                            
-                            card.style.borderColor = "#1d7044";
-                            card.style.cursor = "pointer";
-                            card.title = "Bilgi almak için çift tıklayın";
-                            
-                            card.ondblclick = () => showSandboxInfo();
-                            
-                            document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
-                            
-                            const controls = document.getElementById(`dl-controls-${dlId}`);
-                            controls.innerHTML = `
-                                <button class="dl-btn" onclick="event.stopPropagation(); showSandboxInfo()" title="Klasörde Göster"><span class="material-icons-round" style="font-size:18px; color:#1d7044;">folder_open</span></button>
-                                <button class="dl-btn" onclick="event.stopPropagation(); dismissDl('${dlId}')" title="Kapat"><span class="material-icons-round" style="font-size:18px;">close</span></button>
-                            `;
-                            
-                            const statusText = document.getElementById(`dl-status-${dlId}`);
-                            statusText.style.display = 'block';
-                            statusText.style.color = '#1d7044';
-                            statusText.innerText = "Tamamlandı";
-                        }
-                        
                     } else {
+                        // 2. SENARYO: ÇOKLU DOSYA (KLASÖR SEÇİCİ)
+                        startAttentionBlink(true);
+                        const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
+                        stopAttentionBlink();
+
+                        // Kullanıcının seçtiği klasöre dosyaları tek tek gönder (Kuyruk/Queue)
+                        for (let i = 0; i < selectedItems.length; i++) {
+                            const item = selectedItems[i];
+                            const fileHandle = await dirHandle.getFileHandle(item.name, { create: true });
+                            processFileStream(item, fileHandle);
+                        }
+                    }
+
+                } else {
+                    // ESKİ NESİL TARAYICILAR İÇİN (DÜZ İNDİRME)
+                    for (let i = 0; i < selectedItems.length; i++) {
+                        const item = selectedItems[i];
+                        const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
                         showDownloadToast(`${item.name} başlatılıyor...`, 'info', 3000);
                         const a = document.createElement('a');
                         a.href = directUrl; a.download = item.name; a.target = '_blank'; 
                         document.body.appendChild(a); a.click(); document.body.removeChild(a);
                         if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
-                } catch (err) {
-                    stopAttentionBlink();
-                    
-                    // KULLANICI İPTAL ETTİĞİNDE VEYA HATA ALDIĞINDA DEVREYE GİREN 15 SANİYELİK UYARILAR
-                    if (err.name === 'AbortError') {
-                        showDownloadToast(`İptal Edildi: '${item.name}' için kayıt işlemi reddedildi.`, 'warning', 15000);
-                    } else {
-                        console.error("İndirme Hatası:", err);
-                        showDownloadToast(`Hata: '${item.name}' indirilemedi. Bağlantınızı kontrol edin.`, 'error', 15000);
-                    }
+                }
+
+            } catch (err) {
+                stopAttentionBlink();
+                if (err.name === 'AbortError') {
+                    showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning', 15000);
+                } else {
+                    console.error("İndirme Başlatılamadı:", err);
+                    showDownloadToast(`Hata: İndirme paneli açılamadı.`, 'error', 15000);
                 }
             }
+            
             selectedIds.clear(); renderList();
+        }
+
+        // --- 0 RAM CHUNKING MOTORU (AYRI FONKSİYON YAPILDI) ---
+        async function processFileStream(item, fileHandle) {
+            const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+            const dlId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            const estimatedTotalBytes = parseSizeString(item.size) * 1024 * 1024;
+            const totalBytesStr = item.size !== '--' ? item.size : 'Bilinmiyor';
+
+            try {
+                const writable = await fileHandle.createWritable();
+                const controller = new AbortController();
+                
+                activeDownloadsMap.set(dlId, {
+                    controller: controller,
+                    isPaused: false,
+                    isCompleted: false,
+                    pausePromiseResolve: null
+                });
+                
+                createDlCard(dlId, item.name, totalBytesStr);
+
+                const response = await fetch(directUrl, { signal: controller.signal });
+                if (!response.ok) throw new Error("Ağ hatası");
+                
+                const contentLength = response.headers.get('content-length');
+                const total = contentLength ? parseInt(contentLength, 10) : estimatedTotalBytes;
+                
+                const reader = response.body.getReader();
+                let loaded = 0;
+                let lastLoaded = 0;
+                let lastTime = Date.now();
+
+                while (true) {
+                    const dlState = activeDownloadsMap.get(dlId);
+                    if (dlState.isPaused) {
+                        await new Promise(resolve => dlState.pausePromiseResolve = resolve);
+                        lastTime = Date.now();
+                        lastLoaded = loaded;
+                    }
+
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    await writable.write(value);
+                    loaded += value.length;
+
+                    const now = Date.now();
+                    if (now - lastTime > 500) {
+                        const diffBytes = loaded - lastLoaded;
+                        const diffTime = (now - lastTime) / 1000;
+                        const speedMBps = (diffBytes / 1024 / 1024 / diffTime).toFixed(1) + " MB/s";
+                        
+                        let percent = 0;
+                        if(total > 0) percent = Math.min(100, (loaded / total) * 100);
+
+                        document.getElementById(`dl-fill-${dlId}`).style.width = percent + '%';
+                        document.getElementById(`dl-meta-size-${dlId}`).innerText = `${formatBytes(loaded)} / ${formatBytes(total)}`;
+                        document.getElementById(`dl-meta-speed-${dlId}`).innerText = speedMBps;
+
+                        lastLoaded = loaded;
+                        lastTime = now;
+                    }
+                }
+                
+                await writable.close(); 
+                
+                // BAŞARILI BİTİŞ UI
+                const card = document.getElementById(`dl-card-${dlId}`);
+                if(card) {
+                    const dlState = activeDownloadsMap.get(dlId);
+                    if (dlState) dlState.isCompleted = true;
+                    
+                    card.style.borderColor = "#1d7044";
+                    card.style.cursor = "pointer";
+                    card.title = "Bilgi almak için çift tıklayın";
+                    card.ondblclick = () => showSandboxInfo();
+                    
+                    document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
+                    
+                    const controls = document.getElementById(`dl-controls-${dlId}`);
+                    controls.innerHTML = `
+                        <button class="dl-btn" onclick="event.stopPropagation(); showSandboxInfo()" title="Klasörde Göster"><span class="material-icons-round" style="font-size:18px; color:#1d7044;">folder_open</span></button>
+                        <button class="dl-btn" onclick="event.stopPropagation(); dismissDl('${dlId}')" title="Kapat"><span class="material-icons-round" style="font-size:18px;">close</span></button>
+                    `;
+                    
+                    const statusText = document.getElementById(`dl-status-${dlId}`);
+                    statusText.style.display = 'block';
+                    statusText.style.color = '#1d7044';
+                    statusText.innerText = "Tamamlandı";
+                }
+                
+            } catch (err) {
+                // BEKLENMEYEN AĞ HATASI VEYA İPTAL (KART ÜZERİNDEN)
+                const card = document.getElementById(`dl-card-${dlId}`);
+                if(card) {
+                    card.style.borderColor = "#d93025";
+                    document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
+                    document.getElementById(`dl-controls-${dlId}`).style.display = 'none';
+                    const statusText = document.getElementById(`dl-status-${dlId}`);
+                    statusText.style.display = 'block';
+                    statusText.style.color = '#d93025';
+                    statusText.innerText = err.name === 'AbortError' ? "İptal Edildi" : "Başarısız";
+                    setTimeout(() => { dismissDl(dlId); }, 5000);
+                }
+            }
         }
     </script>
 </body>
