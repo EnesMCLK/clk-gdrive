@@ -214,6 +214,54 @@
         .dl-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
+
+        /* ================= MOBİL UYUM (RESPONSIVE) AYARLARI (YENİ EKLENDİ) ================= */
+        @media (max-width: 768px) {
+            /* Üst Menü */
+            .navbar { padding: 12px 16px; gap: 8px; }
+            .brand span:not(.material-icons-round) { display: none; } /* Mobilde 'Bulut Depom' yazısını gizle, sadece ikon kalsın */
+            .search-box { margin: 0; flex: 1; } /* Arama çubuğu alanı kaplasın */
+            .search-box input { padding: 10px 16px 10px 40px; font-size: 14px; }
+            .search-box i { left: 12px; top: 11px; font-size: 20px; }
+
+            /* Alt Menü ve Görünüm Seçici */
+            .sub-header { padding: 8px 16px 12px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
+            .view-menu-container { align-self: stretch; display: flex; justify-content: flex-end; width: 100%; }
+            .view-btn { width: 100%; justify-content: space-between; } /* Görünüm butonu genişlesin */
+            .breadcrumb-nav { font-size: 16px; }
+
+            /* Tablo Başlıkları (Ad hariç gizle) */
+            .list-header { grid-template-columns: 40px 1fr; padding: 12px; }
+            .list-header .sortable-col:not(:nth-child(2)) { display: none; }
+            
+            /* Ayrıntılar Görünümü Mobil Düzeni */
+            .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
+            .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; } /* Daraltan sütunları gizle */
+            /* Javascript'te gizli (none) olan meta etiketini mobil için CSS'de zorla (!important) esnek div yapısı olarak göster */
+            .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+
+            /* Izgara (Grid) Sıkışma Düzeltmeleri */
+            .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
+            .view-list .item-row { width: 100%; max-width: none; }
+            
+            .view-tiles { grid-template-columns: 1fr; padding: 12px; }
+            .view-large { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); padding: 12px; gap: 4px; }
+            .view-medium { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); padding: 12px; gap: 4px; }
+            
+            .view-small { justify-content: flex-start; padding: 12px; }
+            .view-small .item-row { width: calc(50% - 4px); max-width: none; } /* İkişerli sıkıştır */
+
+            /* Ekran Genişliği Uyumu */
+            .main-container { margin: 0 8px 8px 8px; border-radius: 12px; }
+            .login-card { width: 90%; max-width: 360px; padding: 32px 20px; }
+            .profile-menu { width: 240px; right: -10px; }
+            #ctxMenu { min-width: 160px; max-width: 200px; }
+            
+            /* Download Manager Taşma Önleyici */
+            .dl-manager { width: calc(100% - 32px); left: 16px; bottom: 16px; max-width: none; }
+            .dl-manager.minimized { width: calc(100% - 32px); }
+            #dlOverlay { left: 16px; right: 16px; bottom: 16px; width: auto; justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -525,7 +573,7 @@
             menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.some(i => i.isFolder)) { document.getElementById('ctxLabel').innerText = "Klasörleri Seçmeyin"; document.getElementById('ctxLabel').style.color = "gray"; } 
-            else { document.getElementById('ctxLabel').innerText = selectedIds.size > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
+            else { document.getElementById('ctxLabel').innerText = selectedItems.length > 1 ? "Toplu İndir" : "İndir"; document.getElementById('ctxLabel').style.color = "var(--text)"; }
         }
 
         // =======================================================================
