@@ -184,9 +184,7 @@
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
 
-        /* ================================================================= */
-        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI                   */
-        /* ================================================================= */
+        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
         .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dl-manager.minimized { width: 280px; }
         .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
@@ -826,9 +824,8 @@
         const originalTitle = document.title;
 
         function startAttentionBlink(isBulk = false) {
-            // Toplu indirme ve Tekli indirme için özel proaktif uyarilar
             const msg = isBulk 
-                ? `⚠️ KLASÖR SEÇİN: Tarayıcı kök dizine izin vermez. İndirilenler içine 'Yeni Klasör' açıp onu seçin!` 
+                ? `⚠️ KLASÖR SEÇİN: Tarayıcılar güvenlik gereği ana dizine izin vermez. İndirmek istenilen klasörün içine 'Yeni Klasör' açıp onu seçin!` 
                 : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
                 
             showDownloadToast(msg, 'flash', 0); 
@@ -904,7 +901,7 @@
                         processFileStream(item, fileHandle);
 
                     } else {
-                        // 2. SENARYO: ÇOKLU DOSYA (Kullanıcıdan Kök Olmayan Klasör İster)
+                        // 2. SENARYO: ÇOKLU DOSYA
                         startAttentionBlink(true);
                         const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
                         stopAttentionBlink();
@@ -931,12 +928,10 @@
             } catch (err) {
                 stopAttentionBlink();
                 
-                // KULLANICI İPTAL ETTİ VEYA GÜVENLİK (KÖK KLASÖR) ENGELİNE TAKILDI
                 if (err.name === 'AbortError') {
                     showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning', 10000);
                 } else if (err.name === 'SecurityError' || err.name === 'NotAllowedError' || err.name === 'TypeError') {
-                    // İŞTE KULLANICIYI DOĞRU YÖNLENDİRECEĞİMİZ ZEKİ UYARI
-                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar kök dizine (İndirilenler vb.) doğrudan yazamaz. Lütfen 'Yeni Klasör' oluşturup onu seçin.`, 'error', 15000);
+                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 15000);
                 } else {
                     console.error("İndirme Başlatılamadı:", err);
                     showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error', 15000);
