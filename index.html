@@ -417,6 +417,9 @@
         let navigationHistory = []; 
         let currentSortCol = 'name';
         let isSortAsc = true;
+        
+        // YENİ EKLENEN: Çoklu Seçim Çapası (Anchor)
+        let lastSelectedIndex = -1;
 
         document.addEventListener('click', (e) => { 
             document.getElementById('ctxMenu').style.display = 'none'; 
@@ -513,7 +516,12 @@
                 else if (currentSortCol === 'date') comparison = parseDateString(a.date) - parseDateString(b.date);
                 return isSortAsc ? comparison : -comparison;
             });
-            selectedIds.clear(); document.getElementById('selectAllCb').checked = false; renderList();
+            
+            // Sıralama değiştiğinde seçimleri ve çapayı sıfırla (Windows Mantığı)
+            selectedIds.clear(); 
+            lastSelectedIndex = -1;
+            document.getElementById('selectAllCb').checked = false; 
+            renderList();
         }
 
         function getFileIcon(filename, isFolder) {
@@ -528,19 +536,65 @@
             return { icon: 'insert_drive_file', class: 'icon-file' };
         }
 
+        // =======================================================================
+        // YENİ EKLENEN: WINDOWS SEÇİM MANTIĞI (CTRL VE SHIFT KONTROLLERİ)
+        // =======================================================================
+        function handleItemClick(e, id, index) {
+            // SHIFT tuşuna basılı tutularak tıklandıysa (Aralık Seçimi)
+            if (e.shiftKey && lastSelectedIndex !== -1) {
+                document.getSelection().removeAllRanges(); // Metin seçilmesini engelle
+                
+                let start = Math.min(lastSelectedIndex, index);
+                let end = Math.max(lastSelectedIndex, index);
+                
+                // Eğer ek olarak Ctrl tuşuna basılmıyorsa eski seçimleri temizle
+                if (!e.ctrlKey && !e.metaKey) {
+                    selectedIds.clear();
+                }
+                
+                // Çapa noktası ile tıklanan nokta arasındaki her şeyi seç
+                for (let i = start; i <= end; i++) {
+                    selectedIds.add(displayedItems[i].id);
+                }
+            } 
+            // CTRL tuşuna basılarak tıklandıysa (Ekle/Çıkar)
+            else if (e.ctrlKey || e.metaKey) {
+                if (selectedIds.has(id)) selectedIds.delete(id);
+                else selectedIds.add(id);
+                lastSelectedIndex = index; // Yeni çapa burası
+            } 
+            // Sadece normal tıklama (Temizle ve Seç)
+            else {
+                selectedIds.clear();
+                selectedIds.add(id);
+                lastSelectedIndex = index; // Yeni çapa burası
+            }
+            
+            updateCheckboxState();
+            renderList();
+        }
+
+        function handleCheckboxClick(e, id, index) {
+            if (selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            lastSelectedIndex = index;
+            updateCheckboxState();
+            renderList();
+        }
+
         function renderList() {
             const list = document.getElementById('fileList');
             const loader = document.getElementById('loader');
             if(loader) loader.style.display = 'none';
             Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
 
-            displayedItems.forEach(item => {
+            displayedItems.forEach((item, index) => {
                 const row = document.createElement('div');
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
                 const iconInfo = getFileIcon(item.name, item.isFolder);
 
                 row.innerHTML = `
-                    <div class="checkbox-wrapper"><input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelection('${item.id}')"></div>
+                    <div class="checkbox-wrapper"><input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); handleCheckboxClick(event, '${item.id}', ${index})"></div>
                     <div class="file-info">
                         <span class="material-icons-round ${iconInfo.class}">${iconInfo.icon}</span>
                         <div class="file-details-wrapper">
@@ -554,9 +608,19 @@
                     <span class="col-date" style="font-size:13px;">${item.date || '--'}</span>
                 `;
                 
-                row.onclick = (e) => { if(!e.ctrlKey && !e.metaKey) selectedIds.clear(); toggleSelection(item.id); };
+                row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
                 row.ondblclick = (e) => { e.stopPropagation(); if(item.isFolder) enterFolder(item.id, item.name); else { selectedIds.clear(); selectedIds.add(item.id); triggerNativeDownload(); } };
-                row.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); if(!selectedIds.has(item.id)) { selectedIds.clear(); toggleSelection(item.id); } showContextMenu(e); };
+                row.oncontextmenu = (e) => { 
+                    e.preventDefault(); e.stopPropagation(); 
+                    if(!selectedIds.has(item.id)) { 
+                        selectedIds.clear(); 
+                        selectedIds.add(item.id); 
+                        lastSelectedIndex = index;
+                        updateCheckboxState();
+                        renderList();
+                    } 
+                    showContextMenu(e); 
+                };
                 list.appendChild(row);
             });
             updateCheckboxState();
@@ -607,10 +671,22 @@
             });
         }
 
-        function toggleSelection(id) { if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateCheckboxState(); renderList(); }
-        function selectAllItems(checked) { selectedIds.clear(); if(checked) displayedItems.forEach(i => selectedIds.add(i.id)); renderList(); }
-        function updateCheckboxState() { const cb = document.getElementById('selectAllCb'); if(displayedItems.length === 0) { cb.checked = false; return; } cb.checked = displayedItems.every(i => selectedIds.has(i.id)); }
-        function filterItems(val) { displayedItems = allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase())); applySorting(); }
+        function selectAllItems(checked) { 
+            selectedIds.clear(); 
+            if(checked) displayedItems.forEach(i => selectedIds.add(i.id)); 
+            renderList(); 
+        }
+        
+        function updateCheckboxState() { 
+            const cb = document.getElementById('selectAllCb'); 
+            if(displayedItems.length === 0) { cb.checked = false; return; } 
+            cb.checked = displayedItems.every(i => selectedIds.has(i.id)); 
+        }
+        
+        function filterItems(val) { 
+            displayedItems = allItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase())); 
+            applySorting(); 
+        }
         function toggleProfile() { document.getElementById('profileCard').classList.toggle('show'); }
         function logout() { sessionStorage.clear(); location.reload(); }
 
@@ -893,7 +969,6 @@
                 if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
                     
                     if (selectedItems.length === 1) {
-                        // 1. SENARYO: TEK DOSYA
                         const item = selectedItems[0];
                         startAttentionBlink(false);
                         const fileHandle = await window.showSaveFilePicker({ suggestedName: item.name, startIn: 'downloads' });
@@ -901,7 +976,6 @@
                         processFileStream(item, fileHandle);
 
                     } else {
-                        // 2. SENARYO: ÇOKLU DOSYA
                         startAttentionBlink(true);
                         const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
                         stopAttentionBlink();
