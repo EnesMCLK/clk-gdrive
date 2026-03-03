@@ -174,7 +174,7 @@
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
-        .ctx-item .material-icons-round { font-size: 20px; }
+        .ctx-item .material-icons-round { font-size: 20px; } 
 
         .icon-folder { color: var(--folder-color); }
         .icon-file { color: var(--primary); }
@@ -184,7 +184,9 @@
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
 
-        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
+        /* ================================================================= */
+        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI                   */
+        /* ================================================================= */
         .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dl-manager.minimized { width: 280px; }
         .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
@@ -217,7 +219,7 @@
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
         /* ================================================================= */
-        /* SARI ÇAKAR IŞIK (FLASHING TOAST) ANİMASYONU                       */
+        /* SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI                */
         /* ================================================================= */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
@@ -225,9 +227,11 @@
             100% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
         }
         
-        .flash-warning {
-            animation: flashYellow 1.2s infinite;
-        }
+        .flash-warning { animation: flashYellow 1.2s infinite; }
+        
+        /* Hata ve Uyarı Renklendirmeleri */
+        .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
+        .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
 
         #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 10000; font-size: 14px; font-weight: 500; transition: 0.2s;}
         .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
@@ -427,7 +431,6 @@
         let currentSortCol = 'name';
         let isSortAsc = true;
 
-        // Dışarı tıklamaları dinle (Ayrıntılar ekranını kapatma dahil)
         document.addEventListener('click', (e) => { 
             document.getElementById('ctxMenu').style.display = 'none'; 
             if(!e.target.closest('.view-menu-container')) {
@@ -826,24 +829,18 @@
         }
 
         function showSandboxInfo() {
-            showDownloadToast(`Güvenlik: Web tarayıcıları indirilen yerel dosyaları doğrudan çalıştıramaz. Lütfen kaydettiğiniz dizinden dosyayı açınız.`);
-            setTimeout(hideDownloadToast, 6000); 
+            showDownloadToast(`Güvenlik: Web tarayıcıları indirilen yerel dosyaları doğrudan çalıştıramaz. Lütfen kaydettiğiniz dizinden dosyayı açınız.`, 'info', 6000);
         }
 
         // =======================================================================
-        // YENİ EKLENEN: SARI ÇAKAR IŞIK (FLASHING) VE SEKME BAŞLIĞI UYARISI
+        // YENİ EKLENEN: SARI ÇAKAR IŞIK (FLASHING) VE YENİ TOAST DURUMLARI
         // =======================================================================
         let blinkInterval = null;
+        let toastTimeout = null;
         const originalTitle = document.title;
 
         function startAttentionBlink() {
-            const overlay = document.getElementById('dlOverlay');
-            const icon = document.getElementById('dlOverlayIcon');
-            
-            overlay.classList.add('flash-warning');
-            icon.innerText = "warning";
-            showDownloadToast(`⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`);
-            
+            showDownloadToast(`⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`, 'flash', 0); // 0 = Kapanmaz
             let isBlinkOn = false;
             blinkInterval = setInterval(() => {
                 document.title = isBlinkOn ? "⚠️ ONAY BEKLENİYOR..." : originalTitle;
@@ -854,22 +851,46 @@
         function stopAttentionBlink() {
             clearInterval(blinkInterval);
             document.title = originalTitle;
-            
-            const overlay = document.getElementById('dlOverlay');
-            const icon = document.getElementById('dlOverlayIcon');
-            
-            overlay.classList.remove('flash-warning');
-            icon.innerText = "info";
             hideDownloadToast();
         }
 
-        function showDownloadToast(msg) { 
-            document.getElementById('dlText').innerText = msg; 
-            document.getElementById('dlOverlay').style.display = 'flex'; 
+        function showDownloadToast(msg, type = 'info', duration = 3000) { 
+            const overlay = document.getElementById('dlOverlay');
+            const icon = document.getElementById('dlOverlayIcon');
+            const text = document.getElementById('dlText');
+            
+            // Sınıfları Temizle
+            overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
+            icon.style.color = 'inherit';
+
+            if (type === 'error') {
+                overlay.classList.add('toast-error');
+                icon.innerText = 'error';
+            } else if (type === 'warning') {
+                overlay.classList.add('toast-warning');
+                icon.innerText = 'warning';
+            } else if (type === 'flash') {
+                overlay.classList.add('flash-warning');
+                icon.innerText = 'warning';
+            } else {
+                icon.innerText = 'info';
+                icon.style.color = 'var(--primary)';
+            }
+
+            text.innerText = msg;
+            overlay.style.display = 'flex'; 
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            
+            if (duration > 0) {
+                toastTimeout = setTimeout(() => { hideDownloadToast(); }, duration);
+            }
         }
         
         function hideDownloadToast() { 
-            document.getElementById('dlOverlay').style.display = 'none'; 
+            const overlay = document.getElementById('dlOverlay');
+            overlay.style.display = 'none'; 
+            overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
         }
 
         async function triggerNativeDownload() {
@@ -891,7 +912,6 @@
                 try {
                     if ('showSaveFilePicker' in window) {
                         
-                        // SARI ÇAKAR IŞIĞI BAŞLAT (Farklı Kaydet Penceresi Bekleniyor)
                         startAttentionBlink();
 
                         const handle = await window.showSaveFilePicker({ 
@@ -899,7 +919,6 @@
                             startIn: 'downloads' 
                         });
                         
-                        // KULLANICI ONAY VERDİĞİ AN IŞIĞI KAPAT
                         stopAttentionBlink();
                         
                         const writable = await handle.createWritable();
@@ -985,18 +1004,21 @@
                         }
                         
                     } else {
+                        showDownloadToast(`${item.name} başlatılıyor...`, 'info', 3000);
                         const a = document.createElement('a');
                         a.href = directUrl; a.download = item.name; a.target = '_blank'; 
                         document.body.appendChild(a); a.click(); document.body.removeChild(a);
                         if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
                 } catch (err) {
-                    // KULLANICI İPTAL EDERSE VEYA HATA ÇIKARSA IŞIĞI KAPAT
                     stopAttentionBlink();
                     
-                    if (err.name !== 'AbortError') {
+                    // KULLANICI İPTAL ETTİĞİNDE VEYA HATA ALDIĞINDA DEVREYE GİREN 15 SANİYELİK UYARILAR
+                    if (err.name === 'AbortError') {
+                        showDownloadToast(`İptal Edildi: '${item.name}' için kayıt işlemi reddedildi.`, 'warning', 15000);
+                    } else {
                         console.error("İndirme Hatası:", err);
-                        alert(`Hata: ${item.name} indirilemedi.`);
+                        showDownloadToast(`Hata: '${item.name}' indirilemedi. Bağlantınızı kontrol edin.`, 'error', 15000);
                     }
                 }
             }
