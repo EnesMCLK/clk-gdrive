@@ -414,7 +414,7 @@
         <div class="dl-list" id="dlList"></div>
     </div>
     
-    <!-- YENİLENEN UYARI/BİLGİ TOAST KARTI (MANUEL KAPATMA VE HIZLI SİLİNME EKLENDİ) -->
+    <!-- UYARI/BİLGİ TOAST KARTI (MANUEL KAPATMA VE HIZLI SİLİNME EKLENDİ) -->
     <div id="dlOverlay">
         <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
         <span id="dlText" style="flex:1;">Bilgi</span>
@@ -884,15 +884,16 @@
         }
 
         // =======================================================================
-        // YENİLENEN UYARI (TOAST) SİSTEMİ: HIZLI SİLİNME VE MANUEL KAPATMA
+        // AKILLI UYARI VE YÖNLENDİRME SİSTEMİ
         // =======================================================================
         let blinkInterval = null;
         let toastTimeout = null;
         const originalTitle = document.title;
 
         function startAttentionBlink(isBulk = false) {
+            // YENİDEN DÜZENLENEN METİN
             const msg = isBulk 
-                ? `⚠️ KLASÖR SEÇİN: Tarayıcılar güvenlik gereği ana dizine izin vermez. İndirmek istenilen klasörün içine 'Yeni Klasör' açıp onu seçin!` 
+                ? `⚠️ KLASÖR SEÇİN: Tarayıcılar güvenlik gereği toplu indirmelerde ana dizine izin vermez. Toplu indirilecek dosyalar için indirmek istenilen klasörün içine 'Yeni Klasör' açıp onu seçin!` 
                 : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
                 
             showDownloadToast(msg, 'flash', 0); 
@@ -915,7 +916,6 @@
             const icon = document.getElementById('dlOverlayIcon');
             const text = document.getElementById('dlText');
             
-            // Eğer süre 0 değilse ve hata/uyarı ise süreyi 2.5 saniyeye (2500ms) kısalt (UX İsteği)
             let displayDuration = duration;
             if (duration !== 0 && (type === 'error' || type === 'warning')) {
                 displayDuration = 2500; 
@@ -940,7 +940,6 @@
 
             text.innerText = msg;
             
-            // Animasyonlu Gösterim
             overlay.style.display = 'flex'; 
             requestAnimationFrame(() => {
                 overlay.classList.add('show-toast');
@@ -948,7 +947,6 @@
 
             if (toastTimeout) clearTimeout(toastTimeout);
             
-            // Otomatik Silinme
             if (displayDuration > 0) {
                 toastTimeout = setTimeout(() => { hideDownloadToast(); }, displayDuration);
             }
@@ -958,7 +956,6 @@
             const overlay = document.getElementById('dlOverlay');
             overlay.classList.remove('show-toast');
             
-            // Animasyon süresi (0.3s) kadar bekleyip ekrandan tam kaldır
             setTimeout(() => {
                 overlay.style.display = 'none'; 
                 overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
@@ -966,7 +963,7 @@
         }
 
         // =======================================================================
-        // ANA İNDİRME TETİKLEYİCİ
+        // ANA İNDİRME TETİKLEYİCİ (0 RAM / DIRECTORY PICKER)
         // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -1013,11 +1010,10 @@
             } catch (err) {
                 stopAttentionBlink();
                 
-                // UX: Kullanıcı reddederse veya hata çıkarsa sadece 2.5 saniye süren uyarılar verir.
                 if (err.name === 'AbortError') {
                     showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning');
                 } else if (err.name === 'SecurityError' || err.name === 'NotAllowedError' || err.name === 'TypeError') {
-                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 4000); // Bu metin uzun olduğu için istisnai olarak 4 saniye
+                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 4000);
                 } else {
                     console.error("İndirme Başlatılamadı:", err);
                     showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error');
