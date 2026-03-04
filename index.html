@@ -216,7 +216,7 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI */
+        /* SARI ÇAKAR IŞIK VE HIZLI SİLİNEN TOAST (YENİ ANİMASYON) */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
@@ -227,7 +227,20 @@
         .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
         .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
 
-        #dlOverlay { position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 10000; font-size: 14px; font-weight: 500; transition: 0.2s;}
+        /* Toast Animasyonları Eklendi */
+        #dlOverlay { 
+            position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); 
+            padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 10000; 
+            font-size: 14px; font-weight: 500;
+            opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        #dlOverlay.show-toast {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -366,8 +379,10 @@
         </div>
     </div>
 
+    <!-- SAĞ TIK MENÜSÜ -->
     <div id="ctxMenu"></div>
 
+    <!-- AYRINTILAR KARTI (MODAL) -->
     <div id="detailsOverlay">
         <div class="details-card">
             <div class="details-header">
@@ -387,6 +402,7 @@
         </div>
     </div>
 
+    <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
@@ -398,9 +414,11 @@
         <div class="dl-list" id="dlList"></div>
     </div>
     
+    <!-- YENİLENEN UYARI/BİLGİ TOAST KARTI (MANUEL KAPATMA VE HIZLI SİLİNME EKLENDİ) -->
     <div id="dlOverlay">
         <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
-        <span id="dlText">Bilgi</span>
+        <span id="dlText" style="flex:1;">Bilgi</span>
+        <span class="material-icons-round" onclick="hideDownloadToast()" style="cursor:pointer; font-size:18px; opacity:0.6; transition:0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">close</span>
     </div>
 
     <script>
@@ -417,8 +435,6 @@
         let navigationHistory = []; 
         let currentSortCol = 'name';
         let isSortAsc = true;
-        
-        // YENİ EKLENEN: Çoklu Seçim Çapası (Anchor)
         let lastSelectedIndex = -1;
 
         document.addEventListener('click', (e) => { 
@@ -517,7 +533,6 @@
                 return isSortAsc ? comparison : -comparison;
             });
             
-            // Sıralama değiştiğinde seçimleri ve çapayı sıfırla (Windows Mantığı)
             selectedIds.clear(); 
             lastSelectedIndex = -1;
             document.getElementById('selectAllCb').checked = false; 
@@ -536,50 +551,29 @@
             return { icon: 'insert_drive_file', class: 'icon-file' };
         }
 
-        // =======================================================================
-        // YENİ EKLENEN: WINDOWS SEÇİM MANTIĞI (CTRL VE SHIFT KONTROLLERİ)
-        // =======================================================================
         function handleItemClick(e, id, index) {
-            // SHIFT tuşuna basılı tutularak tıklandıysa (Aralık Seçimi)
             if (e.shiftKey && lastSelectedIndex !== -1) {
-                document.getSelection().removeAllRanges(); // Metin seçilmesini engelle
-                
+                document.getSelection().removeAllRanges(); 
                 let start = Math.min(lastSelectedIndex, index);
                 let end = Math.max(lastSelectedIndex, index);
-                
-                // Eğer ek olarak Ctrl tuşuna basılmıyorsa eski seçimleri temizle
-                if (!e.ctrlKey && !e.metaKey) {
-                    selectedIds.clear();
-                }
-                
-                // Çapa noktası ile tıklanan nokta arasındaki her şeyi seç
-                for (let i = start; i <= end; i++) {
-                    selectedIds.add(displayedItems[i].id);
-                }
+                if (!e.ctrlKey && !e.metaKey) { selectedIds.clear(); }
+                for (let i = start; i <= end; i++) { selectedIds.add(displayedItems[i].id); }
             } 
-            // CTRL tuşuna basılarak tıklandıysa (Ekle/Çıkar)
             else if (e.ctrlKey || e.metaKey) {
-                if (selectedIds.has(id)) selectedIds.delete(id);
-                else selectedIds.add(id);
-                lastSelectedIndex = index; // Yeni çapa burası
+                if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+                lastSelectedIndex = index; 
             } 
-            // Sadece normal tıklama (Temizle ve Seç)
             else {
-                selectedIds.clear();
-                selectedIds.add(id);
-                lastSelectedIndex = index; // Yeni çapa burası
+                selectedIds.clear(); selectedIds.add(id);
+                lastSelectedIndex = index; 
             }
-            
-            updateCheckboxState();
-            renderList();
+            updateCheckboxState(); renderList();
         }
 
         function handleCheckboxClick(e, id, index) {
-            if (selectedIds.has(id)) selectedIds.delete(id);
-            else selectedIds.add(id);
+            if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
             lastSelectedIndex = index;
-            updateCheckboxState();
-            renderList();
+            updateCheckboxState(); renderList();
         }
 
         function renderList() {
@@ -613,11 +607,8 @@
                 row.oncontextmenu = (e) => { 
                     e.preventDefault(); e.stopPropagation(); 
                     if(!selectedIds.has(item.id)) { 
-                        selectedIds.clear(); 
-                        selectedIds.add(item.id); 
-                        lastSelectedIndex = index;
-                        updateCheckboxState();
-                        renderList();
+                        selectedIds.clear(); selectedIds.add(item.id); lastSelectedIndex = index;
+                        updateCheckboxState(); renderList();
                     } 
                     showContextMenu(e); 
                 };
@@ -893,7 +884,7 @@
         }
 
         // =======================================================================
-        // AKILLI UYARI VE YÖNLENDİRME SİSTEMİ
+        // YENİLENEN UYARI (TOAST) SİSTEMİ: HIZLI SİLİNME VE MANUEL KAPATMA
         // =======================================================================
         let blinkInterval = null;
         let toastTimeout = null;
@@ -924,6 +915,12 @@
             const icon = document.getElementById('dlOverlayIcon');
             const text = document.getElementById('dlText');
             
+            // Eğer süre 0 değilse ve hata/uyarı ise süreyi 2.5 saniyeye (2500ms) kısalt (UX İsteği)
+            let displayDuration = duration;
+            if (duration !== 0 && (type === 'error' || type === 'warning')) {
+                displayDuration = 2500; 
+            }
+
             overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
             icon.style.color = 'inherit';
 
@@ -942,20 +939,34 @@
             }
 
             text.innerText = msg;
+            
+            // Animasyonlu Gösterim
             overlay.style.display = 'flex'; 
+            requestAnimationFrame(() => {
+                overlay.classList.add('show-toast');
+            });
 
             if (toastTimeout) clearTimeout(toastTimeout);
-            if (duration > 0) toastTimeout = setTimeout(() => { hideDownloadToast(); }, duration);
+            
+            // Otomatik Silinme
+            if (displayDuration > 0) {
+                toastTimeout = setTimeout(() => { hideDownloadToast(); }, displayDuration);
+            }
         }
         
         function hideDownloadToast() { 
             const overlay = document.getElementById('dlOverlay');
-            overlay.style.display = 'none'; 
-            overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
+            overlay.classList.remove('show-toast');
+            
+            // Animasyon süresi (0.3s) kadar bekleyip ekrandan tam kaldır
+            setTimeout(() => {
+                overlay.style.display = 'none'; 
+                overlay.classList.remove('flash-warning', 'toast-error', 'toast-warning');
+            }, 300);
         }
 
         // =======================================================================
-        // ANA İNDİRME TETİKLEYİCİ (0 RAM / DIRECTORY PICKER)
+        // ANA İNDİRME TETİKLEYİCİ
         // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -991,7 +1002,7 @@
                     for (let i = 0; i < selectedItems.length; i++) {
                         const item = selectedItems[i];
                         const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                        showDownloadToast(`${item.name} başlatılıyor...`, 'info', 3000);
+                        showDownloadToast(`${item.name} başlatılıyor...`, 'info', 2500);
                         const a = document.createElement('a');
                         a.href = directUrl; a.download = item.name; a.target = '_blank'; 
                         document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -1002,13 +1013,14 @@
             } catch (err) {
                 stopAttentionBlink();
                 
+                // UX: Kullanıcı reddederse veya hata çıkarsa sadece 2.5 saniye süren uyarılar verir.
                 if (err.name === 'AbortError') {
-                    showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning', 10000);
+                    showDownloadToast(`İptal Edildi: İşlem kullanıcı tarafından reddedildi.`, 'warning');
                 } else if (err.name === 'SecurityError' || err.name === 'NotAllowedError' || err.name === 'TypeError') {
-                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 15000);
+                    showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 4000); // Bu metin uzun olduğu için istisnai olarak 4 saniye
                 } else {
                     console.error("İndirme Başlatılamadı:", err);
-                    showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error', 15000);
+                    showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error');
                 }
             }
             
