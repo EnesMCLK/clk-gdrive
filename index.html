@@ -48,7 +48,8 @@
         }
         
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+        /* height: 100dvh eklendi (Dinamik Mobil Tarayıcı Boyutu İçin) */
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
         /* GİRİŞ EKRANI */
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
@@ -216,7 +217,7 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK VE HIZLI SİLİNEN TOAST (YENİ ANİMASYON) */
+        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
@@ -227,7 +228,6 @@
         .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
         .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
 
-        /* Toast Animasyonları Eklendi */
         #dlOverlay { 
             position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); 
             padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; 
@@ -282,6 +282,9 @@
             .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+
+            /* MOBİLDE KAYDIRMA (SCROLL) TAMPONU EKLENDİ */
+            .list-container { padding-bottom: 80px; }
 
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
             .view-list .item-row { width: 100%; max-width: none; }
@@ -414,7 +417,7 @@
         <div class="dl-list" id="dlList"></div>
     </div>
     
-    <!-- UYARI/BİLGİ TOAST KARTI (MANUEL KAPATMA VE HIZLI SİLİNME EKLENDİ) -->
+    <!-- UYARI/BİLGİ TOAST KARTI -->
     <div id="dlOverlay">
         <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
         <span id="dlText" style="flex:1;">Bilgi</span>
@@ -891,7 +894,6 @@
         const originalTitle = document.title;
 
         function startAttentionBlink(isBulk = false) {
-            // YENİDEN DÜZENLENEN METİN
             const msg = isBulk 
                 ? `⚠️ KLASÖR SEÇİN: Tarayıcılar güvenlik gereği toplu indirmelerde ana dizine izin vermez. Toplu indirilecek dosyalar için indirmek istenilen klasörün içine 'Yeni Klasör' açıp onu seçin!` 
                 : `⚠️ Lütfen 'Farklı Kaydet' penceresinden indirmeyi onaylayın...`;
@@ -946,10 +948,7 @@
             });
 
             if (toastTimeout) clearTimeout(toastTimeout);
-            
-            if (displayDuration > 0) {
-                toastTimeout = setTimeout(() => { hideDownloadToast(); }, displayDuration);
-            }
+            if (displayDuration > 0) toastTimeout = setTimeout(() => { hideDownloadToast(); }, displayDuration);
         }
         
         function hideDownloadToast() { 
@@ -963,7 +962,7 @@
         }
 
         // =======================================================================
-        // ANA İNDİRME TETİKLEYİCİ (0 RAM / DIRECTORY PICKER)
+        // ANA İNDİRME TETİKLEYİCİ
         // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -1023,7 +1022,6 @@
             selectedIds.clear(); renderList();
         }
 
-        // --- 0 RAM CHUNKING MOTORU ---
         async function processFileStream(item, fileHandle) {
             const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
             const dlId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
