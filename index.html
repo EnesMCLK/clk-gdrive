@@ -522,9 +522,7 @@
     </div>
 
     <script>
-        // =================================================================
         // DİKKAT: BURAYA GOOGLE APPS SCRIPT URL'NİZİ YAZIN
-        // =================================================================
         const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK';
         
         let allItems = [];
@@ -1126,7 +1124,7 @@
                     }
                 }
                 
-                const urlMatch = text.match(/https?:\/\/[^\s"'<>\\]+/i);
+                const urlMatch = text.match(/(?:https?:\/\/|\/\/)[a-zA-Z0-9.-]+[^\s"'<>\\]*/i);
                 
                 if (urlMatch && urlMatch[0]) {
                     hideDownloadToast();
