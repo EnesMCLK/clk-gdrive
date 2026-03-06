@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- ======================================================= -->
-    <!-- FOIT ENGELLEYİCİ SİSTEM: Tema Seçimini Önceden Yükle    -->
-    <!-- ======================================================= -->
     <script>
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
 
-    <!-- ======================================================= -->
-    <!-- KURUMSAL KİMLİK, GÜVENLİK VE AÇIK KAYNAK DOĞRULAMASI -->
-    <!-- ======================================================= -->
     <title>Bulut Depom | Kurumsal Arşiv ve Dosya Yönetimi</title>
-    <meta name="description" content="Bulut Depom, işletmeler için güvenli, şeffaf ve yüksek performanslı bir bulut dosya yönetim platformudur. Bu açık kaynaklı (Open Source) projenin kaynak kodları ve mimarisi, denetlenebilirlik ilkeleri gereği GitHub üzerinde barındırılmaktadır: https://github.com/enesmclk/clk-gdrive">
+    <meta name="description" content="Bulut Depom, işletmeler için güvenli, şeffaf ve yüksek performanslı bir bulut dosya yönetim platformudur.">
     <meta name="keywords" content="kurumsal arşiv, güvenli dosya yönetimi, bulut depolama, açık kaynak, open source, file management, enterprise cloud storage, enesmclk, clk-gdrive">
     <meta name="author" content="EnesMCLK (https://github.com/enesmclk)">
     <meta name="publisher" content="EnesMCLK Open Source Projects">
@@ -26,27 +20,19 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f0f4f9">
     
-    <!-- Open Graph -->
     <meta property="og:title" content="Bulut Depom | Açık Kaynak Kurumsal Arşiv">
     <meta property="og:description" content="Şeffaf, denetlenebilir ve modern dosya yönetim sistemi. Yüksek kapasiteli verileri doğrudan diske akıtır. (enesmclk/clk-gdrive)">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/enesmclk/clk-gdrive">
     <meta property="og:site_name" content="Bulut Depom Kurumsal">
 
-    <!-- Dinamik Mavi Favicon (#0b57d0) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>">
-
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <style>
-        /* ================================================================= */
-        /* DİNAMİK RENK PALETİ VE KÜRESEL ANİMASYONLAR                       */
-        /* ================================================================= */
         :root { 
             color-scheme: light;
-            
-            /* Gündüz (Light) Mod Renkleri (Orijinal) */
             --bg: #f0f4f9; 
             --surface: #ffffff; 
             --primary: #0b57d0; 
@@ -58,13 +44,11 @@
             --sel-hover: #b3d4ec;
             --hover-bg: #e1e5ea;
             --folder-color: #fbbc04;
-            
             --search-bg: #e9eef6;
             --header-bg: #fafafa;
             --stripe-bg: #f4f7fc;
             --card-bg: #f8fafd;
             --input-border: #747775;
-            
             --toast-err-bg: #fce8e6;
             --toast-err-border: #d93025;
             --toast-err-text: #d93025;
@@ -75,7 +59,6 @@
             --flash-text: #1f1f1f;
         }
 
-        /* 🌙 NATIVE (YERLEŞİK) KARANLIK MOD PALETİ */
         [data-theme="dark"] {
             color-scheme: dark;
             --bg: #181a1b;          
@@ -89,13 +72,11 @@
             --sel-hover: #324563;   
             --hover-bg: #303436;    
             --folder-color: #f6c035; 
-            
             --search-bg: #1e2022;   
             --header-bg: #1e2022;   
             --stripe-bg: #2a2c2e;   
             --card-bg: #1e2022;     
             --input-border: #55595b;
-            
             --toast-err-bg: #4a1917;
             --toast-err-border: #8c2822;
             --toast-err-text: #f2b8b5;
@@ -106,14 +87,12 @@
             --flash-text: #e8e6e3;
         }
 
-        /* Nefes Alan Yazı Animasyonu (Pulse) */
         @keyframes textPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
         .anim-pulse { animation: textPulse 1.5s ease-in-out infinite; }
 
-        /* YUMUŞAK TEMA GEÇİŞLERİ İÇİN KÜRESEL TRANSİTİON (UI Akıcılığı) */
         body, .navbar, .sub-header, .main-container, .item-row, .details-card, .details-header, .details-footer, 
         .dl-manager, .dl-header, .dl-item, .profile-menu, .view-dropdown, .ctx-item, .search-box input, .view-btn, .breadcrumb-item, .login-card, .login-input {
             transition: background-color 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -122,7 +101,6 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
-        /* GİRİŞ EKRANI */
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         
         .login-theme-wrapper { position: absolute; top: 24px; right: 24px; }
@@ -140,16 +118,8 @@
         .login-btn { width: 100%; padding: 12px; background: var(--primary); color: #ffffff; border: none; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; font-family: inherit; transition: all 0.2s;}
         .login-btn:hover:not(:disabled) { background: var(--primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .login-btn:active:not(:disabled) { transform: scale(0.96); }
-        
-        /* GİRİŞ YAPILIYOR (KİLİTLİ) BUTON DURUMU */
-        .login-btn:disabled {
-            opacity: 0.7;
-            transform: scale(0.98);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .login-btn:disabled { opacity: 0.7; transform: scale(0.98); cursor: not-allowed; box-shadow: none; }
 
-        /* ÜST MENÜ (NAVBAR) */
         .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: var(--bg); }
         .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 400; color: var(--text-muted); }
         
@@ -158,9 +128,6 @@
         .search-box input:focus { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid var(--border);}
         .search-box i { position: absolute; left: 16px; top: 14px; color: var(--text-muted); }
 
-        /* ================================================================= */
-        /* MİNİMALİST SVG GÜNEŞ/AY TEMA BUTONU VE ANİMASYONLARI              */
-        /* ================================================================= */
         .theme-toggle-btn {
             background: none; border: none; cursor: pointer; color: var(--text-muted);
             padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -168,25 +135,21 @@
         }
         .theme-toggle-btn:hover { background: var(--hover-bg); color: var(--text); }
         
-        /* Çekirdek Animasyon Sınıfları */
         .theme-toggle-icon { transform-origin: center; transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
         .sun-core { transform-origin: center; transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
         .sun-rays { transform-origin: center; transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1), opacity 0.5s ease; }
         .mask-circle { transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
 
-        /* Karanlık Modda Hilal (Ay) Dönüşümü (+7.5 Derece) */
         [data-theme="dark"] .theme-toggle-icon { transform: rotate(7.5deg); } 
         [data-theme="dark"] .sun-core { transform: scale(1.6); } 
         [data-theme="dark"] .sun-rays { transform: rotate(90deg) scale(0); opacity: 0; } 
         [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); }
-
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; }
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
 
-        /* ALT KONTROL (BREADCRUMB VE WINDOWS GÖRÜNÜM MENÜSÜ) */
         .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px 16px 24px; background: var(--bg); }
         .breadcrumb-nav { display: flex; align-items: center; gap: 8px; font-size: 20px; color: var(--text); flex-wrap: wrap;}
         .breadcrumb-item { cursor: pointer; border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; }
@@ -202,7 +165,6 @@
         .view-option:hover { background: var(--hover-bg); color: var(--primary); }
         .view-option.active { background: var(--sel); color: var(--primary); font-weight: 500;}
 
-        /* ANA İÇERİK ALANI */
         .main-container { flex: 1; background: var(--surface); margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid var(--border);}
         
         .list-header { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); background: var(--header-bg);}
@@ -219,7 +181,6 @@
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
 
-        /* GÖRÜNÜM MODLARI */
         .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid var(--border); align-items: center; cursor: pointer; font-size: 14px; height: 48px; }
         .view-details .item-row:hover { background: var(--stripe-bg); }
         .view-details .item-row.selected { background: var(--sel); }
@@ -284,7 +245,6 @@
 
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
-        /* SAĞ TIK MENÜSÜ */
         #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
@@ -297,9 +257,8 @@
         .icon-word { color: #2b579a; }
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
-        .icon-link { color: #1a73e8; } /* Kısayol / Link ikonu rengi */
+        .icon-link { color: #1a73e8; } 
 
-        /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
         .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dl-manager.minimized { width: 280px; }
         .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
@@ -331,7 +290,6 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI (Dinamik Renkler) */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: var(--flash-color); color: var(--flash-text); border-color: var(--toast-warn-border); }
@@ -354,7 +312,6 @@
         .spinner { animation: rotate 1s linear infinite; display: inline-block; color: var(--primary); }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* DOSYA AYRINTILARI KARTI (MODAL) */
         #detailsOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.2s; }
         #detailsOverlay.show { display: flex; opacity: 1; }
         .details-card { background: var(--surface); width: 400px; max-width: 90%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; display: flex; flex-direction: column; border: 1px solid var(--border);}
@@ -373,41 +330,32 @@
         .details-btn-primary { background: var(--primary); color: #ffffff; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
-        /* MOBİL UYUM (RESPONSIVE) AYARLARI */
         @media (max-width: 768px) {
             .navbar { padding: 12px 16px; gap: 8px; }
             .brand span:not(.material-icons-round) { display: none; }
             .search-box { margin: 0; flex: 1; }
             .search-box input { padding: 10px 16px 10px 40px; font-size: 14px; }
             .search-box i { left: 12px; top: 11px; font-size: 20px; }
-
             .sub-header { padding: 8px 16px 12px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
             .view-menu-container { align-self: stretch; display: flex; justify-content: flex-end; width: 100%; }
             .view-btn { width: 100%; justify-content: space-between; }
             .breadcrumb-nav { font-size: 16px; }
-
             .list-header { grid-template-columns: 40px 1fr; padding: 12px; }
             .list-header .sortable-col:not(:nth-child(2)) { display: none; }
-            
             .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
-
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
             .view-list .item-row { width: 100%; max-width: none; }
-            
             .view-tiles { grid-template-columns: 1fr; padding: 12px; }
             .view-large { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); padding: 12px; gap: 4px; }
             .view-medium { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); padding: 12px; gap: 4px; }
-            
             .view-small { justify-content: flex-start; padding: 12px; }
             .view-small .item-row { width: calc(50% - 4px); max-width: none; }
-
             .main-container { margin: 0 8px 8px 8px; border-radius: 12px; }
             .login-card { width: 90%; max-width: 360px; padding: 32px 20px; }
             .profile-menu { width: 240px; right: -10px; }
             #ctxMenu { min-width: 160px; max-width: 200px; }
-            
             .dl-manager { width: calc(100% - 32px); left: 16px; bottom: 16px; max-width: none; }
             .dl-manager.minimized { width: calc(100% - 32px); }
             #dlOverlay { left: 16px; right: 16px; bottom: 16px; width: auto; justify-content: center; }
@@ -417,7 +365,6 @@
 <body>
 
     <div id="loginOverlay">
-        
         <div class="login-theme-wrapper">
             <button class="login-theme-btn" onclick="toggleTheme()" title="Temayı Değiştir">
                 <svg class="theme-toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -439,7 +386,6 @@
                 </svg>
             </button>
         </div>
-
         <div class="login-card">
             <span class="material-icons-round" style="font-size: 64px; color: var(--primary);">cloud</span>
             <h2 style="margin: 20px 0 24px 0; font-weight: 400; color: var(--text);">Bulut Depom</h2>
@@ -451,7 +397,6 @@
     </div>
 
     <div id="app" style="display:none; flex-direction:column; height: 100vh;">
-        
         <div class="navbar">
             <div class="brand">
                 <span class="material-icons-round" style="color:var(--primary); font-size: 32px;">cloud</span> 
@@ -463,10 +408,7 @@
                 <input type="text" placeholder="Dosyayı arayın..." oninput="filterItems(this.value)">
             </div>
 
-            <!-- Sağ Taraf: Tema Butonu ve Profil -->
             <div style="display: flex; align-items: center; gap: 4px;">
-                
-                <!-- ANA UYGULAMA TEMA BUTONU -->
                 <button class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
                     <svg class="theme-toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <mask id="moon-mask-app">
@@ -529,7 +471,6 @@
                 <div class="sortable-col" onclick="handleSort('date')">Son değiştirme <span class="material-icons-round sort-icon" id="sort-icon-date">arrow_downward</span></div>
             </div>
 
-            <!-- YENİLENEN YÜKLEME (LOADER) EKRANI -->
             <div class="list-container view-details" id="fileList">
                 <div id="loader" style="padding:80px; display:none; flex-direction:column; align-items:center; gap:12px; width: 100%;">
                     <span class="material-icons-round spinner" style="font-size:44px; color: var(--primary);">autorenew</span>
@@ -539,10 +480,8 @@
         </div>
     </div>
 
-    <!-- SAĞ TIK MENÜSÜ -->
     <div id="ctxMenu"></div>
 
-    <!-- AYRINTILAR KARTI (MODAL) -->
     <div id="detailsOverlay">
         <div class="details-card">
             <div class="details-header">
@@ -562,7 +501,6 @@
         </div>
     </div>
 
-    <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
@@ -577,7 +515,6 @@
         <div class="dl-list" id="dlList"></div>
     </div>
     
-    <!-- UYARI/BİLGİ TOAST KARTI -->
     <div id="dlOverlay">
         <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
         <span id="dlText" style="flex:1;">Bilgi</span>
@@ -618,14 +555,12 @@
             }
         });
 
-        // YENİLENEN GİRİŞ (LOGIN) FONKSİYONU
         async function checkLogin() {
             const u = document.getElementById('userInput').value;
             const p = document.getElementById('passInput').value;
             const err = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
             
-            // Animasyonlu ve kilitli buton durumu
             btn.innerHTML = "<span class='anim-pulse'>Doğrulanıyor...</span>"; 
             btn.disabled = true;
             
@@ -729,7 +664,7 @@
             if(['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) return { icon: 'image', class: 'icon-image' };
             if(['mp4', 'avi', 'mov'].includes(ext)) return { icon: 'play_circle', class: 'icon-video' };
             if(['zip', 'rar', '7z'].includes(ext)) return { icon: 'folder_zip', class: 'icon-folder' };
-            if(['lnk', 'url'].includes(ext)) return { icon: 'link', class: 'icon-link' }; // YENİ: Kısayol ikonu
+            if(['lnk', 'url'].includes(ext)) return { icon: 'link', class: 'icon-link' }; 
             return { icon: 'insert_drive_file', class: 'icon-file' };
         }
 
@@ -786,7 +721,6 @@
                 
                 row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
                 
-                // YENİ: Çift Tıklama İstisnası (.lnk ve .url için)
                 row.ondblclick = (e) => { 
                     e.stopPropagation(); 
                     if(item.isFolder) {
@@ -797,9 +731,9 @@
                         
                         const ext = item.name.split('.').pop().toLowerCase();
                         if (ext === 'lnk' || ext === 'url') {
-                            openLinkFileInBrowser(item); // Link okuyucu motoru çağırılır
+                            openLinkFileInBrowser(item);
                         } else {
-                            triggerNativeDownload(); // Diğer dosyalar standart indirilir
+                            triggerNativeDownload();
                         }
                     } 
                 };
@@ -829,7 +763,6 @@
         }
 
         async function enterFolder(id, name) {
-            // YENİLENEN FLEX YÜKLEYİCİ GÖRÜNÜMÜ
             document.getElementById('loader').style.display = 'flex';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
             if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
@@ -1173,9 +1106,6 @@
             }, 300);
         }
 
-        // =======================================================================
-        // YENİ: GİZLİ LİNK OKUYUCU (BINARY & UTF-16 DESTEKLİ)
-        // =======================================================================
         async function openLinkFileInBrowser(item) {
             const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
             showDownloadToast(`${item.name} yönlendiriliyor...`, 'info', 2000);
@@ -1184,12 +1114,10 @@
                 const response = await fetch(directUrl);
                 if (!response.ok) throw new Error("Ağ hatası");
                 
-                // Binary (ikili) okuma: UTF-16 Windows .lnk dosyalarındaki ASCII URL'leri yakalayabilmek için
                 const buffer = await response.arrayBuffer();
                 const uint8Array = new Uint8Array(buffer);
                 let text = "";
                 
-                // Sadece yazdırılabilir karakterleri çekerek .lnk içindeki çöp verilerden kurtuluyoruz
                 for(let i=0; i<uint8Array.length; i++) {
                     if(uint8Array[i] !== 0 && uint8Array[i] >= 32 && uint8Array[i] <= 126) {
                         text += String.fromCharCode(uint8Array[i]);
@@ -1198,12 +1126,11 @@
                     }
                 }
                 
-                // Çıkarılan temiz metin içinde geçerli URL arama
                 const urlMatch = text.match(/https?:\/\/[^\s"'<>\\]+/i);
                 
                 if (urlMatch && urlMatch[0]) {
                     hideDownloadToast();
-                    window.open(urlMatch[0], '_blank'); // Yeni sekmede aç
+                    window.open(urlMatch[0], '_blank');
                 } else {
                     showDownloadToast(`Dosya içerisinde geçerli bir link bulunamadı.`, 'warning', 3500);
                 }
@@ -1213,7 +1140,6 @@
             }
         }
 
-        // ANA İNDİRME TETİKLEYİCİ
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
