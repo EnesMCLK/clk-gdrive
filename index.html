@@ -563,12 +563,16 @@
 
     <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
+        <!-- YENİ EKLENEN MANUEL KAPATMA (X) TUŞU -->
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
                 <span class="material-icons-round" style="color: var(--primary); font-size: 20px;">file_download</span>
                 <span id="dlHeaderText">İndirmeler (0)</span>
             </div>
-            <span class="material-icons-round dl-header-icon" id="dlHeaderIcon">expand_more</span>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <span class="material-icons-round dl-header-icon" id="dlHeaderIcon">expand_more</span>
+                <span class="material-icons-round" onclick="event.stopPropagation(); closeDlManager()" title="Paneli Temizle ve Kapat" style="font-size: 20px; color: var(--text-muted); transition: 0.2s; padding: 2px; border-radius: 50%;" onmouseover="this.style.color='var(--toast-err-text)'; this.style.background='var(--hover-bg)'" onmouseout="this.style.color='var(--text-muted)'; this.style.background='transparent'">close</span>
+            </div>
         </div>
         <div class="dl-list" id="dlList"></div>
     </div>
@@ -963,6 +967,27 @@
         
         function toggleDlManager() {
             document.getElementById('dlManager').classList.toggle('minimized');
+        }
+
+        // YENİ EKLENEN FONKSİYON: İndirme Panelini Manuel Temizle ve Kapat
+        function closeDlManager() {
+            // Varsa devam eden indirmeleri güvenlice iptal et (Hafıza Temizliği)
+            activeDownloadsMap.forEach((dl, dlId) => {
+                if (dl.controller && !dl.isCompleted) {
+                    dl.controller.abort();
+                }
+            });
+            
+            // Tüm listeyi ve hafızayı temizle
+            activeDownloadsMap.clear();
+            document.getElementById('dlList').innerHTML = '';
+            
+            // Paneli tamamen gizle ve durumunu sıfırla
+            const manager = document.getElementById('dlManager');
+            manager.style.display = 'none';
+            manager.classList.remove('minimized');
+            
+            updateDlHeader();
         }
 
         function formatBytes(bytes, decimals = 2) {
