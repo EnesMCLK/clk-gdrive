@@ -216,7 +216,7 @@
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK VE HIZLI SİLİNEN TOAST (YENİ ANİMASYON) */
+        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
             50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
@@ -227,7 +227,6 @@
         .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
         .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
 
-        /* Toast Animasyonları */
         #dlOverlay { 
             position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); 
             padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; 
@@ -282,9 +281,6 @@
             .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
-
-            /* MOBİLDE KAYDIRMA (SCROLL) TAMPONU ARTIRILDI */
-            .list-container { padding-bottom: 160px; }
 
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
             .view-list .item-row { width: 100%; max-width: none; }
