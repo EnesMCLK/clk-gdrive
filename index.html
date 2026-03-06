@@ -41,7 +41,7 @@
 
     <style>
         /* ================================================================= */
-        /* DİNAMİK RENK PALETİ (AYDINLIK / KARANLIK MOD DESTEKLİ)            */
+        /* DİNAMİK RENK PALETİ VE KÜRESEL ANİMASYONLAR                       */
         /* ================================================================= */
         :root { 
             color-scheme: light;
@@ -106,6 +106,13 @@
             --flash-text: #e8e6e3;
         }
 
+        /* Nefes Alan Yazı Animasyonu (Pulse) */
+        @keyframes textPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .anim-pulse { animation: textPulse 1.5s ease-in-out infinite; }
+
         /* YUMUŞAK TEMA GEÇİŞLERİ İÇİN KÜRESEL TRANSİTİON (UI Akıcılığı) */
         body, .navbar, .sub-header, .main-container, .item-row, .details-card, .details-header, .details-footer, 
         .dl-manager, .dl-header, .dl-item, .profile-menu, .view-dropdown, .ctx-item, .search-box input, .view-btn, .breadcrumb-item, .login-card, .login-input {
@@ -115,7 +122,7 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
-        /* GİRİŞ EKRANI VE YENİ TEMA BUTONU */
+        /* GİRİŞ EKRANI */
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         
         .login-theme-wrapper { position: absolute; top: 24px; right: 24px; }
@@ -129,8 +136,18 @@
         .login-card { background: var(--surface); padding: 48px; border-radius: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 360px; text-align: center; border: 1px solid var(--border); }
         .login-input { width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--input-border); border-radius: 4px; outline: none; font-size: 16px; font-family: inherit; background: var(--surface); color: var(--text);}
         .login-input:focus { border: 2px solid var(--primary); padding: 13px 15px; }
-        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: #ffffff; border: none; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; font-family: inherit;}
-        .login-btn:hover { background: var(--primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: #ffffff; border: none; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; font-family: inherit; transition: all 0.2s;}
+        .login-btn:hover:not(:disabled) { background: var(--primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .login-btn:active:not(:disabled) { transform: scale(0.96); }
+        
+        /* GİRİŞ YAPILIYOR (KİLİTLİ) BUTON DURUMU */
+        .login-btn:disabled {
+            opacity: 0.7;
+            transform: scale(0.98);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
         /* ÜST MENÜ (NAVBAR) */
         .navbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: var(--bg); }
@@ -157,11 +174,11 @@
         .sun-rays { transform-origin: center; transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1), opacity 0.5s ease; }
         .mask-circle { transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
 
-        /* Karanlık Modda Hilal (Ay) Dönüşümü (+7.5 Derece Güncellemesi) */
-        [data-theme="dark"] .theme-toggle-icon { transform: rotate(7.5deg); } /* İkonu Sağa doğru +10 derece daha döndür */
-        [data-theme="dark"] .sun-core { transform: scale(1.6); } /* Çekirdeği büyüt */
-        [data-theme="dark"] .sun-rays { transform: rotate(90deg) scale(0); opacity: 0; } /* Işınları gizle */
-        [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); } /* Maskeyi kaydırıp ay şeklini kes */
+        /* Karanlık Modda Hilal (Ay) Dönüşümü (+7.5 Derece) */
+        [data-theme="dark"] .theme-toggle-icon { transform: rotate(7.5deg); } 
+        [data-theme="dark"] .sun-core { transform: scale(1.6); } 
+        [data-theme="dark"] .sun-rays { transform: rotate(90deg) scale(0); opacity: 0; } 
+        [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); }
 
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
@@ -400,7 +417,6 @@
 
     <div id="loginOverlay">
         
-        <!-- YENİ: GİRİŞ EKRANI TEMA BUTONU -->
         <div class="login-theme-wrapper">
             <button class="login-theme-btn" onclick="toggleTheme()" title="Temayı Değiştir">
                 <svg class="theme-toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -512,9 +528,11 @@
                 <div class="sortable-col" onclick="handleSort('date')">Son değiştirme <span class="material-icons-round sort-icon" id="sort-icon-date">arrow_downward</span></div>
             </div>
 
+            <!-- YENİLENEN YÜKLEME (LOADER) EKRANI -->
             <div class="list-container view-details" id="fileList">
-                <div id="loader" style="text-align:center; padding:80px; display:none;">
-                    <span class="material-icons-round spinner" style="font-size:40px;">autorenew</span>
+                <div id="loader" style="padding:80px; display:none; flex-direction:column; align-items:center; gap:12px; width: 100%;">
+                    <span class="material-icons-round spinner" style="font-size:44px; color: var(--primary);">autorenew</span>
+                    <span class="anim-pulse" style="color: var(--primary); font-weight: 500; font-size: 15px; letter-spacing: 0.5px;">Dizin yükleniyor...</span>
                 </div>
             </div>
         </div>
@@ -578,7 +596,6 @@
         let isSortAsc = true;
         let lastSelectedIndex = -1;
 
-        // TEMA DEĞİŞTİRME FONKSİYONU
         function toggleTheme() {
             const docEl = document.documentElement;
             const currentTheme = docEl.getAttribute('data-theme');
@@ -597,12 +614,17 @@
             }
         });
 
+        // YENİLENEN GİRİŞ (LOGIN) FONKSİYONU
         async function checkLogin() {
             const u = document.getElementById('userInput').value;
             const p = document.getElementById('passInput').value;
             const err = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
-            btn.innerText = "Doğrulanıyor..."; btn.disabled = true;
+            
+            // Animasyonlu ve kilitli buton durumu
+            btn.innerHTML = "<span class='anim-pulse'>Doğrulanıyor...</span>"; 
+            btn.disabled = true;
+            
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
                 const res = await r.json();
@@ -624,9 +646,14 @@
                 } else { 
                     err.innerText = res.error || "Hatalı Giriş!";
                     err.style.display = 'block'; 
-                    btn.innerText = "Oturum Aç"; btn.disabled = false;
+                    btn.innerText = "Oturum Aç"; 
+                    btn.disabled = false;
                 }
-            } catch(e) { alert("Sunucuya ulaşılamıyor."); btn.innerText = "Oturum Aç"; btn.disabled = false; }
+            } catch(e) { 
+                alert("Sunucuya ulaşılamıyor."); 
+                btn.innerText = "Oturum Aç"; 
+                btn.disabled = false; 
+            }
         }
 
         function extractType(filename, isFolder) {
@@ -779,7 +806,8 @@
         }
 
         async function enterFolder(id, name) {
-            document.getElementById('loader').style.display = 'block';
+            // YENİLENEN FLEX YÜKLEYİCİ GÖRÜNÜMÜ
+            document.getElementById('loader').style.display = 'flex';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
             if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
             const u = sessionStorage.getItem('u'); const p = sessionStorage.getItem('p');
