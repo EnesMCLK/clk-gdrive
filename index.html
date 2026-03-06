@@ -297,6 +297,7 @@
         .icon-word { color: #2b579a; }
         .icon-image { color: #e37400; }
         .icon-video { color: #d93025; }
+        .icon-link { color: #1a73e8; } /* Kısayol / Link ikonu rengi */
 
         /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
         .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -563,7 +564,6 @@
 
     <!-- İNDİRME YÖNETİCİSİ -->
     <div id="dlManager" class="dl-manager" style="display: none;">
-        <!-- YENİ EKLENEN MANUEL KAPATMA (X) TUŞU -->
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
                 <span class="material-icons-round" style="color: var(--primary); font-size: 20px;">file_download</span>
@@ -729,6 +729,7 @@
             if(['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) return { icon: 'image', class: 'icon-image' };
             if(['mp4', 'avi', 'mov'].includes(ext)) return { icon: 'play_circle', class: 'icon-video' };
             if(['zip', 'rar', '7z'].includes(ext)) return { icon: 'folder_zip', class: 'icon-folder' };
+            if(['lnk', 'url'].includes(ext)) return { icon: 'link', class: 'icon-link' }; // YENİ: Kısayol ikonu
             return { icon: 'insert_drive_file', class: 'icon-file' };
         }
 
@@ -784,7 +785,25 @@
                 `;
                 
                 row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
-                row.ondblclick = (e) => { e.stopPropagation(); if(item.isFolder) enterFolder(item.id, item.name); else { selectedIds.clear(); selectedIds.add(item.id); triggerNativeDownload(); } };
+                
+                // YENİ: Çift Tıklama İstisnası (.lnk ve .url için)
+                row.ondblclick = (e) => { 
+                    e.stopPropagation(); 
+                    if(item.isFolder) {
+                        enterFolder(item.id, item.name); 
+                    } else { 
+                        selectedIds.clear(); 
+                        selectedIds.add(item.id); 
+                        
+                        const ext = item.name.split('.').pop().toLowerCase();
+                        if (ext === 'lnk' || ext === 'url') {
+                            openLinkFileInBrowser(item); // Link okuyucu motoru çağırılır
+                        } else {
+                            triggerNativeDownload(); // Diğer dosyalar standart indirilir
+                        }
+                    } 
+                };
+
                 row.oncontextmenu = (e) => { 
                     e.preventDefault(); e.stopPropagation(); 
                     if(!selectedIds.has(item.id)) { 
@@ -969,20 +988,16 @@
             document.getElementById('dlManager').classList.toggle('minimized');
         }
 
-        // YENİ EKLENEN FONKSİYON: İndirme Panelini Manuel Temizle ve Kapat
         function closeDlManager() {
-            // Varsa devam eden indirmeleri güvenlice iptal et (Hafıza Temizliği)
             activeDownloadsMap.forEach((dl, dlId) => {
                 if (dl.controller && !dl.isCompleted) {
                     dl.controller.abort();
                 }
             });
             
-            // Tüm listeyi ve hafızayı temizle
             activeDownloadsMap.clear();
             document.getElementById('dlList').innerHTML = '';
             
-            // Paneli tamamen gizle ve durumunu sıfırla
             const manager = document.getElementById('dlManager');
             manager.style.display = 'none';
             manager.classList.remove('minimized');
@@ -1158,6 +1173,47 @@
             }, 300);
         }
 
+        // =======================================================================
+        // YENİ: GİZLİ LİNK OKUYUCU (BINARY & UTF-16 DESTEKLİ)
+        // =======================================================================
+        async function openLinkFileInBrowser(item) {
+            const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+            showDownloadToast(`${item.name} yönlendiriliyor...`, 'info', 2000);
+            
+            try {
+                const response = await fetch(directUrl);
+                if (!response.ok) throw new Error("Ağ hatası");
+                
+                // Binary (ikili) okuma: UTF-16 Windows .lnk dosyalarındaki ASCII URL'leri yakalayabilmek için
+                const buffer = await response.arrayBuffer();
+                const uint8Array = new Uint8Array(buffer);
+                let text = "";
+                
+                // Sadece yazdırılabilir karakterleri çekerek .lnk içindeki çöp verilerden kurtuluyoruz
+                for(let i=0; i<uint8Array.length; i++) {
+                    if(uint8Array[i] !== 0 && uint8Array[i] >= 32 && uint8Array[i] <= 126) {
+                        text += String.fromCharCode(uint8Array[i]);
+                    } else if (uint8Array[i] !== 0) {
+                        text += " "; 
+                    }
+                }
+                
+                // Çıkarılan temiz metin içinde geçerli URL arama
+                const urlMatch = text.match(/https?:\/\/[^\s"'<>\\]+/i);
+                
+                if (urlMatch && urlMatch[0]) {
+                    hideDownloadToast();
+                    window.open(urlMatch[0], '_blank'); // Yeni sekmede aç
+                } else {
+                    showDownloadToast(`Dosya içerisinde geçerli bir link bulunamadı.`, 'warning', 3500);
+                }
+            } catch (err) {
+                console.error("Link okuma hatası:", err);
+                showDownloadToast(`Dosya okunamadı. Lütfen sağ tıklayıp indirmeyi deneyin.`, 'error', 3500);
+            }
+        }
+
+        // ANA İNDİRME TETİKLEYİCİ
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
