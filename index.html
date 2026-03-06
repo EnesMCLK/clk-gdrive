@@ -32,8 +32,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <style>
-        /* Google Drive + Windows Explorer Tasarım Dili */
+        /* ================================================================= */
+        /* DİNAMİK RENK PALETİ (AYDINLIK / KARANLIK MOD DESTEKLİ)            */
+        /* ================================================================= */
         :root { 
+            color-scheme: light dark; /* İşletim sistemi scrollbar'larını otomatik ayarlar */
+            
+            /* Gündüz (Light) Mod Renkleri (Orijinal) */
             --bg: #f0f4f9; 
             --surface: #ffffff; 
             --primary: #0b57d0; 
@@ -45,17 +50,66 @@
             --sel-hover: #b3d4ec;
             --hover-bg: #e1e5ea;
             --folder-color: #fbbc04;
+            
+            /* Özel Alan Renkleri */
+            --search-bg: #e9eef6;
+            --header-bg: #fafafa;
+            --stripe-bg: #f4f7fc;
+            --card-bg: #f8fafd;
+            --input-border: #747775;
+            
+            /* Toast Renkleri */
+            --toast-err-bg: #fce8e6;
+            --toast-err-border: #d93025;
+            --toast-err-text: #d93025;
+            --toast-warn-bg: #fef7e0;
+            --toast-warn-border: #fbbc04;
+            --toast-warn-text: #b06000;
+            --flash-color: #fbbc04;
+            --flash-text: #1f1f1f;
+        }
+
+        /* 🌙 OTOMATİK KARANLIK MOD (DARK READER ANALİZİNE GÖRE) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #181a1b;          /* Derin Arkaplan */
+                --surface: #242526;     /* Kartlar ve Menüler */
+                --primary: #5c9eff;     /* Okunabilir Parlak Mavi */
+                --primary-hover: #3d8bff;
+                --border: #3e4446;      /* Yumuşak Çizgiler */
+                --text: #e8e6e3;        /* Ana Metin (Göz yormayan beyaz) */
+                --text-muted: #9aa0a6;  /* Soluk Metin */
+                --sel: #2a3a53;         /* Seçili Öğe (Koyu Mavi/Gri) */
+                --sel-hover: #324563;   
+                --hover-bg: #303436;    /* Üzerine gelince (Hover) */
+                --folder-color: #f6c035; /* Klasör Sarısı */
+                
+                --search-bg: #1e2022;   /* Arama Kutusu */
+                --header-bg: #1e2022;   /* Liste Başlığı */
+                --stripe-bg: #2a2c2e;   /* Satır Hover */
+                --card-bg: #1e2022;     /* İkincil Kart Rengi */
+                --input-border: #55595b;
+                
+                --toast-err-bg: #4a1917;
+                --toast-err-border: #8c2822;
+                --toast-err-text: #f2b8b5;
+                --toast-warn-bg: #4d3800;
+                --toast-warn-border: #8f6a00;
+                --toast-warn-text: #fde293;
+                --flash-color: #5c4300;
+                --flash-text: #e8e6e3;
+            }
         }
         
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; user-select: none; transition: background-color 0.3s, color 0.3s; }
         
         /* GİRİŞ EKRANI */
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--surface); padding: 48px; border-radius: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); width: 360px; text-align: center; }
-        .login-input { width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid #747775; border-radius: 4px; outline: none; transition: 0.2s; font-size: 16px; font-family: inherit;}
+        .login-card { background: var(--surface); padding: 48px; border-radius: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 360px; text-align: center; border: 1px solid var(--border); }
+        .login-input { width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--input-border); border-radius: 4px; outline: none; transition: 0.2s; font-size: 16px; font-family: inherit; background: var(--surface); color: var(--text);}
         .login-input:focus { border: 2px solid var(--primary); padding: 13px 15px; }
-        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; transition: 0.2s; font-family: inherit;}
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: #ffffff; border: none; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; transition: 0.2s; font-family: inherit;}
         .login-btn:hover { background: var(--primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 
         /* ÜST MENÜ (NAVBAR) */
@@ -63,13 +117,13 @@
         .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 400; color: var(--text-muted); }
         
         .search-box { flex: 0 1 720px; position: relative; margin: 0 20px; }
-        .search-box input { width: 100%; padding: 14px 20px 14px 48px; border-radius: 24px; border: none; background: #e9eef6; outline: none; font-size: 16px; font-family: inherit; transition: background 0.2s, box-shadow 0.2s;}
-        .search-box input:focus { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .search-box input { width: 100%; padding: 14px 20px 14px 48px; border-radius: 24px; border: none; background: var(--search-bg); color: var(--text); outline: none; font-size: 16px; font-family: inherit; transition: background 0.2s, box-shadow 0.2s;}
+        .search-box input:focus { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid var(--border);}
         .search-box i { position: absolute; left: 16px; top: 14px; color: var(--text-muted); }
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; }
-        .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid #e0e0e0;}
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; }
+        .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
 
         /* ALT KONTROL (BREADCRUMB VE WINDOWS GÖRÜNÜM MENÜSÜ) */
@@ -82,16 +136,16 @@
         .view-menu-container { position: relative; }
         .view-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text); font-family: inherit; font-size: 14px; background: var(--surface); transition: 0.2s;}
         .view-btn:hover { background: var(--hover-bg); }
-        .view-dropdown { position: absolute; top: 110%; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); width: 220px; display: none; z-index: 2000; padding: 8px 0; }
+        .view-dropdown { position: absolute; top: 110%; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); width: 220px; display: none; z-index: 2000; padding: 8px 0; }
         .view-dropdown.show { display: block; }
         .view-option { padding: 10px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; color: var(--text); transition: background 0.1s;}
         .view-option:hover { background: var(--hover-bg); color: var(--primary); }
         .view-option.active { background: var(--sel); color: var(--primary); font-weight: 500;}
 
         /* ANA İÇERİK ALANI */
-        .main-container { flex: 1; background: var(--surface); margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .main-container { flex: 1; background: var(--surface); margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid var(--border);}
         
-        .list-header { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); background: #fafafa;}
+        .list-header { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text-muted); background: var(--header-bg);}
         .sortable-col { display: flex; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
         .sortable-col:hover { color: var(--text); }
         .sort-icon { font-size: 16px; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
@@ -106,22 +160,22 @@
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
 
         /* GÖRÜNÜM MODLARI */
-        .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid #f1f3f4; align-items: center; cursor: pointer; font-size: 14px; height: 48px; transition: background 0.1s; }
-        .view-details .item-row:hover { background: #f4f7fc; }
+        .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid var(--border); align-items: center; cursor: pointer; font-size: 14px; height: 48px; transition: background 0.1s; }
+        .view-details .item-row:hover { background: var(--stripe-bg); }
         .view-details .item-row.selected { background: var(--sel); }
         
         .view-list { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 4px; padding: 12px; height: 100%; overflow-x: auto;}
         .view-list .list-header { display: none; }
         .view-list .item-row { display: flex; align-items: center; width: 240px; padding: 6px 10px; cursor: pointer; border-radius: 8px; gap: 10px; transition: 0.1s; height: max-content;}
-        .view-list .item-row:hover { background: #f4f7fc; }
+        .view-list .item-row:hover { background: var(--stripe-bg); }
         .view-list .item-row.selected { background: var(--sel); }
         .view-list .col-type, .view-list .col-size, .view-list .col-date { display: none; }
 
         .view-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; padding: 16px; align-content: start; }
         .view-tiles .list-header { display: none; }
-        .view-tiles .item-row { display: flex; align-items: center; padding: 10px 12px; background: #f8fafd; border-radius: 12px; cursor: pointer; border: 1px solid transparent; gap: 12px; transition: 0.2s; height: max-content; }
-        .view-tiles .item-row:hover { background: #f0f4f9; border-color: var(--border); }
-        .view-tiles .item-row.selected { background: var(--sel); border-color: #a8c7fa; }
+        .view-tiles .item-row { display: flex; align-items: center; padding: 10px 12px; background: var(--card-bg); border-radius: 12px; cursor: pointer; border: 1px solid var(--border); gap: 12px; transition: 0.2s; height: max-content; }
+        .view-tiles .item-row:hover { background: var(--hover-bg); border-color: var(--border); }
+        .view-tiles .item-row.selected { background: var(--sel); border-color: var(--primary); }
         .view-tiles .file-info { flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; }
         .view-tiles .material-icons-round { font-size: 32px; }
         .view-tiles .file-name { font-size: 14px; width: 100%; }
@@ -131,7 +185,7 @@
         .view-large { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 20px; align-content: start; }
         .view-large .list-header { display: none; }
         .view-large .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 8px; border-radius: 8px; cursor: pointer; text-align: center; gap: 8px; transition: 0.1s; height: max-content; }
-        .view-large .item-row:hover { background: #f4f7fc; }
+        .view-large .item-row:hover { background: var(--stripe-bg); }
         .view-large .item-row.selected { background: var(--sel); }
         .view-large .material-icons-round { font-size: 64px; }
         .view-large .file-info { flex-direction: column; gap: 4px; width: 100%;}
@@ -141,7 +195,7 @@
         .view-medium { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; padding: 16px; align-content: start; }
         .view-medium .list-header { display: none; }
         .view-medium .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 4px; border-radius: 8px; cursor: pointer; text-align: center; gap: 6px; transition: 0.1s; height: max-content; }
-        .view-medium .item-row:hover { background: #f4f7fc; }
+        .view-medium .item-row:hover { background: var(--stripe-bg); }
         .view-medium .item-row.selected { background: var(--sel); }
         .view-medium .material-icons-round { font-size: 44px; } 
         .view-medium .file-info { flex-direction: column; gap: 4px; width: 100%;}
@@ -151,7 +205,7 @@
         .view-small { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px; align-content: flex-start; }
         .view-small .list-header { display: none; }
         .view-small .item-row { display: flex; align-items: center; width: auto; max-width: 180px; padding: 4px 8px; border-radius: 6px; cursor: pointer; gap: 8px; height: max-content; }
-        .view-small .item-row:hover { background: #f4f7fc; }
+        .view-small .item-row:hover { background: var(--stripe-bg); }
         .view-small .item-row.selected { background: var(--sel); }
         .view-small .material-icons-round { font-size: 20px; }
         .view-small .file-name { font-size: 12px; }
@@ -160,7 +214,7 @@
         .view-content { display: flex; flex-direction: column; padding: 16px; gap: 8px; }
         .view-content .list-header { display: none; }
         .view-content .item-row { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; gap: 24px; transition: 0.1s; height: max-content; }
-        .view-content .item-row:hover { background: #fafafa; }
+        .view-content .item-row:hover { background: var(--stripe-bg); }
         .view-content .item-row.selected { background: var(--sel); }
         .view-content .material-icons-round { font-size: 32px; }
         .view-content .file-info { flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
@@ -171,7 +225,7 @@
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
         /* SAĞ TIK MENÜSÜ */
-        #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
+        #ctxMenu { position: fixed; display: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 0; z-index: 5000; min-width: 200px; }
         .ctx-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text); }
         .ctx-item:hover { background: var(--hover-bg); }
         .ctx-item .material-icons-round { font-size: 20px; }
@@ -185,20 +239,20 @@
         .icon-video { color: #d93025; }
 
         /* ZENGİN İNDİRME YÖNETİCİSİ (DOWNLOAD MANAGER) UI */
-        .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dl-manager { position: fixed; bottom: 24px; left: 24px; width: 380px; background: var(--surface); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--border); display: flex; flex-direction: column; z-index: 9999; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dl-manager.minimized { width: 280px; }
         .dl-manager.minimized .dl-list { max-height: 0; padding: 0 12px; opacity: 0; }
         .dl-manager.minimized .dl-header-icon { transform: rotate(180deg); }
         
-        .dl-header { padding: 14px 20px; background: #f8fafd; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s; }
-        .dl-header:hover { background: #eef2f7; }
+        .dl-header { padding: 14px 20px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+        .dl-header:hover { background: var(--hover-bg); }
         .dl-header-title { font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 8px; }
         .dl-header-icon { color: var(--text-muted); transition: transform 0.3s; }
 
         .dl-list { max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--surface); transition: max-height 0.3s, opacity 0.3s, padding 0.3s; }
         
-        .dl-item { background: var(--surface); border-radius: 8px; padding: 12px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.2s; }
-        .dl-item:hover { background: #f8fafd; }
+        .dl-item { background: var(--surface); border-radius: 8px; padding: 12px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
+        .dl-item:hover { background: var(--hover-bg); }
         
         .dl-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
         .dl-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); flex: 1; padding-top: 2px;}
@@ -206,33 +260,33 @@
         .dl-controls { display: flex; gap: 4px; }
         .dl-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .dl-btn:hover { background: var(--hover-bg); color: var(--text); }
-        .dl-btn.cancel:hover { color: #d93025; background: #fce8e6; }
+        .dl-btn.cancel:hover { color: var(--toast-err-text); background: var(--toast-err-bg); }
         
         .dl-progress-container { width: 100%; display: flex; flex-direction: column; gap: 6px; }
-        .dl-progress-bg { height: 6px; background: #e1e5ea; border-radius: 3px; overflow: hidden; width: 100%; }
+        .dl-progress-bg { height: 6px; background: var(--hover-bg); border-radius: 3px; overflow: hidden; width: 100%; border: 1px solid var(--border); }
         .dl-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s linear; }
         
         .dl-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
         .dl-meta-speed { font-weight: 500; color: #1d7044; }
         .dl-status-text { font-size: 12px; font-weight: 500; color: var(--primary); display: none; }
 
-        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI */
+        /* SARI ÇAKAR IŞIK VE TOAST DURUMLARI (Dinamik Renkler) */
         @keyframes flashYellow {
             0% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
-            50% { background-color: #fbbc04; color: #1f1f1f; border-color: #fbbc04; }
+            50% { background-color: var(--flash-color); color: var(--flash-text); border-color: var(--toast-warn-border); }
             100% { background-color: var(--surface); color: var(--text); border-color: var(--border); }
         }
         
         .flash-warning { animation: flashYellow 1.2s infinite; }
-        .toast-error { background-color: #fce8e6 !important; border-color: #d93025 !important; color: #d93025 !important; }
-        .toast-warning { background-color: #fef7e0 !important; border-color: #fbbc04 !important; color: #b06000 !important; }
+        .toast-error { background-color: var(--toast-err-bg) !important; border-color: var(--toast-err-border) !important; color: var(--toast-err-text) !important; }
+        .toast-warning { background-color: var(--toast-warn-bg) !important; border-color: var(--toast-warn-border) !important; color: var(--toast-warn-text) !important; }
 
         #dlOverlay { 
             position: fixed; bottom: 24px; left: 24px; background: var(--surface); color: var(--text); 
             padding: 16px 24px; border-radius: 12px; display: none; align-items: center; gap: 16px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 10000; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid var(--border); z-index: 10000; 
             font-size: 14px; font-weight: 500;
-            opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s;
         }
         
         #dlOverlay.show-toast {
@@ -244,11 +298,11 @@
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* DOSYA AYRINTILARI KARTI (MODAL) */
-        #detailsOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.2s; }
+        #detailsOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.2s; }
         #detailsOverlay.show { display: flex; opacity: 1; }
-        .details-card { background: var(--surface); width: 400px; max-width: 90%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; display: flex; flex-direction: column;}
+        .details-card { background: var(--surface); width: 400px; max-width: 90%; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; display: flex; flex-direction: column; border: 1px solid var(--border);}
         #detailsOverlay.show .details-card { transform: scale(1); }
-        .details-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: #f8fafd; }
+        .details-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--card-bg); }
         .details-title { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; color: var(--text); }
         .details-close { cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 50%; display: flex; transition: background 0.2s; }
         .details-close:hover { background: var(--hover-bg); color: var(--text); }
@@ -258,9 +312,9 @@
         .details-row { display: flex; flex-direction: column; gap: 4px; }
         .details-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .details-value { font-size: 14px; color: var(--text); word-break: break-all; }
-        .details-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: #f8fafd; }
-        .details-btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(11, 87, 208, 0.3); }
+        .details-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: var(--card-bg); }
+        .details-btn-primary { background: var(--primary); color: #ffffff; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
         /* MOBİL UYUM (RESPONSIVE) AYARLARI */
         @media (max-width: 768px) {
@@ -309,7 +363,7 @@
         <div class="login-card">
             <span class="material-icons-round" style="font-size: 64px; color: var(--primary);">cloud</span>
             <h2 style="margin: 20px 0 24px 0; font-weight: 400; color: var(--text);">Bulut Depom</h2>
-            <div id="loginError" style="color:#d93025; font-size:13px; margin-bottom:12px; display:none; font-weight:500;">Hatalı Kullanıcı veya Şifre!</div>
+            <div id="loginError" style="color:var(--toast-err-border); font-size:13px; margin-bottom:12px; display:none; font-weight:500;">Hatalı Kullanıcı veya Şifre!</div>
             <input type="text" id="userInput" class="login-input" placeholder="Kullanıcı Adı">
             <input type="password" id="passInput" class="login-input" placeholder="Şifre" onkeypress="if(event.key==='Enter') checkLogin()">
             <button class="login-btn" onclick="checkLogin()" id="loginBtn">Oturum Aç</button>
@@ -333,9 +387,9 @@
                 <div class="avatar" id="navAvatar">?</div>
                 <div class="profile-menu" id="profileCard">
                     <div class="avatar" style="width:64px; height:64px; font-size:28px; margin: 0 auto 12px auto;" id="cardAvatar">?</div>
-                    <h3 id="cardNick" style="margin:0 0 4px 0; font-weight: 500;">Rumuz</h3>
+                    <h3 id="cardNick" style="margin:0 0 4px 0; font-weight: 500; color: var(--text);">Rumuz</h3>
                     <p id="cardUser" style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">user@bulutdepom.com</p>
-                    <button onclick="logout()" style="width:100%; padding:10px; border:1px solid var(--border); color:var(--text); background:var(--surface); border-radius:8px; cursor:pointer; font-weight:500; font-family:inherit;">Oturumu Kapat</button>
+                    <button onclick="logout()" style="width:100%; padding:10px; border:1px solid var(--border); color:var(--text); background:var(--surface); border-radius:8px; cursor:pointer; font-weight:500; font-family:inherit; transition: 0.2s;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--surface)'">Oturumu Kapat</button>
                 </div>
             </div>
         </div>
@@ -857,12 +911,12 @@
             
             const card = document.getElementById(`dl-card-${dlId}`);
             if(card) {
-                card.style.borderColor = "#d93025";
+                card.style.borderColor = "var(--toast-err-border)";
                 document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
                 document.getElementById(`dl-controls-${dlId}`).style.display = 'none';
                 const statusText = document.getElementById(`dl-status-${dlId}`);
                 statusText.style.display = 'block';
-                statusText.style.color = '#d93025';
+                statusText.style.color = 'var(--toast-err-text)';
                 statusText.innerText = "İptal Edildi";
                 
                 setTimeout(() => { dismissDl(dlId); }, 3000);
@@ -882,9 +936,6 @@
             showDownloadToast(`Güvenlik: Web tarayıcıları indirilen yerel dosyaları doğrudan çalıştıramaz. Lütfen kaydettiğiniz dizinden dosyayı açınız.`, 'info', 6000);
         }
 
-        // =======================================================================
-        // AKILLI UYARI VE YÖNLENDİRME SİSTEMİ
-        // =======================================================================
         let blinkInterval = null;
         let toastTimeout = null;
         const originalTitle = document.title;
@@ -957,9 +1008,6 @@
             }, 300);
         }
 
-        // =======================================================================
-        // ANA İNDİRME TETİKLEYİCİ
-        // =======================================================================
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
@@ -1109,12 +1157,12 @@
             } catch (err) {
                 const card = document.getElementById(`dl-card-${dlId}`);
                 if(card) {
-                    card.style.borderColor = "#d93025";
+                    card.style.borderColor = "var(--toast-err-border)";
                     document.getElementById(`dl-prog-container-${dlId}`).style.display = 'none';
                     document.getElementById(`dl-controls-${dlId}`).style.display = 'none';
                     const statusText = document.getElementById(`dl-status-${dlId}`);
                     statusText.style.display = 'block';
-                    statusText.style.color = '#d93025';
+                    statusText.style.color = 'var(--toast-err-text)';
                     statusText.innerText = err.name === 'AbortError' ? "İptal Edildi" : "Başarısız";
                     setTimeout(() => { dismissDl(dlId); }, 5000);
                 }
