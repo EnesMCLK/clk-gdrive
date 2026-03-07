@@ -1,24 +1,83 @@
-# ☁︎ Bulut Depom
+☁️ Bulut Depom
 
-**CLK-GDrive**, Google Drive altyapısını kullanan, tamamen sunucusuz (serverless) ve modern bir web tabanlı dosya yöneticisidir. 
+Bulut Depom Enterprise, işletmeler ve bireysel kullanıcılar için geliştirilmiş; güvenli, şeffaf ve yüksek performanslı bir modern bulut dosya yönetim arayüzüdür. Tarayıcı sınırlarını zorlayan mimarisi sayesinde, uzak sunucudaki devasa dosyalarınızı Sıfır RAM (0 RAM) tüketimi ile doğrudan yerel diskinize akıtır (Stream).
 
-Bu proje, özellikle katı güvenlik duvarlarına (firewall) sahip şirket ağlarında, harici bulut depolama servislerine veya sunuculara erişimin engellendiği durumlarda **yalnızca GitHub ve Google ekosistemini kullanarak** kesintisiz bir dosya erişim deneyimi sunmak amacıyla geliştirilmiştir.
+Tamamen istemci tarafında (Client-side) çalışan modern arayüzü, işletim sistemlerinin (Windows/macOS) yerleşik dosya gezgini deneyimini doğrudan web tarayıcısına taşır.
 
-## ✨ Özellikler
+🌟 Öne Çıkan Özellikler (Altın Standart Mimarisi)
 
-* **🚀 Tamamen Sunucusuz (Serverless):** Arka planda Node.js, PHP veya bir veritabanı (MySQL vb.) gerektirmez.
-* **🛡️ Güvenlik Duvarı Dostu:** Tüm veri trafiği GitHub Pages ve Google sunucuları (`script.google.com`) üzerinden aktığı için ağ kısıtlamalarına takılmaz.
-* **🎨 Modern Arayüz:** Google'ın Material Design prensipleriyle tasarlanmış, kullanıcı dostu temiz arayüz.
-* **📂 Dinamik Navigasyon:** Klasörler arasında gezinme, alt klasörlere erişim ve anlık veri çekme yeteneği.
-* **⚡ Sıfır Maliyet:** Barındırma için GitHub Pages, depolama ve API için Google Drive & Apps Script kullanılarak 0₺ maliyetle çalışır.
+🚀 Sıfır RAM Tüketimli İndirme Motoru (Zero-RAM Chunking)
 
-## 🏗️ Mimari Yapı
+Geleneksel web indirmelerinin aksine dosyaları tarayıcı belleğine (RAM) yüklemez. Modern File System Access API (showSaveFilePicker & showDirectoryPicker) kullanarak, bulut sunucudan gelen veriyi milisaniyeler içinde doğrudan bilgisayarınızın fiziksel diskine yazar. Cihazınız yorulmaz, indirmeler kopmaz.
 
-Sistem üç ana bileşenden oluşur:
-1. **Frontend (Arayüz):** HTML, CSS ve Vanilla JavaScript ile yazılmış, GitHub Pages üzerinde barındırılan statik arayüz.
-2. **Backend (API Köprüsü):** Google Apps Script. Tarayıcıdan gelen istekleri karşılayıp Drive'dan veriyi JSON formatında frontend'e iletir.
-3. **Database (Depolama):** Google Drive. Tüm dosyalar ve klasör hiyerarşisi kullanıcının kişisel veya kurumsal Drive hesabında tutulur.
+🗂️ Akıllı Toplu İndirme & Sandbox Koruması
 
-## 📝 Lisans
+Birden fazla dosya seçildiğinde tarayıcının spam engelleme (Sandbox) sistemine takılmamak için kullanıcıdan tek bir "Hedef Klasör" izni ister ve tüm dosyaları o klasörün içine sırayla, sessizce ve güvenle indirir. Akıllı uyarı sistemi (Flash Toast) kök dizin (C:, Masaüstü vb.) güvenlik engellerini önceden algılar ve kullanıcıyı yönlendirir.
 
-Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır. Kişisel ve ticari kullanıma, değiştirilmeye ve dağıtılmaya açıktır.
+💻 Native (Yerleşik) Windows Gezgini Deneyimi
+
+Çoklu Seçim: Klasik masaüstü alışkanlıkları web'e uyarlandı. Normal tıklama ile çapa (anchor) atma, Ctrl (veya Cmd) ile tekil dosya ekleme/çıkarma ve Shift ile pürüzsüz aralık seçimi!
+
+Görünüm Modları: Ayrıntılar, Döşemeler, Büyük/Orta/Küçük Simgeler, İçerik ve Liste modları arasında dinamik geçiş.
+
+Sağ Tık Menüsü: Özelleştirilmiş ve sistem stiline uygun akıllı Context Menu.
+
+Dinamik Ekmek Kırıntısı (Breadcrumbs): Klasörler arası derinlemesine ve limitsiz gezinme hafızası.
+
+🌙 Dinamik ve Yerleşik (Native) Karanlık Mod
+
+Harici bir kütüphane veya eklenti (örn: Dark Reader) gerektirmez. Cihazınızın sistem temasını otomatik okur. FOIT (Flash of Inaccurate Theme) engelleme sistemi sayesinde sayfa yüklenirken ekran patlaması yaşanmaz. Güneş ve Ay arasında geçiş yapan Saf CSS SVG Morphing animasyonu ile premium bir hissiyat sunar.
+
+🔗 LNK ve URL Akıllı Okuyucu
+
+Sisteme yüklenen Windows kısayol (.lnk) veya .url dosyalarına çift tıklandığında anlamsızca indirmek yerine; ikili (binary) ve UTF-16 veriyi ayıklar, içindeki http://, https:// veya //localhost formatlı hedef bağlantıyı tespit edip sizi doğrudan o adrese ışınlar.
+
+📱 Kusursuz Mobil Uyumluluk (100dvh Mimarisi)
+
+Tasarım, mobil tarayıcıların açılıp kapanan adres çubuklarından etkilenmemesi için position: fixed ve esnek kutu (flex) mimarisiyle cihaz ekranına milimetrik kilitlenir. Hiçbir öğe yarım görünmez, tam bir "Native App" gibi hissettirir. Profil sisteminde Base64 resim desteği ile kişiselleştirilebilir arayüz.
+
+🛠️ Sistem Kurulumu
+
+Proje, geleneksel veritabanı veya sunucu kiralama gereksinimlerini ortadan kaldıran Serverless (Sunucusuz) bir mimari üzerine inşa edilmiştir.
+
+1. Backend (Serverless Cloud) Kurulumu
+
+Uygun bir sunucusuz çalışma ortamı (Cloud Function) oluşturun.
+
+Projedeki backend kod alanına yapılandırma dosyasının içeriğini entegre edin.
+
+Kod içerisindeki ROOT_FOLDER_ID değişkenine, dosyaları çekeceğiniz ana dizinin referans ID'sini yazın.
+
+yetkiliKullanicilar JSON objesi içerisine kullanıcı adı, şifre ve (opsiyonel) Base64 profil resmi (pp) değerlerinizi girin.
+
+Dağıtımı tamamlayın ve oluşan güvenli URL'yi bir kenara kopyalayın.
+
+2. Güvenli API Anahtarı
+
+Bulut depolama sağlayıcınız üzerinden bir okuma yetkisi (API Key) oluşturun ve bu anahtarı backend kodundaki ilgili değişkene atayın. (Mimarimiz gereği bu key HTML dosyasında yer almaz, böylece asla dışarıdan çalınamaz. Sadece şifre ile başarılı giriş yapan kullanıcılara backend tarafından anlık olarak iletilir.)
+
+3. Frontend (HTML) Kurulumu
+
+index.html dosyasını bir kod editöründe açın.
+
+const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK'; satırını bulun.
+
+Kopyaladığınız Backend URL'sini buraya yapıştırın.
+
+Dosyayı kurumsal ağınızda, GitHub Pages, Vercel veya statik bir sunucuda yayınlayın.
+
+🔒 Güvenlik Notları
+
+Sistem, indirme işlemi için açık (Public) veri anahtarlarını Frontend'de kesinlikle barındırmaz.
+
+Tüm yetkilendirme, şifreleme ve klasör hiyerarşisi sorguları dışa kapalı izole sunucularda çalışır.
+
+Hatalı şifre denemelerinde Backend, sistem anahtarını veya klasör yapısını asla geri döndürmez. Yetkisiz iletişim kapıda kesilir.
+
+👨‍💻 Geliştirici
+
+EnesMCLK GitHub Profilim
+
+Eğer projeyi faydalı bulduysanız ⭐ yıldız vermeyi unutmayın! Kod kalitesini artıracak Pull Request'lere (PR) her zaman açığım.
+
+📝 Lisans: Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için LICENSE dosyasına bakabilirsiniz.
