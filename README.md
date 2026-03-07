@@ -57,18 +57,25 @@ Bulut depolama sağlayıcınız üzerinden bir okuma yetkisi (API Key) oluşturu
 
 ---
 
-## 🔒 Güvenlik Notları
+## 🔒 Güvenlik & İzolasyon
+
 * Sistem, indirme işlemi için açık (Public) veri anahtarlarını Frontend'de kesinlikle barındırmaz.
 * Tüm yetkilendirme, şifreleme ve klasör hiyerarşisi sorguları dışa kapalı izole sunucularda çalışır.
 * Hatalı şifre denemelerinde Backend, sistem anahtarını veya klasör yapısını asla geri döndürmez. Yetkisiz iletişim kapıda kesilir.
 
 ---
 
-## 👨‍💻 Geliştirici
-**EnesMCLK** [GitHub Profilim](https://github.com/enesmclk)
+## 🏛️ Mimari & Bakım (Maintainer)
 
-Eğer projeyi faydalı bulduysanız ⭐ **yıldız vermeyi** unutmayın! Kod kalitesini artıracak Pull Request'lere (PR) her zaman açığım.
+Bu projenin çekirdek mimarisi, sıfır-RAM akış (stream) motoru ve güvenlik entegrasyonları **EnesMCLK** tarafından tasarlanmış ve sürdürülmektedir.
+
+[![GitHub Profile](https://img.shields.io/badge/GitHub-EnesMCLK-181717?style=flat-square&logo=github)](https://github.com/enesmclk)
+
+### 🤝 Katkıda Bulunma (Contributing)
+Kurumsal standartları ve kod kalitesini korumak kaydıyla, sisteme yapılacak her türlü profesyonel katkıya açığız. Çekirdek yapıyı geliştirecek veya performans optimizasyonu sağlayacak **Pull Request (PR)** gönderimleri değerlendirmeye alınacaktır. Lütfen PR göndermeden önce sistemin *Serverless* ve *Zero-RAM* ilkelerine sadık kaldığından emin olun.
+
+Karşılaştığınız mimari sorunlar veya iyileştirme tavsiyeleri için **Issue** oluşturabilirsiniz.
 
 ---
 
-📝 *Lisans:* Bu proje **MIT Lisansı** altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakabilirsiniz.
+📝 *Lisans:* Bu yazılım **MIT Lisansı** altında açık kaynak olarak sunulmuştur. Güvenlik politikaları ve kopyalama şartları için detayları `LICENSE` dosyasında bulabilirsiniz.
