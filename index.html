@@ -100,9 +100,6 @@
         
         * { box-sizing: border-box; }
         
-        /* YENİ NATIVE MOBİL MİMARİSİ (100vh/dvh Sorununun Çözümü):
-           position: fixed kullanılarak uygulamanın tarayıcı sınırlarına milimetrik olarak kilitlenmesi sağlandı.
-        */
         body { 
             margin: 0; padding: 0;
             font-family: 'Product Sans', sans-serif; 
@@ -162,7 +159,10 @@
         [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); }
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; }
+        
+        /* Avatar için background ayarları eklendi */
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; overflow: hidden; background-repeat: no-repeat;}
+        
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
 
@@ -191,7 +191,7 @@
         .sortable-col.active .sort-icon { opacity: 1; }
         .sortable-col.desc .sort-icon { transform: rotate(180deg); }
 
-        .list-container { flex: 1; overflow-y: auto; padding: 8px 0 24px 0; }
+        .list-container { flex: 1; overflow-y: auto; padding: 8px 0 20px 0; }
         
         .file-info { display: flex; align-items: center; gap: 16px; overflow: hidden; flex: 1; min-width: 0; }
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
@@ -586,11 +586,37 @@
                     sessionKey = res.apiKey;
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
+                    
                     const ruzmuz = res.displayName || "Kullanıcı";
-                    document.getElementById('navAvatar').innerText = ruzmuz.charAt(0).toUpperCase();
-                    document.getElementById('cardAvatar').innerText = ruzmuz.charAt(0).toUpperCase();
                     document.getElementById('cardNick').innerText = ruzmuz;
                     document.getElementById('cardUser').innerText = u;
+                    
+                    // --- YENİ EKLENEN PROFİL RESMİ (AVATAR) AYARLAMA ---
+                    const navAv = document.getElementById('navAvatar');
+                    const cardAv = document.getElementById('cardAvatar');
+                    
+                    if (res.pp && res.pp.length > 10) { // Base64 kodunun geldiğinden emin oluyoruz
+                        navAv.innerText = "";
+                        navAv.style.backgroundImage = `url('${res.pp}')`;
+                        navAv.style.backgroundSize = "cover";
+                        navAv.style.backgroundPosition = "center";
+                        navAv.style.backgroundColor = "transparent"; // Varsa arka plan rengini temizle
+                        
+                        cardAv.innerText = "";
+                        cardAv.style.backgroundImage = `url('${res.pp}')`;
+                        cardAv.style.backgroundSize = "cover";
+                        cardAv.style.backgroundPosition = "center";
+                        cardAv.style.backgroundColor = "transparent";
+                    } else {
+                        // Eğer profil resmi yoksa standart baş harf sistemine dön
+                        navAv.innerText = ruzmuz.charAt(0).toUpperCase();
+                        cardAv.innerText = ruzmuz.charAt(0).toUpperCase();
+                        navAv.style.backgroundImage = "none";
+                        cardAv.style.backgroundImage = "none";
+                        navAv.style.backgroundColor = "var(--primary)";
+                        cardAv.style.backgroundColor = "var(--primary)";
+                    }
+                    
                     const rootId = res.data.currentId || 'root';
                     folderCache[rootId] = res.data;
                     navigationHistory = [{ id: rootId, name: 'Ana Sayfa' }];
@@ -1144,7 +1170,13 @@
                 
                 if (urlMatch && urlMatch[0]) {
                     hideDownloadToast();
-                    window.open(urlMatch[0], '_blank');
+                    let targetUrl = urlMatch[0];
+                    
+                    if (targetUrl.startsWith('//')) {
+                        targetUrl = 'http:' + targetUrl;
+                    }
+                    
+                    window.open(targetUrl, '_blank');
                 } else {
                     showDownloadToast(`Dosya içerisinde geçerli bir link bulunamadı.`, 'warning', 3500);
                 }
