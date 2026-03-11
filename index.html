@@ -99,20 +99,7 @@
         }
         
         * { box-sizing: border-box; }
-        
-        body { 
-            margin: 0; padding: 0;
-            font-family: 'Product Sans', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            width: 100%; height: 100%;
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            user-select: none; 
-        }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         
@@ -159,10 +146,7 @@
         [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); }
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        
-        /* Avatar için background ayarları eklendi */
         .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; overflow: hidden; background-repeat: no-repeat;}
-        
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
 
@@ -197,6 +181,15 @@
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
 
+        /* YENİ: DOSYA İÇİ İNDİRME BUTONU (SATIR İÇİ) */
+        .item-dl-btn {
+            background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+            padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: all 0.2s ease; margin-right: 8px;
+        }
+        .item-row:hover .item-dl-btn { opacity: 1; }
+        .item-dl-btn:hover { background: var(--hover-bg); color: var(--primary); transform: scale(1.05); }
+
         .view-details .item-row { display: grid; grid-template-columns: 48px 1fr 120px 100px 150px; padding: 0 16px; border-bottom: 1px solid var(--border); align-items: center; cursor: pointer; font-size: 14px; height: 48px; }
         .view-details .item-row:hover { background: var(--stripe-bg); }
         .view-details .item-row.selected { background: var(--sel); }
@@ -210,7 +203,7 @@
 
         .view-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; padding: 16px; align-content: start; }
         .view-tiles .list-header { display: none; }
-        .view-tiles .item-row { display: flex; align-items: center; padding: 10px 12px; background: var(--card-bg); border-radius: 12px; cursor: pointer; border: 1px solid var(--border); gap: 12px; height: max-content; }
+        .view-tiles .item-row { display: flex; align-items: center; padding: 10px 12px; background: var(--card-bg); border-radius: 12px; cursor: pointer; border: 1px solid var(--border); gap: 12px; height: max-content; position: relative;}
         .view-tiles .item-row:hover { background: var(--hover-bg); border-color: var(--border); }
         .view-tiles .item-row.selected { background: var(--sel); border-color: var(--primary); }
         .view-tiles .file-info { flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; }
@@ -219,9 +212,14 @@
         .view-tiles .tile-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 100%;}
         .view-tiles .col-type, .view-tiles .col-size, .view-tiles .col-date { display: none; }
 
+        /* Grid modlarında indirme butonunu hizalama */
+        .view-tiles .item-dl-btn, .view-large .item-dl-btn, .view-medium .item-dl-btn {
+            position: absolute; top: 8px; right: 8px; background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
         .view-large { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 20px; align-content: start; }
         .view-large .list-header { display: none; }
-        .view-large .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 8px; border-radius: 8px; cursor: pointer; text-align: center; gap: 8px; height: max-content; }
+        .view-large .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 8px; border-radius: 8px; cursor: pointer; text-align: center; gap: 8px; height: max-content; position: relative;}
         .view-large .item-row:hover { background: var(--stripe-bg); }
         .view-large .item-row.selected { background: var(--sel); }
         .view-large .material-icons-round { font-size: 64px; }
@@ -231,7 +229,7 @@
 
         .view-medium { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; padding: 16px; align-content: start; }
         .view-medium .list-header { display: none; }
-        .view-medium .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 4px; border-radius: 8px; cursor: pointer; text-align: center; gap: 6px; height: max-content; }
+        .view-medium .item-row { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 4px; border-radius: 8px; cursor: pointer; text-align: center; gap: 6px; height: max-content; position: relative;}
         .view-medium .item-row:hover { background: var(--stripe-bg); }
         .view-medium .item-row.selected { background: var(--sel); }
         .view-medium .material-icons-round { font-size: 44px; } 
@@ -241,12 +239,13 @@
 
         .view-small { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px; align-content: flex-start; }
         .view-small .list-header { display: none; }
-        .view-small .item-row { display: flex; align-items: center; width: auto; max-width: 180px; padding: 4px 8px; border-radius: 6px; cursor: pointer; gap: 8px; height: max-content; }
+        .view-small .item-row { display: flex; align-items: center; width: auto; max-width: 180px; padding: 4px 8px; border-radius: 6px; cursor: pointer; gap: 8px; height: max-content; position: relative;}
         .view-small .item-row:hover { background: var(--stripe-bg); }
         .view-small .item-row.selected { background: var(--sel); }
         .view-small .material-icons-round { font-size: 20px; }
         .view-small .file-name { font-size: 12px; }
         .view-small .col-type, .view-small .col-size, .view-small .col-date, .view-small .checkbox-wrapper { display: none; }
+        .view-small .item-dl-btn { display: none; } /* Çok küçük olduğu için gizliyoruz */
 
         .view-content { display: flex; flex-direction: column; padding: 16px; gap: 8px; }
         .view-content .list-header { display: none; }
@@ -254,7 +253,7 @@
         .view-content .item-row:hover { background: var(--stripe-bg); }
         .view-content .item-row.selected { background: var(--sel); }
         .view-content .material-icons-round { font-size: 32px; }
-        .view-content .file-info { flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+        .view-content .file-info { flex-direction: row; align-items: center; gap: 16px; flex: 1; }
         .view-content .file-name { font-size: 16px; }
         .view-content .content-meta { font-size: 13px; color: var(--text-muted); display: flex; gap: 16px; }
         .view-content .col-type, .view-content .col-size, .view-content .col-date { display: none; }
@@ -346,6 +345,29 @@
         .details-btn-primary { background: var(--primary); color: #ffffff; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
+        /* YENİ: DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) */
+        .selection-action-bar {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(150px);
+            background: var(--surface); color: var(--text); padding: 12px 24px; border-radius: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 20px; z-index: 9000; opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            width: max-content; max-width: 90%;
+        }
+        .selection-action-bar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        [data-theme="dark"] .selection-action-bar { box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+        .sab-count { font-weight: 500; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .sab-count .material-icons-round { color: var(--primary); }
+        .sab-actions { display: flex; gap: 8px; }
+        .sab-btn { 
+            background: var(--primary); color: #fff; border: none; padding: 8px 16px; 
+            border-radius: 20px; font-weight: 500; cursor: pointer; display: flex; 
+            align-items: center; gap: 6px; font-family: inherit; transition: 0.2s;
+        }
+        .sab-btn.secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .sab-btn:hover { filter: brightness(0.9); transform: scale(0.98); }
+        .sab-btn.secondary:hover { background: var(--hover-bg); color: var(--text); }
+
         @media (max-width: 768px) {
             .navbar { padding: 12px 16px; gap: 8px; }
             .brand span:not(.material-icons-round) { display: none; }
@@ -361,6 +383,10 @@
             .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+            
+            /* Mobilde indirme butonu her zaman gözüksün */
+            .item-dl-btn { opacity: 1; padding: 10px; }
+
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
             .view-list .item-row { width: 100%; max-width: none; }
             .view-tiles { grid-template-columns: 1fr; padding: 12px; }
@@ -375,6 +401,11 @@
             .dl-manager { width: calc(100% - 32px); left: 16px; bottom: 16px; max-width: none; }
             .dl-manager.minimized { width: calc(100% - 32px); }
             #dlOverlay { left: 16px; right: 16px; bottom: 16px; width: auto; justify-content: center; }
+            
+            /* Floating Action Bar mobilde daha yukarıda dursun */
+            .selection-action-bar { bottom: 20px; padding: 10px 16px; gap: 12px;}
+            .sab-count { font-size: 14px; }
+            .sab-btn { padding: 6px 12px; font-size: 13px;}
         }
     </style>
 </head>
@@ -496,6 +527,22 @@
         </div>
     </div>
 
+    <!-- YENİ: DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) -->
+    <div id="selectionActionBar" class="selection-action-bar">
+        <div class="sab-count">
+            <span class="material-icons-round">check_circle</span>
+            <span id="sabCountText">1 öğe seçildi</span>
+        </div>
+        <div class="sab-actions">
+            <button class="sab-btn secondary" onclick="clearSelection()">
+                <span class="material-icons-round" style="font-size: 18px;">close</span> İptal
+            </button>
+            <button class="sab-btn" id="sabDownloadBtn" onclick="triggerNativeDownload()">
+                <span class="material-icons-round" style="font-size: 18px;">download</span> İndir
+            </button>
+        </div>
+    </div>
+
     <div id="ctxMenu"></div>
 
     <div id="detailsOverlay">
@@ -591,16 +638,15 @@
                     document.getElementById('cardNick').innerText = ruzmuz;
                     document.getElementById('cardUser').innerText = u;
                     
-                    // --- YENİ EKLENEN PROFİL RESMİ (AVATAR) AYARLAMA ---
                     const navAv = document.getElementById('navAvatar');
                     const cardAv = document.getElementById('cardAvatar');
                     
-                    if (res.pp && res.pp.length > 10) { // Base64 kodunun geldiğinden emin oluyoruz
+                    if (res.pp && res.pp.length > 10) {
                         navAv.innerText = "";
                         navAv.style.backgroundImage = `url('${res.pp}')`;
                         navAv.style.backgroundSize = "cover";
                         navAv.style.backgroundPosition = "center";
-                        navAv.style.backgroundColor = "transparent"; // Varsa arka plan rengini temizle
+                        navAv.style.backgroundColor = "transparent"; 
                         
                         cardAv.innerText = "";
                         cardAv.style.backgroundImage = `url('${res.pp}')`;
@@ -608,7 +654,6 @@
                         cardAv.style.backgroundPosition = "center";
                         cardAv.style.backgroundColor = "transparent";
                     } else {
-                        // Eğer profil resmi yoksa standart baş harf sistemine dön
                         navAv.innerText = ruzmuz.charAt(0).toUpperCase();
                         cardAv.innerText = ruzmuz.charAt(0).toUpperCase();
                         navAv.style.backgroundImage = "none";
@@ -733,6 +778,58 @@
             updateCheckboxState(); renderList();
         }
 
+        // YENİ: Toplu İşlem Çubuğunu Yöneten Motor
+        function updateSelectionUI() {
+            const sab = document.getElementById('selectionActionBar');
+            const selCountText = document.getElementById('sabCountText');
+            const sabDlBtn = document.getElementById('sabDownloadBtn');
+
+            if (selectedIds.size > 0) {
+                selCountText.innerText = `${selectedIds.size} öğe seçildi`;
+                
+                // Sadece klasörler mi seçildi kontrolü
+                const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+                const hasOnlyFolders = selectedItems.every(i => i.isFolder);
+
+                if (hasOnlyFolders) {
+                    sabDlBtn.style.display = 'none'; // Sadece klasörse indirme tuşunu gizle
+                } else {
+                    sabDlBtn.style.display = 'flex';
+                }
+                
+                sab.classList.add('show');
+            } else {
+                sab.classList.remove('show');
+            }
+        }
+
+        function clearSelection() {
+            selectedIds.clear();
+            lastSelectedIndex = -1;
+            updateCheckboxState();
+            renderList();
+        }
+
+        // YENİ: Satır İçi Tekil İndirme Tuşu Mantığı
+        function downloadSingleItem(e, id, filename) {
+            e.stopPropagation();
+            
+            // Link dosyası ise doğrudan yönlendir
+            const ext = filename.split('.').pop().toLowerCase();
+            const item = allItems.find(i => i.id === id);
+            
+            if (ext === 'lnk' || ext === 'url') {
+                if(item) openLinkFileInBrowser(item);
+                return;
+            }
+            
+            selectedIds.clear();
+            selectedIds.add(id);
+            updateCheckboxState();
+            renderList();
+            triggerNativeDownload();
+        }
+
         function renderList() {
             const list = document.getElementById('fileList');
             const loader = document.getElementById('loader');
@@ -744,6 +841,11 @@
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
                 const iconInfo = getFileIcon(item.name, item.isFolder);
 
+                // YENİ: Sadece dosyalarda (klasör olmayanlarda) satır içi indirme butonu oluşturulur
+                const downloadBtnHTML = !item.isFolder 
+                    ? `<button class="item-dl-btn" onclick="downloadSingleItem(event, '${item.id}', '${item.name}')" title="İndir"><span class="material-icons-round">download</span></button>`
+                    : '';
+
                 row.innerHTML = `
                     <div class="checkbox-wrapper"><input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); handleCheckboxClick(event, '${item.id}', ${index})"></div>
                     <div class="file-info">
@@ -753,6 +855,7 @@
                             <div class="tile-meta" style="display:none;">${item.type} • ${item.size}</div>
                             <div class="content-meta" style="display:none;">${item.type} • ${item.size} • ${item.date}</div>
                         </div>
+                        ${downloadBtnHTML}
                     </div>
                     <span class="col-type" style="font-size:13px;">${item.type}</span>
                     <span class="col-size" style="font-size:13px;">${item.size}</span>
@@ -805,6 +908,9 @@
         async function enterFolder(id, name) {
             document.getElementById('loader').style.display = 'flex';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
+            
+            clearSelection(); // Klasöre girerken seçimi temizle
+
             if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
             const u = sessionStorage.getItem('u'); const p = sessionStorage.getItem('p');
             try {
@@ -815,6 +921,7 @@
         }
 
         function navigateToHistoryIndex(index) {
+            clearSelection(); // Geri giderken seçimi temizle
             const target = navigationHistory[index]; navigationHistory = navigationHistory.slice(0, index + 1); renderBreadcrumbs();
             if(folderCache[target.id]) loadData(folderCache[target.id]);
         }
@@ -844,8 +951,10 @@
         
         function updateCheckboxState() { 
             const cb = document.getElementById('selectAllCb'); 
-            if(displayedItems.length === 0) { cb.checked = false; return; } 
-            cb.checked = displayedItems.every(i => selectedIds.has(i.id)); 
+            if(displayedItems.length === 0) { cb.checked = false; } 
+            else { cb.checked = displayedItems.every(i => selectedIds.has(i.id)); }
+            
+            updateSelectionUI(); // Çubuk Menüyü Güncelle
         }
         
         function filterItems(val) { 
@@ -1241,7 +1350,7 @@
                 }
             }
             
-            selectedIds.clear(); renderList();
+            clearSelection(); // İndirme sonrasında seçimi temizle ve Hap menüyü gizle
         }
 
         async function processFileStream(item, fileHandle) {
