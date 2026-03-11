@@ -319,7 +319,6 @@
     </style>
 </head>
 <body>
-
     <div id="loginOverlay">
         <div class="login-theme-wrapper">
             <button class="login-theme-btn" onclick="toggleTheme()" title="Temayı Değiştir">
@@ -351,19 +350,16 @@
             <button class="login-btn" onclick="checkLogin()" id="loginBtn">Oturum Aç</button>
         </div>
     </div>
-
     <div id="app" style="display:none; flex-direction:column; flex: 1; width: 100%; height: 100%; min-height: 0;">
         <div class="navbar">
             <div class="brand">
                 <span class="material-icons-round" style="color:var(--primary); font-size: 32px;">cloud</span> 
                 <span style="color: var(--text);">Bulut Depom</span>
             </div>
-            
             <div class="search-box">
                 <i class="material-icons-round">search</i>
                 <input type="text" placeholder="Dosyayı arayın..." oninput="filterItems(this.value)">
             </div>
-
             <div style="display: flex; align-items: center; gap: 4px;">
                 <button class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
                     <svg class="theme-toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -384,7 +380,6 @@
                         </g>
                     </svg>
                 </button>
-
                 <div class="profile-area" onclick="toggleProfile()">
                     <div class="avatar" id="navAvatar">?</div>
                     <div class="profile-menu" id="profileCard">
@@ -396,10 +391,8 @@
                 </div>
             </div>
         </div>
-
         <div class="sub-header">
             <div class="breadcrumb-nav" id="breadcrumbNav"></div>
-            
             <div class="view-menu-container">
                 <button class="view-btn" onclick="toggleViewMenu(event)">
                     <span class="material-icons-round" id="currentViewIcon">view_list</span>
@@ -417,7 +410,6 @@
                 </div>
             </div>
         </div>
-
         <div class="main-container">
             <div class="list-header" id="listHeaderRow">
                 <input type="checkbox" onclick="selectAllItems(this.checked)" id="selectAllCb">
@@ -426,7 +418,6 @@
                 <div class="sortable-col" onclick="handleSort('size')">Boyut <span class="material-icons-round sort-icon" id="sort-icon-size">arrow_downward</span></div>
                 <div class="sortable-col" onclick="handleSort('date')">Son değiştirme <span class="material-icons-round sort-icon" id="sort-icon-date">arrow_downward</span></div>
             </div>
-
             <div class="list-container view-details" id="fileList">
                 <div id="loader" style="padding:80px; display:none; flex-direction:column; align-items:center; gap:12px; width: 100%;">
                     <span class="material-icons-round spinner" style="font-size:44px; color: var(--primary);">autorenew</span>
@@ -435,7 +426,6 @@
             </div>
         </div>
     </div>
-
     <div id="selectionActionBar" class="selection-action-bar">
         <div class="sab-count">
             <span class="material-icons-round">check_circle</span>
@@ -450,9 +440,7 @@
             </button>
         </div>
     </div>
-
     <div id="ctxMenu"></div>
-
     <div id="detailsOverlay">
         <div class="details-card">
             <div class="details-header">
@@ -471,7 +459,6 @@
             </div>
         </div>
     </div>
-
     <div id="dlManager" class="dl-manager" style="display: none;">
         <div class="dl-header" onclick="toggleDlManager()">
             <div class="dl-header-title">
@@ -485,7 +472,6 @@
         </div>
         <div class="dl-list" id="dlList"></div>
     </div>
-    
     <div id="dlOverlay">
         <span class="material-icons-round" style="color:inherit" id="dlOverlayIcon">info</span>
         <span id="dlText" style="flex:1;">Bilgi</span>
@@ -504,6 +490,7 @@
         let currentSortCol = 'name';
         let isSortAsc = true;
         let lastSelectedIndex = -1;
+        let isFetchingFolder = false;
 
         function toggleTheme() {
             const docEl = document.documentElement;
@@ -764,12 +751,9 @@
 
                 row.ondblclick = (e) => { 
                     e.stopPropagation(); 
-                    if(item.isFolder) {
-                        enterFolder(item.id, item.name); 
-                    } else { 
+                    if(!item.isFolder) { 
                         selectedIds.clear(); 
                         selectedIds.add(item.id); 
-                        
                         const ext = item.name.split('.').pop().toLowerCase();
                         if (ext === 'lnk' || ext === 'url') {
                             openLinkFileInBrowser(item);
@@ -804,21 +788,49 @@
         }
 
         async function enterFolder(id, name) {
+            if (isFetchingFolder) return; 
+            isFetchingFolder = true;
+
             document.getElementById('loader').style.display = 'flex';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
             
             clearSelection();
 
-            if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
-            const u = sessionStorage.getItem('u'); const p = sessionStorage.getItem('p');
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            if (folderCache[id]) { 
+                navigationHistory.push({ id: id, name: name }); 
+                renderBreadcrumbs(); 
+                loadData(folderCache[id]); 
+                isFetchingFolder = false;
+                return; 
+            }
+
+            const u = sessionStorage.getItem('u'); 
+            const p = sessionStorage.getItem('p');
+
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&id=${id}`);
                 const res = await r.json();
-                if(res.success) { folderCache[id] = res.data; navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(res.data); }
-            } catch (error) { alert("Klasör yüklenemedi."); renderList(); }
+                if(res.success) { 
+                    folderCache[id] = res.data; 
+                    navigationHistory.push({ id: id, name: name }); 
+                    renderBreadcrumbs(); 
+                    loadData(res.data); 
+                } else {
+                    alert("Klasör yüklenemedi: " + (res.error || "Bilinmeyen hata"));
+                    renderList();
+                }
+            } catch (error) { 
+                alert("Klasör yüklenemedi."); 
+                renderList(); 
+            } finally {
+                isFetchingFolder = false;
+            }
         }
 
         function navigateToHistoryIndex(index) {
+            if (isFetchingFolder) return;
             clearSelection();
             const target = navigationHistory[index]; navigationHistory = navigationHistory.slice(0, index + 1); renderBreadcrumbs();
             if(folderCache[target.id]) loadData(folderCache[target.id]);
@@ -1214,7 +1226,7 @@
         }
 
         async function downloadAsZip(item) {
-            showDownloadToast(`${item.name} güvenli ZIP formatında hazırlanıyor...`, 'info', 3000);
+            showDownloadToast(`${item.name} hazırlanıyor...`, 'info', 3000);
             try {
                 const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
                 const response = await fetch(directUrl);
@@ -1274,7 +1286,7 @@
                         if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
                     }
                 } catch (e) {
-                    showDownloadToast(`ZIP motoru yüklenemedi. Lütfen internet bağlantınızı kontrol edin.`, 'error', 4000);
+                    showDownloadToast(`Yükleme motoru başlatılamadı.`, 'error', 4000);
                 }
             }
 
