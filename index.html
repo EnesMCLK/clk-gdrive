@@ -13,7 +13,7 @@
     <meta name="keywords" content="kurumsal arşiv, güvenli dosya yönetimi, bulut depolama, açık kaynak, open source, file management, enterprise cloud storage, enesmclk, clk-gdrive">
     <meta name="author" content="EnesMCLK (https://github.com/enesmclk)">
     <meta name="publisher" content="EnesMCLK Open Source Projects">
-    <meta name="application-name" content="Bulut Depom Enterprise">
+    <meta name="application-name" content="Bulut Depom">
     <meta name="generator" content="GitHub Repository: enesmclk/clk-gdrive">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f0f4f9">
@@ -21,7 +21,7 @@
     <meta property="og:description" content="Şeffaf, denetlenebilir ve modern dosya yönetim sistemi. Yüksek kapasiteli verileri doğrudan diske akıtır. (enesmclk/clk-gdrive)">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/enesmclk/clk-gdrive">
-    <meta property="og:site_name" content="Bulut Depom Kurumsal">
+    <meta property="og:site_name" content="Bulut Depom">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b57d0'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -152,6 +152,7 @@
         .file-info { display: flex; align-items: center; gap: 16px; overflow: hidden; flex: 1; min-width: 0; }
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
+        .item-row { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
         .item-dl-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.2s ease; margin-right: 8px; }
         .item-row:hover .item-dl-btn { opacity: 1; }
         .item-dl-btn:hover { background: var(--hover-bg); color: var(--primary); transform: scale(1.05); }
@@ -662,16 +663,18 @@
         }
 
         function handleItemClick(e, id, index) {
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            
             if (e.shiftKey && lastSelectedIndex !== -1) {
                 document.getSelection().removeAllRanges(); 
                 let start = Math.min(lastSelectedIndex, index);
                 let end = Math.max(lastSelectedIndex, index);
                 if (!e.ctrlKey && !e.metaKey) { selectedIds.clear(); }
                 for (let i = start; i <= end; i++) { 
-                    if (!displayedItems[i].isFolder) selectedIds.add(displayedItems[i].id); 
+                    selectedIds.add(displayedItems[i].id); 
                 }
             } 
-            else if (e.ctrlKey || e.metaKey) {
+            else if (isMobile || e.ctrlKey || e.metaKey) {
                 if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
                 lastSelectedIndex = index; 
             } 
@@ -711,6 +714,15 @@
 
         function downloadSingleItem(e, id, filename) {
             e.stopPropagation(); 
+            e.preventDefault();
+            
+            const item = allItems.find(i => i.id === id);
+            const ext = filename.split('.').pop().toLowerCase();
+            if (ext === 'lnk' || ext === 'url') {
+                if(item) openLinkFileInBrowser(item);
+                return;
+            }
+
             selectedIds.clear();
             selectedIds.add(id);
             updateCheckboxState();
@@ -724,6 +736,8 @@
             if(loader) loader.style.display = 'none';
             Array.from(list.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
 
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
             displayedItems.forEach((item, index) => {
                 const row = document.createElement('div');
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
@@ -735,7 +749,7 @@
 
                 const checkboxHTML = !item.isFolder 
                     ? `<input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); handleCheckboxClick(event, '${item.id}', ${index})">`
-                    : ``;
+                    : `<div style="width:18px;height:18px;display:inline-block;"></div>`;
 
                 row.innerHTML = `
                     <div class="checkbox-wrapper">${checkboxHTML}</div>
@@ -753,36 +767,84 @@
                     <span class="col-date" style="font-size:13px;">${item.date || '--'}</span>
                 `;
                 
+                let touchTimer;
+                let touchMoved = false;
+
+                row.addEventListener('touchstart', (e) => {
+                    if (!isMobile) return;
+                    if (e.target.tagName.toLowerCase() === 'input' || e.target.closest('.item-dl-btn')) return;
+                    
+                    touchMoved = false;
+                    touchTimer = setTimeout(() => {
+                        touchMoved = true;
+                        if(navigator.vibrate) navigator.vibrate(50);
+                        handleItemClick(e, item.id, index);
+                    }, 400);
+                }, {passive: true});
+
+                row.addEventListener('touchmove', () => {
+                    if (!isMobile) return;
+                    touchMoved = true;
+                    clearTimeout(touchTimer);
+                }, {passive: true});
+
+                row.addEventListener('touchend', () => {
+                    if (!isMobile) return;
+                    clearTimeout(touchTimer);
+                });
+
+                row.addEventListener('contextmenu', (e) => {
+                    if (isMobile) {
+                        e.preventDefault(); 
+                    } else {
+                        e.preventDefault(); e.stopPropagation(); 
+                        const selectedItems = allItems.filter(i => selectedIds.has(i.id));
+                        const selectedFiles = selectedItems.filter(i => !i.isFolder);
+                        if (selectedFiles.length === 0 && selectedItems.length > 0) return; 
+
+                        if(!selectedIds.has(item.id)) { 
+                            selectedIds.clear(); selectedIds.add(item.id); lastSelectedIndex = index;
+                            updateCheckboxState(); renderList();
+                        } 
+                        showContextMenu(e); 
+                    }
+                });
+
                 row.onclick = (e) => { 
-                    e.stopPropagation(); 
-                    if(item.isFolder) {
-                        enterFolder(item.id, item.name); 
-                    } else { 
+                    e.stopPropagation();
+                    if (e.target.tagName.toLowerCase() === 'input' || e.target.closest('.item-dl-btn')) return;
+
+                    if (isMobile) {
+                        if (!touchMoved) {
+                            if (item.isFolder) {
+                                enterFolder(item.id, item.name);
+                            } else {
+                                const ext = item.name.split('.').pop().toLowerCase();
+                                if (ext === 'lnk' || ext === 'url') openLinkFileInBrowser(item);
+                                else downloadSingleItem(e, item.id, item.name);
+                            }
+                        }
+                    } else {
                         handleItemClick(e, item.id, index); 
                     }
                 };
 
                 row.ondblclick = (e) => { 
-                    e.stopPropagation(); 
-                    if(!item.isFolder) { 
-                        selectedIds.clear(); 
-                        selectedIds.add(item.id); 
-                        const ext = item.name.split('.').pop().toLowerCase();
-                        if (ext === 'lnk' || ext === 'url') {
-                            openLinkFileInBrowser(item);
-                        } else {
-                            triggerNativeDownload();
-                        }
-                    } 
-                };
-
-                row.oncontextmenu = (e) => { 
-                    e.preventDefault(); e.stopPropagation(); 
-                    if(!selectedIds.has(item.id)) { 
-                        selectedIds.clear(); selectedIds.add(item.id); lastSelectedIndex = index;
-                        updateCheckboxState(); renderList();
-                    } 
-                    showContextMenu(e); 
+                    if (!isMobile) {
+                        e.stopPropagation(); 
+                        if(item.isFolder) {
+                            enterFolder(item.id, item.name); 
+                        } else { 
+                            selectedIds.clear(); 
+                            selectedIds.add(item.id); 
+                            const ext = item.name.split('.').pop().toLowerCase();
+                            if (ext === 'lnk' || ext === 'url') {
+                                openLinkFileInBrowser(item);
+                            } else {
+                                triggerNativeDownload();
+                            }
+                        } 
+                    }
                 };
                 list.appendChild(row);
             });
@@ -872,9 +934,7 @@
         function goBack() { if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2); }
         
         function handleNavAction() {
-            if (navigationHistory.length > 1) {
-                goBack();
-            }
+            if (navigationHistory.length > 1) goBack();
         }
 
         function renderBreadcrumbs() {
@@ -953,12 +1013,11 @@
 
         function showContextMenu(e) {
             const menu = document.getElementById('ctxMenu'); 
-            menu.style.display = 'block';
-            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; 
-            menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
-            
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             
+            const selectedFiles = selectedItems.filter(i => !i.isFolder);
+            if (selectedFiles.length === 0 && selectedItems.length > 0) return; 
+
             let dlText = "";
             let dlStyle = "";
             let infoText = "";
@@ -983,6 +1042,10 @@
                     <span>${infoText}</span>
                 </div>
             `;
+            
+            menu.style.display = 'block';
+            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px'; 
+            menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
         }
 
         function showDetailsModal() {
