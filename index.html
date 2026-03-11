@@ -99,20 +99,7 @@
         }
         
         * { box-sizing: border-box; }
-        
-        body { 
-            margin: 0; padding: 0;
-            font-family: 'Product Sans', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            width: 100%; height: 100%;
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            user-select: none; 
-        }
+        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
         
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         
@@ -817,8 +804,10 @@
             renderList();
         }
 
+        // SATIR İÇİ TEKİL İNDİRME FONKSİYONU: Her Zaman İndirir
         function downloadSingleItem(e, id, filename) {
-            e.stopPropagation();
+            e.stopPropagation(); // Satır seçimi tetiklemesini engelle
+            
             selectedIds.clear();
             selectedIds.add(id);
             updateCheckboxState();
@@ -859,6 +848,7 @@
                 
                 row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
                 
+                // ÇİFT TIKLAMA FONKSİYONU: Kısayolsa Yeni Sekmede Açar, Dosyaysa İndirir.
                 row.ondblclick = (e) => { 
                     e.stopPropagation(); 
                     if(item.isFolder) {
@@ -1312,38 +1302,36 @@
                 }
             });
 
-            // 1. KISAYOL DOSYALARI İÇİN GÜVENLİ BLOB İNDİRME (.download engelini aşar)
+            // 1. KISAYOL VE FDM İLE ÇAKIŞABİLECEK DOSYALAR İÇİN DOĞRUDAN HTTP İNDİRME (.download engelini aşar)
             if (dangerousItems.length > 0) {
                 for (let i = 0; i < dangerousItems.length; i++) {
                     const item = dangerousItems[i];
-                    const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                    showDownloadToast(`${item.name} indiriliyor...`, 'info', 2500);
+                    
+                    // FDM (Free Download Manager) veya Chrome SafeBrowsing Blob URL'lerde hata verir.
+                    // Bunun yerine Google Drive'ın Native Export linkini gizli bir Iframe ile çağırıyoruz.
+                    // Böylece eklentiler URL'yi sorunsuz okuyup orijinal uzantı (.lnk) ile indirebilirler.
+                    const driveDownloadUrl = `https://drive.google.com/uc?export=download&id=${item.id}`;
+                    showDownloadToast(`${item.name} indiriliyor... (Tarayıcı uyarısına izin verin)`, 'info', 4000);
 
-                    try {
-                        const response = await fetch(directUrl);
-                        if (!response.ok) throw new Error("Ağ hatası");
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = item.name; // Tarayıcıyı orijinal uzantıya zorlar
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        
-                        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
-                    } catch (err) {
-                        console.error("Kısayol indirme hatası:", err);
-                        showDownloadToast(`${item.name} indirilemedi.`, 'error', 3000);
-                    }
-                    if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 600));
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = driveDownloadUrl;
+                    document.body.appendChild(iframe);
+
+                    // İşlem bittikten sonra DOM'u temizle
+                    setTimeout(() => {
+                        if (document.body.contains(iframe)) {
+                            document.body.removeChild(iframe);
+                        }
+                    }, 10000);
+
+                    if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
                 }
             }
 
             if (safeItems.length === 0) return;
 
-            // 2. DİĞER GÜVENLİ DOSYALAR İÇİN SIFIR-RAM (STREAM) MOTORU
+            // 2. DİĞER GÜVENLİ BÜYÜK DOSYALAR İÇİN SIFIR-RAM (STREAM) MOTORU
             try {
                 if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
                     
