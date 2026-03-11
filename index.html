@@ -535,10 +535,11 @@
         </div>
     </div>
 
+    <!-- DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) -->
     <div id="selectionActionBar" class="selection-action-bar">
         <div class="sab-count">
             <span class="material-icons-round">check_circle</span>
-            <span id="sabCountText">1 öğe seçildi</span>
+            <span id="sabCountText">1 dosya seçildi</span>
         </div>
         <div class="sab-actions">
             <button class="sab-btn secondary" onclick="clearSelection()">
@@ -767,7 +768,9 @@
                 let start = Math.min(lastSelectedIndex, index);
                 let end = Math.max(lastSelectedIndex, index);
                 if (!e.ctrlKey && !e.metaKey) { selectedIds.clear(); }
-                for (let i = start; i <= end; i++) { selectedIds.add(displayedItems[i].id); }
+                for (let i = start; i <= end; i++) { 
+                    if (!displayedItems[i].isFolder) selectedIds.add(displayedItems[i].id); 
+                }
             } 
             else if (e.ctrlKey || e.metaKey) {
                 if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
@@ -789,20 +792,12 @@
         function updateSelectionUI() {
             const sab = document.getElementById('selectionActionBar');
             const selCountText = document.getElementById('sabCountText');
-            const sabDlBtn = document.getElementById('sabDownloadBtn');
 
-            if (selectedIds.size > 0) {
-                selCountText.innerText = `${selectedIds.size} öğe seçildi`;
-                
-                const selectedItems = allItems.filter(i => selectedIds.has(i.id));
-                const hasOnlyFolders = selectedItems.every(i => i.isFolder);
+            // Action bar SADECE dosyalar seçildiğinde açılır.
+            const selectedFiles = allItems.filter(i => selectedIds.has(i.id) && !i.isFolder);
 
-                if (hasOnlyFolders) {
-                    sabDlBtn.style.display = 'none'; 
-                } else {
-                    sabDlBtn.style.display = 'flex';
-                }
-                
+            if (selectedFiles.length > 0) {
+                selCountText.innerText = `${selectedFiles.length} dosya seçildi`;
                 sab.classList.add('show');
             } else {
                 sab.classList.remove('show');
@@ -818,7 +813,6 @@
 
         function downloadSingleItem(e, id, filename) {
             e.stopPropagation(); 
-            
             selectedIds.clear();
             selectedIds.add(id);
             updateCheckboxState();
@@ -841,8 +835,13 @@
                     ? `<button class="item-dl-btn" onclick="downloadSingleItem(event, '${item.id}', '${item.name}')" title="İndir"><span class="material-icons-round">download</span></button>`
                     : '';
 
+                // Klasörlerde checkbox tamamen gizlenir (kullanıcıyı şaşırtmamak ve hatalı seçimi engellemek için)
+                const checkboxHTML = !item.isFolder 
+                    ? `<input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); handleCheckboxClick(event, '${item.id}', ${index})">`
+                    : ``;
+
                 row.innerHTML = `
-                    <div class="checkbox-wrapper"><input type="checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} onclick="event.stopPropagation(); handleCheckboxClick(event, '${item.id}', ${index})"></div>
+                    <div class="checkbox-wrapper">${checkboxHTML}</div>
                     <div class="file-info">
                         <span class="material-icons-round ${iconInfo.class}">${iconInfo.icon}</span>
                         <div class="file-details-wrapper">
@@ -857,23 +856,13 @@
                     <span class="col-date" style="font-size:13px;">${item.date || '--'}</span>
                 `;
                 
-                row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
-                
-                row.ondblclick = (e) => { 
+                row.onclick = (e) => { 
                     e.stopPropagation(); 
                     if(item.isFolder) {
-                        enterFolder(item.id, item.name); 
+                        enterFolder(item.id, item.name); // Klasörlere tek tıkla anında girer
                     } else { 
-                        selectedIds.clear(); 
-                        selectedIds.add(item.id); 
-                        
-                        const ext = item.name.split('.').pop().toLowerCase();
-                        if (ext === 'lnk' || ext === 'url') {
-                            openLinkFileInBrowser(item);
-                        } else {
-                            triggerNativeDownload();
-                        }
-                    } 
+                        handleItemClick(e, item.id, index); // Dosyaları seçer
+                    }
                 };
 
                 row.oncontextmenu = (e) => { 
@@ -940,14 +929,24 @@
 
         function selectAllItems(checked) { 
             selectedIds.clear(); 
-            if(checked) displayedItems.forEach(i => selectedIds.add(i.id)); 
+            if(checked) {
+                // Sadece dosyalar seçilir
+                displayedItems.forEach(i => {
+                    if (!i.isFolder) selectedIds.add(i.id);
+                });
+            } 
             renderList(); 
         }
         
         function updateCheckboxState() { 
             const cb = document.getElementById('selectAllCb'); 
-            if(displayedItems.length === 0) { cb.checked = false; return; } 
-            cb.checked = displayedItems.every(i => selectedIds.has(i.id)); 
+            const fileItems = displayedItems.filter(i => !i.isFolder);
+
+            if(fileItems.length === 0) { 
+                cb.checked = false; 
+            } else { 
+                cb.checked = fileItems.every(i => selectedIds.has(i.id)); 
+            }
             updateSelectionUI();
         }
         
@@ -1289,55 +1288,6 @@
             }
         }
 
-        // =======================================================================
-        // YENİ: MİKRO ZIP MOTORU (JSZIP KÜTÜPHANESİ) - Kısayollar İçin
-        // =======================================================================
-        function loadJSZip() {
-            return new Promise((resolve, reject) => {
-                if (typeof JSZip !== 'undefined') return resolve();
-                showDownloadToast('Zip motoru başlatılıyor...', 'info', 1500);
-                const script = document.createElement('script');
-                script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        async function downloadAsZip(item) {
-            showDownloadToast(`${item.name} güvenli ZIP formatında hazırlanıyor...`, 'info', 3000);
-            try {
-                const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                const response = await fetch(directUrl);
-                if (!response.ok) throw new Error("Ağ hatası");
-                
-                const arrayBuffer = await response.arrayBuffer();
-                
-                // ZIP oluştur
-                const zip = new JSZip();
-                zip.file(item.name, arrayBuffer);
-                const zipBlob = await zip.generateAsync({type:"blob"});
-                
-                // Tarayıcıya ZIP olarak sun. ZIP güvenli olduğu için Chrome isim veya uzantı bozmaz!
-                const zipName = item.name + ".zip"; // Örnek: "dosya.lnk.zip"
-                const url = window.URL.createObjectURL(zipBlob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = zipName; 
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
-                showDownloadToast(`${zipName} indirildi!`, 'info', 3000);
-            } catch (err) {
-                console.error("ZIP oluşturma hatası:", err);
-                showDownloadToast(`${item.name} ZIP olarak indirilemedi.`, 'error', 3000);
-            }
-        }
-
-
         // ANA İNDİRME TETİKLEYİCİ
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -1361,18 +1311,43 @@
                 }
             });
 
-            // 1. KISAYOL (LNK/URL) DOSYALARI İÇİN GÜVENLİ MİKRO ZIP MOTORU
-            // Chrome/Edge "Mark Of The Web" güvenlik kuralını aşıp uzantıyı bozmasını engellemek için
-            // anlık olarak ZIP dosyasına gömüp indiriyoruz.
+            // 1. KISAYOL (LNK/URL) DOSYALARI İÇİN GÜVENLİ RAM (BLOB) İNDİRME MOTORU
             if (dangerousItems.length > 0) {
-                try {
-                    await loadJSZip(); // Sadece gerektiğinde kütüphaneyi çağır, gereksiz RAM yemez.
-                    for (let i = 0; i < dangerousItems.length; i++) {
-                        await downloadAsZip(dangerousItems[i]);
-                        if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
+                for (let i = 0; i < dangerousItems.length; i++) {
+                    const item = dangerousItems[i];
+                    const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                    showDownloadToast(`${item.name} hazırlanıyor...`, 'info', 2500);
+
+                    try {
+                        const response = await fetch(directUrl);
+                        if (!response.ok) throw new Error("Ağ hatası");
+                        
+                        // Orijinal uzantıyı tarayıcıya zorlamak için dosyayı Blob formatına (RAM'e) çekiyoruz
+                        const buffer = await response.arrayBuffer();
+                        const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                        
+                        // Siteyle aynı kökten (Same-Origin) bir sanal link oluşturuluyor. 
+                        // Böylece tarayıcı isim silmeyi (ID yazmayı) ve .download atamayı bırakıyor.
+                        const url = window.URL.createObjectURL(blob);
+                        
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = item.name; // Sanal link olduğu için bu isim KESİNLİKLE uygulanır
+                        
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        // Hafızayı temizle
+                        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+
+                    } catch (err) {
+                        console.error("Kısayol indirme hatası:", err);
+                        showDownloadToast(`${item.name} indirilemedi.`, 'error', 3000);
                     }
-                } catch (e) {
-                    showDownloadToast(`ZIP motoru yüklenemedi. Lütfen internet bağlantınızı kontrol edin.`, 'error', 4000);
+
+                    if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
                 }
             }
 
