@@ -479,7 +479,7 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'BURAYA_APPS_SCRIPT_URL_GELECEK';
+        const APPS_SCRIPT_URL = 'AKfycbxj3nB8sN4vWbY4l4t-463n7oUaY4s632_k1iU94S-Wd-XJg5v3sI473mFvX81K82m98A';
         
         let allItems = [];
         let displayedItems = [];
@@ -519,6 +519,8 @@
             btn.innerHTML = "<span class='anim-pulse'>Doğrulanıyor...</span>"; 
             btn.disabled = true;
             
+            await new Promise(resolve => setTimeout(resolve, 20));
+
             try {
                 const r = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
                 const res = await r.json();
@@ -791,16 +793,17 @@
             if (isFetchingFolder) return; 
             isFetchingFolder = true;
 
-            document.getElementById('loader').style.display = 'flex';
-            Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
-            
-            clearSelection();
+            navigationHistory.push({ id: id, name: name });
+            renderBreadcrumbs();
 
-            await new Promise(resolve => setTimeout(resolve, 10));
+            clearSelection();
+            document.getElementById('loader').style.display = 'flex';
+            const fileList = document.getElementById('fileList');
+            Array.from(fileList.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
+
+            await new Promise(resolve => setTimeout(resolve, 20));
 
             if (folderCache[id]) { 
-                navigationHistory.push({ id: id, name: name }); 
-                renderBreadcrumbs(); 
                 loadData(folderCache[id]); 
                 isFetchingFolder = false;
                 return; 
@@ -814,27 +817,47 @@
                 const res = await r.json();
                 if(res.success) { 
                     folderCache[id] = res.data; 
-                    navigationHistory.push({ id: id, name: name }); 
-                    renderBreadcrumbs(); 
                     loadData(res.data); 
                 } else {
+                    navigationHistory.pop();
+                    renderBreadcrumbs();
                     alert("Klasör yüklenemedi: " + (res.error || "Bilinmeyen hata"));
-                    renderList();
+                    const prevId = navigationHistory[navigationHistory.length - 1].id;
+                    if(folderCache[prevId]) loadData(folderCache[prevId]);
                 }
             } catch (error) { 
-                alert("Klasör yüklenemedi."); 
-                renderList(); 
+                navigationHistory.pop();
+                renderBreadcrumbs();
+                alert("Klasör yüklenemedi. İnternet bağlantınızı kontrol edin."); 
+                const prevId = navigationHistory[navigationHistory.length - 1].id;
+                if(folderCache[prevId]) loadData(folderCache[prevId]);
             } finally {
                 isFetchingFolder = false;
             }
         }
 
-        function navigateToHistoryIndex(index) {
+        async function navigateToHistoryIndex(index) {
             if (isFetchingFolder) return;
+            isFetchingFolder = true;
+
             clearSelection();
-            const target = navigationHistory[index]; navigationHistory = navigationHistory.slice(0, index + 1); renderBreadcrumbs();
-            if(folderCache[target.id]) loadData(folderCache[target.id]);
+
+            const target = navigationHistory[index];
+            navigationHistory = navigationHistory.slice(0, index + 1);
+            renderBreadcrumbs();
+
+            document.getElementById('loader').style.display = 'flex';
+            const fileList = document.getElementById('fileList');
+            Array.from(fileList.children).forEach(c => { if(c.id !== 'loader') c.remove(); });
+
+            await new Promise(resolve => setTimeout(resolve, 20));
+
+            if(folderCache[target.id]) {
+                loadData(folderCache[target.id]);
+            }
+            isFetchingFolder = false;
         }
+
         function goBack() { if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2); }
 
         function renderBreadcrumbs() {
@@ -1208,7 +1231,6 @@
                     showDownloadToast(`Dosya içerisinde geçerli bir link bulunamadı.`, 'warning', 3500);
                 }
             } catch (err) {
-                console.error("Link okuma hatası:", err);
                 showDownloadToast(`Dosya okunamadı. Lütfen sağ tıklayıp indirmeyi deneyin.`, 'error', 3500);
             }
         }
@@ -1251,8 +1273,7 @@
                 setTimeout(() => window.URL.revokeObjectURL(url), 10000);
                 showDownloadToast(`${zipName} indirildi!`, 'info', 3000);
             } catch (err) {
-                console.error("ZIP oluşturma hatası:", err);
-                showDownloadToast(`${item.name} ZIP olarak indirilemedi.`, 'error', 3000);
+                showDownloadToast(`${item.name} indirilemedi.`, 'error', 3000);
             }
         }
 
@@ -1334,7 +1355,6 @@
                 } else if (err.name === 'SecurityError' || err.name === 'NotAllowedError' || err.name === 'TypeError') {
                     showDownloadToast(`Güvenlik Engeli: Tarayıcılar ana dizine doğrudan yazamaz. Lütfen indirmek istediğiniz konumda 'Yeni Klasör' oluşturup onu seçin.`, 'error', 4000);
                 } else {
-                    console.error("İndirme Başlatılamadı:", err);
                     showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error');
                 }
             }
