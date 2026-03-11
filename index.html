@@ -123,6 +123,11 @@
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
         .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px 16px 24px; background: var(--bg); }
+        .breadcrumb-wrapper { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .nav-action-btn { background: transparent; border: none; padding: 6px; border-radius: 50%; cursor: default; display: flex; align-items: center; justify-content: center; position: relative; width: 36px; height: 36px; color: var(--primary); transition: background 0.2s, color 0.2s; flex-shrink: 0; pointer-events: none;}
+        .nav-action-btn.active { color: var(--text-muted); cursor: pointer; pointer-events: auto; }
+        .nav-action-btn.active:hover { background: var(--hover-bg); color: var(--text); }
+        .nav-icon { position: absolute; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .breadcrumb-nav { display: flex; align-items: center; gap: 8px; font-size: 20px; color: var(--text); flex-wrap: wrap;}
         .breadcrumb-item { cursor: pointer; border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; }
         .breadcrumb-item:hover { background: var(--hover-bg); }
@@ -392,7 +397,13 @@
             </div>
         </div>
         <div class="sub-header">
-            <div class="breadcrumb-nav" id="breadcrumbNav"></div>
+            <div class="breadcrumb-wrapper">
+                <button class="nav-action-btn" id="navActionBtn" onclick="handleNavAction()" title="Geri">
+                    <span class="material-icons-round nav-icon" id="navIconHome" style="font-size: 22px;">home</span>
+                    <span class="material-icons-round nav-icon" id="navIconBack" style="font-size: 24px; opacity: 0; transform: rotate(-90deg) scale(0.5);">arrow_back</span>
+                </button>
+                <div class="breadcrumb-nav" id="breadcrumbNav"></div>
+            </div>
             <div class="view-menu-container">
                 <button class="view-btn" onclick="toggleViewMenu(event)">
                     <span class="material-icons-round" id="currentViewIcon">view_list</span>
@@ -859,20 +870,55 @@
         }
 
         function goBack() { if(navigationHistory.length > 1) navigateToHistoryIndex(navigationHistory.length - 2); }
+        
+        function handleNavAction() {
+            if (navigationHistory.length > 1) {
+                goBack();
+            }
+        }
 
         function renderBreadcrumbs() {
-            const nav = document.getElementById('breadcrumbNav'); nav.innerHTML = '';
-            if (navigationHistory.length > 1) {
-                const backBtn = document.createElement('div'); backBtn.className = 'breadcrumb-item'; backBtn.innerHTML = `<span class="material-icons-round" style="font-size: 24px;">arrow_back</span>`;
-                backBtn.style.padding = "6px"; backBtn.onclick = goBack; nav.appendChild(backBtn);
+            const nav = document.getElementById('breadcrumbNav'); 
+            nav.innerHTML = '';
+            
+            const isRoot = navigationHistory.length === 1;
+            const homeIcon = document.getElementById('navIconHome');
+            const backIcon = document.getElementById('navIconBack');
+            const actionBtn = document.getElementById('navActionBtn');
+            
+            if (isRoot) {
+                homeIcon.style.opacity = '1'; 
+                homeIcon.style.transform = 'rotate(0) scale(1)';
+                backIcon.style.opacity = '0'; 
+                backIcon.style.transform = 'rotate(-90deg) scale(0.5)';
+                actionBtn.classList.remove('active');
+            } else {
+                homeIcon.style.opacity = '0'; 
+                homeIcon.style.transform = 'rotate(90deg) scale(0.5)';
+                backIcon.style.opacity = '1'; 
+                backIcon.style.transform = 'rotate(0) scale(1)';
+                actionBtn.classList.add('active');
             }
+
             navigationHistory.forEach((step, index) => {
-                const isLast = index === navigationHistory.length - 1; const item = document.createElement('div'); item.className = 'breadcrumb-item';
-                if(index === 0) item.innerHTML = `<span class="material-icons-round" style="font-size: 22px;">home</span> <span style="font-size:16px;">${step.name}</span>`;
-                else item.innerHTML = `<span style="font-size:16px; font-weight: ${isLast ? '500' : '400'}">${step.name}</span>`;
-                if(!isLast) item.onclick = () => navigateToHistoryIndex(index); else { item.style.cursor = "default"; item.style.backgroundColor = "transparent"; }
+                const isLast = index === navigationHistory.length - 1; 
+                const item = document.createElement('div'); 
+                item.className = 'breadcrumb-item';
+                
+                item.innerHTML = `<span style="font-size:16px; font-weight: ${isLast ? '500' : '400'}">${step.name}</span>`;
+                if(!isLast) {
+                    item.onclick = () => navigateToHistoryIndex(index); 
+                } else { 
+                    item.style.cursor = "default"; 
+                    item.style.backgroundColor = "transparent"; 
+                }
                 nav.appendChild(item);
-                if (!isLast) { const sep = document.createElement('span'); sep.className = 'breadcrumb-separator material-icons-round'; sep.innerText = 'chevron_right'; nav.appendChild(sep); }
+                if (!isLast) { 
+                    const sep = document.createElement('span'); 
+                    sep.className = 'breadcrumb-separator material-icons-round'; 
+                    sep.innerText = 'chevron_right'; 
+                    nav.appendChild(sep); 
+                }
             });
         }
 
