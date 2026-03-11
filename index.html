@@ -159,9 +159,7 @@
         [data-theme="dark"] .mask-circle { transform: translate(-10px, -2px); }
 
         .profile-area { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        
         .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 18px; overflow: hidden; background-repeat: no-repeat;}
-        
         .profile-menu { position: absolute; top: 50px; right: 0; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 260px; display: none; z-index: 1000; padding: 20px; text-align: center; border: 1px solid var(--border);}
         .profile-menu.show { display: block; }
 
@@ -1315,7 +1313,9 @@
                 }
             });
 
-            // 1. KISAYOL VE FDM İLE ÇAKIŞABİLECEK DOSYALAR İÇİN ÖZEL BASE64 İNDİRME MOTORU (ZIRH DELİCİ)
+            // 1. KISAYOL (LNK/URL) DOSYALARI İÇİN GÜVENLİ RAM (BLOB) İNDİRME MOTORU
+            // File System API .lnk yazmaya izin vermediği ve Cross-Origin linkler isimsiz indiği için,
+            // dosyayı RAM'e çekip Same-Origin (Blob) olarak tarayıcıya sunuyoruz.
             if (dangerousItems.length > 0) {
                 for (let i = 0; i < dangerousItems.length; i++) {
                     const item = dangerousItems[i];
@@ -1323,27 +1323,28 @@
                     showDownloadToast(`${item.name} hazırlanıyor...`, 'info', 2500);
 
                     try {
-                        // Dosyayı RAM'e çekiyoruz (LNK/URL dosyaları 1-2 KB olduğu için 0-RAM kuralını bozmaz)
                         const response = await fetch(directUrl);
                         if (!response.ok) throw new Error("Ağ hatası");
                         
-                        const blob = await response.blob();
+                        // Dosyayı saf ikili (octet-stream) veri formatında Blob'a çeviriyoruz.
+                        const buffer = await response.arrayBuffer();
+                        const blob = new Blob([buffer], { type: 'application/octet-stream' });
                         
-                        // Tarayıcının "Cross-Origin" (Farklı Alan Adı) güvenlik kısıtlamasını aşmak ve 
-                        // dosya adını %100 zorlamak için Blob'u Base64 veri URI'sine çeviriyoruz.
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                            const base64data = reader.result;
-                            
-                            const a = document.createElement('a');
-                            a.style.display = 'none';
-                            a.href = base64data;
-                            a.download = item.name; // Artık tarayıcı bu ismi KESİNLİKLE kabul edecek!
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                        };
-                        reader.readAsDataURL(blob);
+                        // Same-Origin kuralını sağlayan özel Blob URL oluşturulur.
+                        const url = window.URL.createObjectURL(blob);
+                        
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        // URL Same-Origin olduğu için tarayıcı bu ismi ASLA silmez ve kesinlikle kabul eder!
+                        a.download = item.name; 
+                        
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        // RAM'i temizle
+                        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
 
                     } catch (err) {
                         console.error("Kısayol indirme hatası:", err);
