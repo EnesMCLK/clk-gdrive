@@ -535,7 +535,6 @@
         </div>
     </div>
 
-    <!-- DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) -->
     <div id="selectionActionBar" class="selection-action-bar">
         <div class="sab-count">
             <span class="material-icons-round">check_circle</span>
@@ -1290,6 +1289,55 @@
             }
         }
 
+        // =======================================================================
+        // YENİ: MİKRO ZIP MOTORU (JSZIP KÜTÜPHANESİ) - Kısayollar İçin
+        // =======================================================================
+        function loadJSZip() {
+            return new Promise((resolve, reject) => {
+                if (typeof JSZip !== 'undefined') return resolve();
+                showDownloadToast('Zip motoru başlatılıyor...', 'info', 1500);
+                const script = document.createElement('script');
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        async function downloadAsZip(item) {
+            showDownloadToast(`${item.name} güvenli ZIP formatında hazırlanıyor...`, 'info', 3000);
+            try {
+                const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                const response = await fetch(directUrl);
+                if (!response.ok) throw new Error("Ağ hatası");
+                
+                const arrayBuffer = await response.arrayBuffer();
+                
+                // ZIP oluştur
+                const zip = new JSZip();
+                zip.file(item.name, arrayBuffer);
+                const zipBlob = await zip.generateAsync({type:"blob"});
+                
+                // Tarayıcıya ZIP olarak sun. ZIP güvenli olduğu için Chrome isim veya uzantı bozmaz!
+                const zipName = item.name + ".zip"; // Örnek: "dosya.lnk.zip"
+                const url = window.URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = zipName; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+                showDownloadToast(`${zipName} indirildi!`, 'info', 3000);
+            } catch (err) {
+                console.error("ZIP oluşturma hatası:", err);
+                showDownloadToast(`${item.name} ZIP olarak indirilemedi.`, 'error', 3000);
+            }
+        }
+
+
         // ANA İNDİRME TETİKLEYİCİ
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
@@ -1313,45 +1361,18 @@
                 }
             });
 
-            // 1. KISAYOL (LNK/URL) DOSYALARI İÇİN GÜVENLİ RAM (BLOB) İNDİRME MOTORU
-            // File System API .lnk yazmaya izin vermediği ve Cross-Origin linkler isimsiz indiği için,
-            // dosyayı RAM'e çekip Same-Origin (Blob) olarak tarayıcıya sunuyoruz.
+            // 1. KISAYOL (LNK/URL) DOSYALARI İÇİN GÜVENLİ MİKRO ZIP MOTORU
+            // Chrome/Edge "Mark Of The Web" güvenlik kuralını aşıp uzantıyı bozmasını engellemek için
+            // anlık olarak ZIP dosyasına gömüp indiriyoruz.
             if (dangerousItems.length > 0) {
-                for (let i = 0; i < dangerousItems.length; i++) {
-                    const item = dangerousItems[i];
-                    const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
-                    showDownloadToast(`${item.name} hazırlanıyor...`, 'info', 2500);
-
-                    try {
-                        const response = await fetch(directUrl);
-                        if (!response.ok) throw new Error("Ağ hatası");
-                        
-                        // Dosyayı saf ikili (octet-stream) veri formatında Blob'a çeviriyoruz.
-                        const buffer = await response.arrayBuffer();
-                        const blob = new Blob([buffer], { type: 'application/octet-stream' });
-                        
-                        // Same-Origin kuralını sağlayan özel Blob URL oluşturulur.
-                        const url = window.URL.createObjectURL(blob);
-                        
-                        const a = document.createElement('a');
-                        a.style.display = 'none';
-                        a.href = url;
-                        // URL Same-Origin olduğu için tarayıcı bu ismi ASLA silmez ve kesinlikle kabul eder!
-                        a.download = item.name; 
-                        
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        
-                        // RAM'i temizle
-                        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
-
-                    } catch (err) {
-                        console.error("Kısayol indirme hatası:", err);
-                        showDownloadToast(`${item.name} indirilemedi.`, 'error', 3000);
+                try {
+                    await loadJSZip(); // Sadece gerektiğinde kütüphaneyi çağır, gereksiz RAM yemez.
+                    for (let i = 0; i < dangerousItems.length; i++) {
+                        await downloadAsZip(dangerousItems[i]);
+                        if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
                     }
-
-                    if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
+                } catch (e) {
+                    showDownloadToast(`ZIP motoru yüklenemedi. Lütfen internet bağlantınızı kontrol edin.`, 'error', 4000);
                 }
             }
 
