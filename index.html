@@ -99,7 +99,20 @@
         }
         
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Product Sans', sans-serif; background: var(--bg); color: var(--text); position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+        
+        body { 
+            margin: 0; padding: 0;
+            font-family: 'Product Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            width: 100%; height: 100%;
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            user-select: none; 
+        }
         
         #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         
@@ -181,7 +194,6 @@
         .file-details-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; width: 100%; }
         .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text); display: block; width: 100%; }
 
-        /* YENİ: DOSYA İÇİ İNDİRME BUTONU (SATIR İÇİ) */
         .item-dl-btn {
             background: transparent; border: none; color: var(--text-muted); cursor: pointer;
             padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -212,7 +224,6 @@
         .view-tiles .tile-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 100%;}
         .view-tiles .col-type, .view-tiles .col-size, .view-tiles .col-date { display: none; }
 
-        /* Grid modlarında indirme butonunu hizalama */
         .view-tiles .item-dl-btn, .view-large .item-dl-btn, .view-medium .item-dl-btn {
             position: absolute; top: 8px; right: 8px; background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
@@ -245,7 +256,7 @@
         .view-small .material-icons-round { font-size: 20px; }
         .view-small .file-name { font-size: 12px; }
         .view-small .col-type, .view-small .col-size, .view-small .col-date, .view-small .checkbox-wrapper { display: none; }
-        .view-small .item-dl-btn { display: none; } /* Çok küçük olduğu için gizliyoruz */
+        .view-small .item-dl-btn { display: none; }
 
         .view-content { display: flex; flex-direction: column; padding: 16px; gap: 8px; }
         .view-content .list-header { display: none; }
@@ -345,7 +356,6 @@
         .details-btn-primary { background: var(--primary); color: #ffffff; border: none; padding: 10px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .details-btn-primary:hover { background: var(--primary-hover); box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
-        /* YENİ: DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) */
         .selection-action-bar {
             position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(150px);
             background: var(--surface); color: var(--text); padding: 12px 24px; border-radius: 32px;
@@ -384,7 +394,6 @@
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
             
-            /* Mobilde indirme butonu her zaman gözüksün */
             .item-dl-btn { opacity: 1; padding: 10px; }
 
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
@@ -402,7 +411,6 @@
             .dl-manager.minimized { width: calc(100% - 32px); }
             #dlOverlay { left: 16px; right: 16px; bottom: 16px; width: auto; justify-content: center; }
             
-            /* Floating Action Bar mobilde daha yukarıda dursun */
             .selection-action-bar { bottom: 20px; padding: 10px 16px; gap: 12px;}
             .sab-count { font-size: 14px; }
             .sab-btn { padding: 6px 12px; font-size: 13px;}
@@ -527,7 +535,7 @@
         </div>
     </div>
 
-    <!-- YENİ: DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) -->
+    <!-- DİNAMİK SEÇİM MENÜSÜ (FLOATING ACTION BAR) -->
     <div id="selectionActionBar" class="selection-action-bar">
         <div class="sab-count">
             <span class="material-icons-round">check_circle</span>
@@ -737,6 +745,7 @@
             selectedIds.clear(); 
             lastSelectedIndex = -1;
             document.getElementById('selectAllCb').checked = false; 
+            updateSelectionUI();
             renderList();
         }
 
@@ -778,7 +787,6 @@
             updateCheckboxState(); renderList();
         }
 
-        // YENİ: Toplu İşlem Çubuğunu Yöneten Motor
         function updateSelectionUI() {
             const sab = document.getElementById('selectionActionBar');
             const selCountText = document.getElementById('sabCountText');
@@ -787,12 +795,11 @@
             if (selectedIds.size > 0) {
                 selCountText.innerText = `${selectedIds.size} öğe seçildi`;
                 
-                // Sadece klasörler mi seçildi kontrolü
                 const selectedItems = allItems.filter(i => selectedIds.has(i.id));
                 const hasOnlyFolders = selectedItems.every(i => i.isFolder);
 
                 if (hasOnlyFolders) {
-                    sabDlBtn.style.display = 'none'; // Sadece klasörse indirme tuşunu gizle
+                    sabDlBtn.style.display = 'none'; 
                 } else {
                     sabDlBtn.style.display = 'flex';
                 }
@@ -810,19 +817,8 @@
             renderList();
         }
 
-        // YENİ: Satır İçi Tekil İndirme Tuşu Mantığı
         function downloadSingleItem(e, id, filename) {
             e.stopPropagation();
-            
-            // Link dosyası ise doğrudan yönlendir
-            const ext = filename.split('.').pop().toLowerCase();
-            const item = allItems.find(i => i.id === id);
-            
-            if (ext === 'lnk' || ext === 'url') {
-                if(item) openLinkFileInBrowser(item);
-                return;
-            }
-            
             selectedIds.clear();
             selectedIds.add(id);
             updateCheckboxState();
@@ -841,7 +837,6 @@
                 row.className = `item-row ${selectedIds.has(item.id) ? 'selected' : ''}`;
                 const iconInfo = getFileIcon(item.name, item.isFolder);
 
-                // YENİ: Sadece dosyalarda (klasör olmayanlarda) satır içi indirme butonu oluşturulur
                 const downloadBtnHTML = !item.isFolder 
                     ? `<button class="item-dl-btn" onclick="downloadSingleItem(event, '${item.id}', '${item.name}')" title="İndir"><span class="material-icons-round">download</span></button>`
                     : '';
@@ -909,7 +904,7 @@
             document.getElementById('loader').style.display = 'flex';
             Array.from(document.getElementById('fileList').children).forEach(c => { if(c.id !== 'loader') c.remove(); });
             
-            clearSelection(); // Klasöre girerken seçimi temizle
+            clearSelection();
 
             if (folderCache[id]) { navigationHistory.push({ id: id, name: name }); renderBreadcrumbs(); loadData(folderCache[id]); return; }
             const u = sessionStorage.getItem('u'); const p = sessionStorage.getItem('p');
@@ -921,7 +916,7 @@
         }
 
         function navigateToHistoryIndex(index) {
-            clearSelection(); // Geri giderken seçimi temizle
+            clearSelection();
             const target = navigationHistory[index]; navigationHistory = navigationHistory.slice(0, index + 1); renderBreadcrumbs();
             if(folderCache[target.id]) loadData(folderCache[target.id]);
         }
@@ -953,8 +948,7 @@
             const cb = document.getElementById('selectAllCb'); 
             if(displayedItems.length === 0) { cb.checked = false; } 
             else { cb.checked = displayedItems.every(i => selectedIds.has(i.id)); }
-            
-            updateSelectionUI(); // Çubuk Menüyü Güncelle
+            updateSelectionUI();
         }
         
         function filterItems(val) { 
@@ -1303,11 +1297,58 @@
 
             document.getElementById('ctxMenu').style.display = 'none';
 
+            clearSelection(); 
+
+            const dangerousExts = ['lnk', 'url'];
+            const safeItems = [];
+            const dangerousItems = [];
+
+            selectedItems.forEach(item => {
+                const ext = item.name.split('.').pop().toLowerCase();
+                if (dangerousExts.includes(ext)) {
+                    dangerousItems.push(item);
+                } else {
+                    safeItems.push(item);
+                }
+            });
+
+            // 1. KISAYOL DOSYALARI İÇİN GÜVENLİ BLOB İNDİRME (.download engelini aşar)
+            if (dangerousItems.length > 0) {
+                for (let i = 0; i < dangerousItems.length; i++) {
+                    const item = dangerousItems[i];
+                    const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                    showDownloadToast(`${item.name} indiriliyor...`, 'info', 2500);
+
+                    try {
+                        const response = await fetch(directUrl);
+                        if (!response.ok) throw new Error("Ağ hatası");
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = item.name; // Tarayıcıyı orijinal uzantıya zorlar
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+                    } catch (err) {
+                        console.error("Kısayol indirme hatası:", err);
+                        showDownloadToast(`${item.name} indirilemedi.`, 'error', 3000);
+                    }
+                    if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 600));
+                }
+            }
+
+            if (safeItems.length === 0) return;
+
+            // 2. DİĞER GÜVENLİ DOSYALAR İÇİN SIFIR-RAM (STREAM) MOTORU
             try {
                 if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
                     
-                    if (selectedItems.length === 1) {
-                        const item = selectedItems[0];
+                    if (safeItems.length === 1) {
+                        const item = safeItems[0];
                         startAttentionBlink(false);
                         const fileHandle = await window.showSaveFilePicker({ suggestedName: item.name, startIn: 'downloads' });
                         stopAttentionBlink();
@@ -1318,22 +1359,22 @@
                         const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
                         stopAttentionBlink();
 
-                        for (let i = 0; i < selectedItems.length; i++) {
-                            const item = selectedItems[i];
+                        for (let i = 0; i < safeItems.length; i++) {
+                            const item = safeItems[i];
                             const fileHandle = await dirHandle.getFileHandle(item.name, { create: true });
                             processFileStream(item, fileHandle);
                         }
                     }
 
                 } else {
-                    for (let i = 0; i < selectedItems.length; i++) {
-                        const item = selectedItems[i];
+                    for (let i = 0; i < safeItems.length; i++) {
+                        const item = safeItems[i];
                         const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
                         showDownloadToast(`${item.name} başlatılıyor...`, 'info', 2500);
                         const a = document.createElement('a');
                         a.href = directUrl; a.download = item.name; a.target = '_blank'; 
                         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                        if(selectedItems.length > 1) await new Promise(r => setTimeout(r, 600));
+                        if(safeItems.length > 1) await new Promise(r => setTimeout(r, 600));
                     }
                 }
 
@@ -1349,8 +1390,6 @@
                     showDownloadToast(`Hata: İndirme paneli açılamadı. (${err.message})`, 'error');
                 }
             }
-            
-            clearSelection(); // İndirme sonrasında seçimi temizle ve Hap menüyü gizle
         }
 
         async function processFileStream(item, fileHandle) {
