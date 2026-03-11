@@ -804,9 +804,8 @@
             renderList();
         }
 
-        // SATIR İÇİ TEKİL İNDİRME FONKSİYONU: Her Zaman İndirir
         function downloadSingleItem(e, id, filename) {
-            e.stopPropagation(); // Satır seçimi tetiklemesini engelle
+            e.stopPropagation(); 
             
             selectedIds.clear();
             selectedIds.add(id);
@@ -848,7 +847,6 @@
                 
                 row.onclick = (e) => { e.stopPropagation(); handleItemClick(e, item.id, index); };
                 
-                // ÇİFT TIKLAMA FONKSİYONU: Kısayolsa Yeni Sekmede Açar, Dosyaysa İndirir.
                 row.ondblclick = (e) => { 
                     e.stopPropagation(); 
                     if(item.isFolder) {
@@ -936,8 +934,8 @@
         
         function updateCheckboxState() { 
             const cb = document.getElementById('selectAllCb'); 
-            if(displayedItems.length === 0) { cb.checked = false; } 
-            else { cb.checked = displayedItems.every(i => selectedIds.has(i.id)); }
+            if(displayedItems.length === 0) { cb.checked = false; return; } 
+            cb.checked = displayedItems.every(i => selectedIds.has(i.id)); 
             updateSelectionUI();
         }
         
@@ -1279,6 +1277,7 @@
             }
         }
 
+        // ANA İNDİRME TETİKLEYİCİ
         async function triggerNativeDownload() {
             const selectedItems = allItems.filter(i => selectedIds.has(i.id));
             if(selectedItems.length === 0) return;
@@ -1286,7 +1285,6 @@
             if(!sessionKey) { alert("Güvenlik Hatası: Oturum süresi doldu."); return; }
 
             document.getElementById('ctxMenu').style.display = 'none';
-
             clearSelection(); 
 
             const dangerousExts = ['lnk', 'url'];
@@ -1302,28 +1300,29 @@
                 }
             });
 
-            // 1. KISAYOL VE FDM İLE ÇAKIŞABİLECEK DOSYALAR İÇİN DOĞRUDAN HTTP İNDİRME (.download engelini aşar)
+            // 1. KISAYOL VE FDM İLE ÇAKIŞABİLECEK DOSYALAR İÇİN DOĞRUDAN API İNDİRMESİ
             if (dangerousItems.length > 0) {
                 for (let i = 0; i < dangerousItems.length; i++) {
                     const item = dangerousItems[i];
                     
-                    // FDM (Free Download Manager) veya Chrome SafeBrowsing Blob URL'lerde hata verir.
-                    // Bunun yerine Google Drive'ın Native Export linkini gizli bir Iframe ile çağırıyoruz.
-                    // Böylece eklentiler URL'yi sorunsuz okuyup orijinal uzantı (.lnk) ile indirebilirler.
-                    const driveDownloadUrl = `https://drive.google.com/uc?export=download&id=${item.id}`;
-                    showDownloadToast(`${item.name} indiriliyor... (Tarayıcı uyarısına izin verin)`, 'info', 4000);
+                    // Şirket ağlarında drive.google.com engelli olabildiği için, 
+                    // kurumsal API trafiğine izin verilen googleapis.com üzerinden yönlendirme yapıyoruz.
+                    const directUrl = `https://www.googleapis.com/drive/v3/files/${item.id}?alt=media&key=${sessionKey}`;
+                    showDownloadToast(`${item.name} indiriliyor... (Tarayıcı uyarısı verirse onaylayın)`, 'info', 4000);
 
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = driveDownloadUrl;
-                    document.body.appendChild(iframe);
-
-                    // İşlem bittikten sonra DOM'u temizle
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = directUrl;
+                    a.download = item.name; // Tarayıcı ve FDM'e orijinal uzantıyı zorlar
+                    a.target = '_blank'; // Sayfa yönlendirmesini bozmamak için yeni sekmede tetikler
+                    document.body.appendChild(a);
+                    a.click();
+                    
                     setTimeout(() => {
-                        if (document.body.contains(iframe)) {
-                            document.body.removeChild(iframe);
+                        if (document.body.contains(a)) {
+                            document.body.removeChild(a);
                         }
-                    }, 10000);
+                    }, 5000);
 
                     if(dangerousItems.length > 1 || safeItems.length > 0) await new Promise(r => setTimeout(r, 1500));
                 }
@@ -1331,7 +1330,7 @@
 
             if (safeItems.length === 0) return;
 
-            // 2. DİĞER GÜVENLİ BÜYÜK DOSYALAR İÇİN SIFIR-RAM (STREAM) MOTORU
+            // 2. DİĞER GÜVENLİ DOSYALAR İÇİN SIFIR-RAM (STREAM) MOTORU
             try {
                 if ('showSaveFilePicker' in window && 'showDirectoryPicker' in window) {
                     
