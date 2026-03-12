@@ -303,7 +303,7 @@
             .view-details .item-row { grid-template-columns: 40px 1fr; padding: 10px 12px; height: auto; align-items: center; }
             .view-details .col-type, .view-details .col-size, .view-details .col-date { display: none; }
             .view-details .content-meta { display: flex !important; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
-            .item-dl-btn { opacity: 1; padding: 10px; }
+            .item-dl-btn { display: none !important; }
             .view-list { flex-direction: column; flex-wrap: nowrap; padding: 8px; align-items: stretch; }
             .view-list .item-row { width: 100%; max-width: none; }
             .view-tiles { grid-template-columns: 1fr; padding: 12px; }
@@ -694,11 +694,21 @@
         function updateSelectionUI() {
             const sab = document.getElementById('selectionActionBar');
             const selCountText = document.getElementById('sabCountText');
+            const sabDlBtn = document.getElementById('sabDownloadBtn');
 
             const selectedFiles = allItems.filter(i => selectedIds.has(i.id) && !i.isFolder);
+            const selectedFolders = allItems.filter(i => selectedIds.has(i.id) && i.isFolder);
 
-            if (selectedFiles.length > 0) {
-                selCountText.innerText = `${selectedFiles.length} dosya seçildi`;
+            if (selectedIds.size > 0) {
+                const totalCount = selectedIds.size;
+                selCountText.innerText = `${totalCount} öğe seçildi`;
+                
+                if (selectedFiles.length === 0 && selectedFolders.length > 0) {
+                    sabDlBtn.style.display = 'none';
+                } else {
+                    sabDlBtn.style.display = 'flex';
+                }
+                
                 sab.classList.add('show');
             } else {
                 sab.classList.remove('show');
